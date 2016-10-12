@@ -17,7 +17,7 @@ rule token = parse
 | '[' { LBRACKET } | "++" { INC } | "main" { MAIN }
 | ']' { RBRACKET } | "--" { DEC } | "float" { FLOAT }
 | ':' { COLON } | "char" { CHAR }
-| ',' { COMMA } | "double" { DOUBLE }
+| "double" { DOUBLE }
 | "null" { NULL }
 | "String" { STRING }
 

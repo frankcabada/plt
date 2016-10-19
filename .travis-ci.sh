@@ -1,6 +1,5 @@
-b=$(git branch | grep "*")
-branch=${b:2}
+branch=$(git branch | grep \*)
 
-if [ $branch == "master" ]; then
+if [ $branch == "* master" ]; then
 	echo "NEVER PUSH FROM MASTER!!!"
 	exit 0;

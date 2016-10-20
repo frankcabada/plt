@@ -1,7 +1,8 @@
-{ }
+{ open Parser }
 
 rule token = parse
 	[' ' '\t' '\r' '\n'] { token lexbuf } (* Whitespace *)
+	(* ['n'] { token lexbux n+1 ? }  *)
 | "/*" { comment lexbuf } (* Comments *)
 | "//" { comment2 lexbuf } (* Single Line Comments *)
 | '(' { LPAREN } | '=' { ASSIGN } | "if" { IF }
@@ -15,12 +16,10 @@ rule token = parse
 | '*' { TIMES } | "||" { OR } | "true" { TRUE }
 | '/' { DIVIDE } | '!' { NOT } | "false" { FALSE }
 | '[' { LBRACKET } | "++" { INC } | "main" { MAIN }
-| ']' { RBRACKET } | "--" { DEC } | "float" { FLOAT }
-| ':' { COLON } | "char" { CHAR }
-| "double" { DOUBLE }
+| ']' { RBRACKET } | "--" { DEC } | "double" { DOUBLE }
+| ':' { COLON } 				  | "mat" { MAT } 
 | "null" { NULL }
 | "String" { STRING }
-
 | ['0'-'9']+ as lxm { LITERAL(int_of_string lxm) }
 | ['a'-'z' 'A'-'Z']['a'-'z' 'A'-'Z' '0'-'9' '_']* as lxm { ID(lxm) }
 | eof { EOF }

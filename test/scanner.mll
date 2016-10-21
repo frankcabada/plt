@@ -1,4 +1,4 @@
-{ open Parser }
+{ open Nullparser }
 
 rule token = parse
 	[' ' '\t' '\r' '\n'] { token lexbuf } (* Whitespace *)
@@ -16,7 +16,7 @@ rule token = parse
 | '*' { TIMES } | "||" { OR } | "true" { TRUE }
 | '/' { DIVIDE } | '!' { NOT } | "false" { FALSE }
 | '[' { LBRACKET } | "++" { INC } | "main" { MAIN }
-| ']' { RBRACKET } | "--" { DEC } | "double" { DOUBLE }
+| ']' { RBRACKET } | "--" { DEC }
 | ':' { COLON }
 | "null" { NULL }
 | "String" { STRING }

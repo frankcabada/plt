@@ -24,6 +24,7 @@ let stringify = function
   (* Conditional Operators *)
   | IF -> "IF"
   | ELSE -> "ELSE"
+  | ELSIF -> "ELSIF"
 
   (* End-of-File *)
   | EOF -> "EOF"
@@ -33,10 +34,10 @@ let stringify = function
 
   | SEMI -> "SEMI"  | LBRACKET -> "LBRACKET" | RBRACKET -> "RBRACKET"
   | LT -> "LT" | GT -> "GT" | INC -> "INC" | DEC -> "DEC"
-  | COLON -> "COLON" | FOR -> "FOR" | WHILE -> "WHILE"
+  | COLON -> "COLON" | FOR -> "FOR" | WHILE -> "WHILE" | BREAK -> "BREAK"
   | RETURN -> "RETURN" | MAIN -> "MAIN"
   | TRUE -> "TRUE" | FALSE -> "FALSE"
-  | INT -> "INT" | BOOL -> "BOOL" | VOID -> "VOID"
+  | INT -> "INT" | BOOL -> "BOOL" | VOID -> "VOID" | DOUBLE -> "DOUBLE"
   | STRING -> "STRING" |NULL -> "NULL" | LITERAL(int) -> "LITERAL"
 
 let _ =

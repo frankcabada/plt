@@ -7,5 +7,3 @@ ocamlc -c scanner.ml
 ocamlc -c nullparser.ml
 ocamlc -c tokenize.ml
 ocamlc -o tokenize nullparser.cmo scanner.cmo tokenize.cmo
-
-cat testfile.txt | ./tokenize

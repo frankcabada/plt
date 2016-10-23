@@ -1,25 +1,38 @@
 { open Nullparser }
 
 rule token = parse
-	[' ' '\t' '\r' '\n'] { token lexbuf } (* Whitespace *)
+(* Whitespace *)
+	[' ' '\t' '\r' '\n'] { token lexbuf }
 	(* ['n'] { token lexbux n+1 ? }  *)
-| "/*" { comment lexbuf } (* Comments *)
-| "//" { comment2 lexbuf } (* Single Line Comments *)
-| '(' { LPAREN } | '=' { ASSIGN } | "if" { IF }
-| ')' { RPAREN } | "==" { EQ } | "else" { ELSE }
-| '{' { LBRACE } | "!=" { NEQ } | "for" { FOR }
-| '}' { RBRACE } | '<' { LT } | "while" { WHILE }
-| ';' { SEMI } | "<=" { LEQ } | "return" { RETURN }
-| ',' { COMMA } | ">" { GT } | "int" { INT }
-| '+' { PLUS } | ">=" { GEQ } | "bool" { BOOL }
-| '-' { MINUS } | "&&" { AND } | "void" { VOID }
-| '*' { TIMES } | "||" { OR } | "true" { TRUE }
-| '/' { DIVIDE } | '!' { NOT } | "false" { FALSE }
-| '[' { LBRACKET } | "++" { INC } | "main" { MAIN }
-| ']' { RBRACKET } | "--" { DEC }
-| ':' { COLON }
-| "null" { NULL }
-| "String" { STRING }
+
+(* Comments *)
+| "/*" { comment lexbuf } | "//" { comment2 lexbuf }
+
+(* Delimiters *)
+| '(' { LPAREN }  | ')' { RPAREN } | '{' { LBRACE } | '}' { RBRACE }
+| '[' { LBRACKET } | ']' { RBRACKET }
+
+(* Control Flow *)
+| "if" { IF } | "else" { ELSE } | "while" { WHILE } | "for" { FOR }
+| "return" { RETURN } | "main" { MAIN }
+
+(* Conditionals *)
+| "==" { EQ } | "!=" { NEQ } | '<' { LT } | ">" { GT }
+| "<=" { LEQ } | ">=" { GEQ } | "&&" { AND } | "||" { OR } | '!' { NOT }
+
+(* Arithmetic *)
+| '+' { PLUS } | '-' { MINUS } | '*' { TIMES } | '/' { DIVIDE }
+| '=' { ASSIGN } | "++" { INC } | "--" { DEC }
+
+(* Types *)
+| "int" { INT } | "double" { DOUBLE } | "bool" { BOOL } | "void" { VOID }
+| "null" { NULL } | "String" { STRING } | "true" { TRUE } | "false" { FALSE }
+
+
+(* Misc. *)
+| ';' { SEMI } | ',' { COMMA } | ':' { COLON }
+
+(* Literals, Identifiers, EOF *)
 | ['0'-'9']+ as lxm { LITERAL(int_of_string lxm) }
 | ['a'-'z' 'A'-'Z']['a'-'z' 'A'-'Z' '0'-'9' '_']* as lxm { ID(lxm) }
 | eof { EOF }

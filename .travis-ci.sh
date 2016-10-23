@@ -5,4 +5,5 @@ fi
 
 git checkout -b master || exit
 git merge "$TRAVIS_COMMIT" || exit
-git push
+git push origin master
+echo

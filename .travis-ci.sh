@@ -4,7 +4,12 @@ if [ "$TRAVIS_BRANCH" == "master" ]; then
 fi
 
 export PATH="/usr/bin:$PATH"
-ls /usr/bin
+sudo apt-get update -qq
+sudo apt-get install -qq ocaml ocaml-native-compilers
+
+echo OCaml version
+ocaml -version
+
 cd ./test
 echo $PWD
 ./scripts/build.sh

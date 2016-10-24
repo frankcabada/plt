@@ -5,6 +5,5 @@ fi
 
 git ls-files
 cd ./test
-./scripts/build.sh
-./scripts/test.sh
+echo $PATH
 exit 0

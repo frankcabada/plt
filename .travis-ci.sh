@@ -4,7 +4,7 @@ if [ "$TRAVIS_BRANCH" == "master" ]; then
 fi
 
 export PATH="/usr/bin:$PATH"
-git ls-files
+ls /usr/bin
 cd ./test
 echo $PWD
 ./scripts/build.sh

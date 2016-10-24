@@ -13,4 +13,5 @@ ocaml -version
 cd ./test
 echo $PWD
 ./scripts/build.sh
+./scripts/test.sh
 exit 0

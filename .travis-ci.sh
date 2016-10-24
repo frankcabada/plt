@@ -4,3 +4,6 @@ if [ "$TRAVIS_BRANCH" == "master" ]; then
 fi
 
 git ls-files
+cd ./test
+./scripts/build.sh
+./scripts/test.sh

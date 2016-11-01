@@ -10,7 +10,7 @@ sudo apt-get install -qq ocaml ocaml-native-compilers
 echo "OCaml version: "
 ocaml -version
 
-cd ./test
-./scanner/scripts/build.sh
-./scanner/scripts/test.sh
+cd ./test/scanner
+./scripts/build.sh
+./scripts/test.sh
 exit 0

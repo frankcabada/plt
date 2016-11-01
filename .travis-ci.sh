@@ -1,6 +1,6 @@
 if [ "$TRAVIS_BRANCH" == "master" ]; then
 	echo "NEVER PUSH ON MASTER!!!"
-	exit 1;
+	exit 0;
 fi
 
 export PATH="/usr/bin:$PATH"
@@ -13,4 +13,5 @@ ocaml -version
 cd ./test/scanner
 ./scripts/build.sh
 ./scripts/test.sh
+./scripts/clean.sh
 exit 0

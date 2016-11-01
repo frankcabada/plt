@@ -11,6 +11,6 @@ echo "OCaml version: "
 ocaml -version
 
 cd ./test
-./scripts/build.sh
-./scripts/test.sh
+./scanner/scripts/build.sh
+./scanner/scripts/test.sh
 exit 0

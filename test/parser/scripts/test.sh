@@ -1,5 +1,5 @@
-cat scanner_test.txt | ./tokenize > scanner_test.res
-diff scanner_test.out scanner_test.res > /dev/null
+cat base_scanner_test.txt | ./tokenize > base_scanner_test.res
+diff base_scanner_test.out base_scanner_test.res > /dev/null
 if [ $? = 0 ]; then
   echo "---------------------------------------"
   echo "|      FIRST SCANNER TEST PASSED      |"

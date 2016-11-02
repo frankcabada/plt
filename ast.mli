@@ -1,11 +1,11 @@
-type op = PLUS | MINUS | TIMES | DIVIDE | EQ | 
+type op = PLUS | MINUS | TIMES | DIVIDE | EQ |
 		  NEQ | LT | LEQ | GT | GEQ | AND | OR | COLON
 type uop = NOT | INC of typ | DEC of typ
 type typ = INT | BOOL | VOID | NULL | DOUBLE | STRING | MAT of typ * int * int (* do a check when formed *)
 type bind = typ * string
 
-type expr = Literal of int 					| BooLit of bool 
-		  | Id of string 					| Noexpr
+type expr = Literal of int 					| BooLit of bool
+		  | Id of string 								| Noexpr
 		  | Binop of expr * op * expr		| Unop of uop * expr
 		  | Assign of string * expr			| Call of string * expr list
 

@@ -75,4 +75,4 @@ type func_decl = {
 }
 
 (* Start Symbol *)
-type main = bind list * func_decl list
+type program = bind list * func_decl list

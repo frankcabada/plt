@@ -39,13 +39,13 @@
 %left TIMES DIVIDE
 %right NOT NEG
 
-%start main
+%start program
 /* %type <int> main  ?? */
-%type <Ast.main> main
+%type <Ast.program> program
 
 %%
 
-main: 
+program: 
     decls EOF { $1 } /* ?? anything else */
 
 decls: 

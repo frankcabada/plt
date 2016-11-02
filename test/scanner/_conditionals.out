@@ -1,0 +1,9 @@
+EQ
+NEQ
+LT
+GT
+LEQ
+GEQ
+AND
+OR
+NOT

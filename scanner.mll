@@ -37,13 +37,6 @@ rule token = parse
 | '"' (([^ '"'] | "\\\"")* as strlit) '"' { STRING_LIT(strlit) }
 | "null" { NULL }
 
-<<<<<<< HEAD
-(* Matrix Init
-'[' ['0'-'9']+ ':' ['0'-'9']+ ':' ['0'-'9']+ ']' as matinit { COLON(matinit) }
-*)
-
-=======
->>>>>>> master
 (* Identifiers, EOF *)
 | ['a'-'z' 'A'-'Z']['a'-'z' 'A'-'Z' '0'-'9' '_']* as lxm { ID(lxm) }
 | "const" { CONST }

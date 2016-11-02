@@ -1,7 +1,7 @@
 type op = Add | Sub | Mult | Div | Equal | 
 		  Neq | Less | Leq | Greater | Geq | And | Or (* | COLON *)
 type uop = Neg | Not (* | INC of typ | DEC of typ *)
-type typ = Int | Bool | Void (*| NULL | DOUBLE | STRING | MAT of typ * int * int do a check when formed *) 
+type typ = Int | Bool | Void | Double (* | STRING | MAT of typ * int * int do a check when formed *) 
 type bind = typ * string
 
 type expr = Literal of int 					| BoolLit of bool 

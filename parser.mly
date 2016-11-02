@@ -5,10 +5,9 @@
 %token ASSIGN EQ NEQ LT LEQ GT GEQ AND OR NOT INC DEC COLON
 %token IF ELSE ELSIF FOR WHILE RETURN MAIN
 %token TRUE FALSE
-%token INT BOOL VOID STRING MAT NULL
+%token INT BOOL VOID STRING DOUBLE NULL
 %token <int> LITERAL
 %token <string> ID
-/* %token <double> DOUBLE */
 %token EOF
 
 /* Precedence and associativity of each operator */
@@ -52,9 +51,9 @@ typ:
      INT    { Int }
    | BOOL   { Bool }
    | VOID   { Void }
-/*   | DOUBLE { Double } 
-   | STRING { String }
-   | NULL   { Null } */
+   | DOUBLE { Double } 
+/*   | STRING { String } */
+   | NULL   { Null } 
 
 /*
 mdecl_list:  nothing  { [] }
@@ -92,11 +91,11 @@ stmt:
 
 expr:
     LITERAL                                         { Literal($1) }
-  /*| DOUBLE                                          { Double($1) }  ?? */
   /*| MAT                                             { Mat($1) }     ?? */
   | TRUE                                            { BoolLit(true) }
   | FALSE                                           { BoolLit(false) }
   | ID                                              { Id($1) }
+  | NULL                                            { Null($1) }  
   | expr PLUS expr                                  { Binop($1, Add, $3) }
   | expr MINUS expr                                 { Binop($1, Sub, $3) }
   | expr TIMES expr                                 { Binop($1, Mult, $3) }

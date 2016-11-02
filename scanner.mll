@@ -6,15 +6,15 @@ rule token = parse
 	(* ['n'] { token lexbux n+1 ? }  *)
 
 (* Comments *)
-| "/*" { comment lexbuf } | "//" { comment2 lexbuf }
+| "/*" { comment lexbuf } (* | "//" { comment2 lexbuf } *)
 
 (* Delimiters *)
 | '(' { LPAREN }  | ')' { RPAREN } | '{' { LBRACE } | '}' { RBRACE }
 | '[' { LBRACKET } | ']' { RBRACKET }
 
 (* Control Flow *)
-| "if" { IF } | "elsif" { ELSIF } | "else" { ELSE } | "while" { WHILE } | "for" { FOR }
-| "return" { RETURN } | "main" { MAIN } | "break" { BREAK }
+| "if" { IF } (* | "elsif" { ELSIF } *) | "else" { ELSE } | "while" { WHILE } | "for" { FOR }
+| "return" { RETURN } (* | "main" { MAIN } | "break" { BREAK } *)
 
 (* Conditionals *)
 | "==" { EQ } | "!=" { NEQ } | '<' { LT } | ">" { GT }
@@ -22,15 +22,15 @@ rule token = parse
 
 (* Arithmetic *)
 | '+' { PLUS } | '-' { MINUS } | '*' { TIMES } | '/' { DIVIDE }
-| '=' { ASSIGN } | "++" { INC } | "--" { DEC }
+| '=' { ASSIGN } (* | "++" { INC } | "--" { DEC } *)
 
 (* Types *)
-| "int" { INT } | "double" { DOUBLE } | "bool" { BOOL } | "void" { VOID }
-| "null" { NULL } | "String" { STRING } | "true" { TRUE } | "false" { FALSE }
+| "int" { INT } (* | "double" { DOUBLE } *) | "bool" { BOOL } | "void" { VOID }
+(* | "null" { NULL } | "String" { STRING } *) | "true" { TRUE } | "false" { FALSE }
 
 
 (* Misc. *)
-| ';' { SEMI } | ',' { COMMA } | ':' { COLON }
+| ';' { SEMI } | ',' { COMMA } (* | ':' { COLON } *)
 
 (* Literals, Identifiers, EOF *)
 | ['0'-'9']+ as lxm { LITERAL(int_of_string lxm) }
@@ -43,7 +43,7 @@ and comment = parse
 	"*/" { token lexbuf }
 | _ { comment lexbuf }
 
-(* ?? *)
+(* ?? 
 and comment2 = parse
 	'\n' { token lexbuf}
-| _ { comment2 lexbuf }
+| _ { comment2 lexbuf } *)

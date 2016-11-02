@@ -42,6 +42,7 @@ type expr =
 	| Int_lit of int
 	| Bool_lit of bool
 	| Id of string
+	| Const of string (* ?? is this correct *)
 	| Noexpr
 	| Binop of expr * op * expr
 	| Unop of uop * expr
@@ -60,10 +61,12 @@ type stmt =
 	| Block of stmt list
 	| Expr of expr
   	| If of expr * stmt * stmt
+(*  	| Elseif of expr * stmt * stmt *)
   	| Else of stmt
   	| For of expr * expr * expr * stmt
   	| While of expr * stmt
 	| Return of expr
+	| Break of expr
 
 (* Function Declarations *)
 type func_decl = {

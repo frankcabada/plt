@@ -4,7 +4,7 @@
 %token LPAREN RPAREN LBRACE RBRACE LBRACKET RBRACKET
 
 /* Control Flow */
-%token IF ELSIF ELSE WHILE FOR RETURN MAIN BREAK
+%token IF ELSEIF ELSE WHILE FOR RETURN MAIN BREAK
 
 /* Conditionals */
 %token EQ NEQ LT GT LEQ GEQ AND OR NOT
@@ -24,12 +24,14 @@
 %token <string> STRING_LIT
 %token <float> FLOAT_LIT
 %token NULL
+%token CONST
 %token EOF
 
 /* Precedence and associativity of each operator */
 %nonassoc RETURN
 %nonassoc NOELSE
 %nonassoc ELSE
+%nonassoc BREAK /* ?? Correct precendence */
 %right ASSIGN
 %left OR
 %left AND
@@ -72,7 +74,7 @@ primitives:
   | VOID              { Void }
   | FLOAT             { Float }
   | STRING            { String } 
-  | MATRIX primitives { Matrix ($2) }
+  | MATRIX primitives { Matrix($2) }
 
 vdecl_list: 
     /* nothing */    { [] }
@@ -88,6 +90,7 @@ stmt_list:
 stmt:
     expr SEMI                                               { Expr $1 } 
   | RETURN SEMI                                             { Return Noexpr }
+  | BREAK SEMI                                              { Break Noexpr }
   | RETURN expr SEMI                                        { Return $2 }
   | LBRACE stmt_list RBRACE                                 { Block(List.rev $2) }
   | IF LPAREN expr RPAREN stmt %prec NOELSE                 { If($3, $5, Block([])) }
@@ -103,6 +106,7 @@ expr:
   | FALSE                                                    { Bool_lit(false) }
   | NULL                                                     { Null }
   | ID                                                       { Id($1) }
+  | CONST ID                                                 { Const($2) }
   | expr PLUS expr                                           { Binop($1, Add, $3) }
   | expr MINUS expr                                          { Binop($1, Sub, $3) }
   | expr TIMES expr                                          { Binop($1, Mult, $3) }
@@ -123,10 +127,10 @@ expr:
   | LPAREN expr RPAREN                                       { $2 }
   | ID LPAREN actuals_opt RPAREN                             { Call($1, $3) }
   | LBRACKET expr COLON expr COLON expr RBRACKET             { Mat_init($2, $4, $6) }
-  | LBRACKET actuals_opt RBRACKET                            { Matrix_lit ($2) }
-  | ID LBRACKET expr COMMA expr RBRACKET                     { Matrix_access ($1, $3, $5) }
-  | ID LBRACKET expr COMMA COLON RBRACKET                    { Matrix_row ($1, $3) } /* ?? that's all */
-  | ID LBRACKET COLON COMMA expr RBRACKET                    { Matrix_row ($1, $5) } /* ?? that's all */
+  | LBRACKET actuals_opt RBRACKET                            { Matrix_lit($2) }
+  | ID LBRACKET expr COMMA expr RBRACKET                     { Matrix_access($1, $3, $5) }
+  | ID LBRACKET expr COMMA COLON RBRACKET                    { Matrix_row($1, $3) } /* ?? that's all */
+  | ID LBRACKET COLON COMMA expr RBRACKET                    { Matrix_row($1, $5) } /* ?? that's all */
 
 expr_opt:
     /* nothing */ { Noexpr }

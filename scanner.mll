@@ -13,8 +13,8 @@ rule token = parse
 | '[' { LBRACKET } | ']' { RBRACKET }
 
 (* Control Flow *)
-| "if" { IF } (* | "elsif" { ELSIF } *) | "else" { ELSE } | "while" { WHILE } | "for" { FOR }
-| "return" { RETURN } | "main" { MAIN } (* | "break" { BREAK } *)
+| "if" { IF } (* | "elseif" { ELSEIF } *) | "else" { ELSE } | "while" { WHILE } | "for" { FOR }
+| "return" { RETURN } | "main" { MAIN } | "break" { BREAK }
 
 (* Conditionals *)
 | "==" { EQ } | "!=" { NEQ } | '<' { LT } | ">" { GT }
@@ -28,7 +28,6 @@ rule token = parse
 | "int" { INT } | "float" { FLOAT } | "bool" { BOOL } | "void" { VOID }
 | "String" { STRING } | "true" { TRUE } | "false" { FALSE } | "matrix" { MATRIX }
 
-
 (* Misc. *)
 | ';' { SEMI } | ',' { COMMA } | ':' { COLON }
 
@@ -38,12 +37,9 @@ rule token = parse
 | '"' (([^ '"'] | "\\\"")* as strlit) '"' { STRING_LIT(strlit) }
 | "null" { NULL }
 
-(* Matrix Init 
-'[' ['0'-'9']+ ':' ['0'-'9']+ ':' ['0'-'9']+ ']' as matinit { COLON(matinit) }
-*)
-
 (* Identifiers, EOF *)
 | ['a'-'z' 'A'-'Z']['a'-'z' 'A'-'Z' '0'-'9' '_']* as lxm { ID(lxm) }
+| "const" { CONST }
 | eof { EOF }
 | _ as char { raise (Failure("illegal character " ^
 							  Char.escaped char)) }

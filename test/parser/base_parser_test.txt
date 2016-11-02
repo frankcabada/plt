@@ -1,7 +1,0 @@
-( ) { } [ ]
-if else elsif while for return main break
-== != < > <= >= && || !
-+ - * / = ++ --
-int double bool void null String true false
-; , :
-hi 99

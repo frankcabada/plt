@@ -17,14 +17,17 @@ type op =
 type uop =
 	| Neg
 	| Not
-	(* | Inc
-	| Dec *)
+	| Inc
+	| Dec
 
 (* Types *)
 type typ =
 	| Int
 	| Bool
+	| Double
 	| Void
+	| Null
+	| String
 
 (* Bind *)
 type bind = typ * string
@@ -39,18 +42,15 @@ type expr =
 	| Unop of uop * expr
 	| Assign of string * expr
 	| Call of string * expr list
-	| String of string 				
-	| Double of float
-	| Mat_init of int * int * int
 
 (* Statements *)
 type stmt =
 	| Block of stmt list
 	| Expr of expr
-  	| If of expr * stmt * stmt
-  	| Else of stmt
-  	| For of expr * expr * expr * stmt
-  	| While of expr * stmt
+  | If of expr * stmt * stmt
+  | Else of stmt
+  | For of expr * expr * expr * stmt
+  | While of expr * stmt
 	| Return of expr
 
 (* Function Declarations *)

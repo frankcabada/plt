@@ -5,6 +5,8 @@ open Printf
 let txt_of_unop = function
   | Not -> "Not"
   | Neg -> "Neg"
+  | Inc -> "Inc"
+  | Dec -> "Dec"
 
 (* Binary operators *)
 let txt_of_binop = function
@@ -16,46 +18,30 @@ let txt_of_binop = function
   (* Boolean *)
   | Or -> "Or"
   | And -> "And"
-  | Eq -> "Eq"
+  | Equal -> "Equal"
   | Neq -> "Neq"
-  | Lt -> "Lt"
-  | Gt -> "Gt"
+  | Less -> "Less"
+  | Greater -> "Greater"
   | Leq -> "Leq"
   | Geq -> "Geq"
 
 (* Expressions *)
-let txt_of_num = function
+(* let txt_of_num = function
   | Num_int(x) -> string_of_int x
-  | Num_float(x) -> string_of_float x
 
 let rec txt_of_expr = function
-  | Num_lit(x) -> sprintf "Num_lit(%s)" (txt_of_num x)
-  | String_lit(x) -> sprintf "String_lit(%s)" x
-  | Bool_lit(x) -> sprintf "Bool_lit(%s)" (string_of_bool x)
-  | Void_lit -> "Void_lit"
+  | Literal(x) -> sprintf "Literal(%s)" (txt_of_num x)
+  | BoolLit(x) -> sprintf "BoolLit(%s)" (string_of_bool x)
   | Id(x) -> sprintf "Id(%s)" x
-  | Unop(op, e) -> sprintf "Unop(%s, %s)" (txt_of_unop op) (txt_of_expr e)
+  | Noexpr
   | Binop(e1, op, e2) -> sprintf "Binop(%s, %s, %s)"
       (txt_of_expr e1) (txt_of_binop op) (txt_of_expr e2)
+  | Unop(op, e) -> sprintf "Unop(%s, %s)" (txt_of_unop op) (txt_of_expr e)
+  | Assign(x, e) -> sprintf "Assign(%s, %s)" x (txt_of_expr e)
   | Call(f, args) -> sprintf "Call(%s, [%s])"
       (txt_of_expr f) (txt_of_list args)
-  | Assign(x, e) -> sprintf "Assign(%s, %s)" x (txt_of_expr e)
-  | LDecl(l) -> sprintf "LDecl([%s])" (txt_of_list l)
-  | Dist(d) -> txt_of_dist d
-  | Discr_dist(d) -> txt_of_discr_dist d
-  | Fdecl(f)-> txt_of_fdecl f
-  | Cake(fdecl, args) -> sprintf "Cake(%s, [%s])"
-      (txt_of_expr fdecl) (txt_of_list args)
-  | If(e1, e2, e3) -> sprintf "If(%s, %s, %s)"
-      (txt_of_expr e1) (txt_of_expr e2) (txt_of_expr e3)
-
-and txt_of_dist d =
-  sprintf "Dist({ min=%s ; max=%s ; dist_func=%s })"
-    (txt_of_expr d.min) (txt_of_expr d.max) (txt_of_expr d.dist_func)
-
-and txt_of_discr_dist d =
-  sprintf "Dist({ vals=%s ; weights=%s })"
-    (txt_of_expr d.vals) (txt_of_expr d.weights)
+  | String(x) -> sprintf "String(%s)" x
+  | Double(x) -> sprintf "Double(%s)" (txt_of_num)
 
 (* Function declarations *)
 and txt_of_fdecl f =
@@ -84,3 +70,4 @@ let _ =
   let program = Parser.program Scanner.token lexbuf in
   let result = txt_of_stmts program in
   print_endline result
+*)

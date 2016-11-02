@@ -30,12 +30,16 @@ rule token = parse
 
 
 (* Misc. *)
-| ';' { SEMI } | ',' { COMMA } (* | ':' { COLON } *)
+| ';' { SEMI } | ',' { COMMA } | ':' { COLON }
 
 (* Literals *)
 | ['0'-'9']+ as lxm { LITERAL(int_of_string lxm) }
 | ['0'-'9']* '.' ['0'-'9']+ as lxmd { DOUBLE(float_of_string lxmd) }
 | '"' (([^ '"'] | "\\\"")* as strlit) '"' { STRING(strlit) }
+
+(* Matrix Init 
+'[' ['0'-'9']+ ':' ['0'-'9']+ ':' ['0'-'9']+ ']' as matinit { COLON(matinit) }
+*)
 
 (* Identifiers, EOF *)
 | ['a'-'z' 'A'-'Z']['a'-'z' 'A'-'Z' '0'-'9' '_']* as lxm { ID(lxm) }

@@ -127,6 +127,7 @@ expr:
   | ID ASSIGN expr                                  { Assign($1, $3) }
   | LPAREN expr RPAREN                              { $2 }
   | ID LPAREN actuals_opt RPAREN                    { Call($1, $3) }
+  | LBRACKET LITERAL COLON LITERAL COLON LITERAL RBRACKET    { Mat_init($2, $4, $6) }
 
 expr_opt:
     /* nothing */ { Noexpr }

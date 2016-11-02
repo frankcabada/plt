@@ -13,4 +13,5 @@ ocaml -version
 cd ./test/scanner
 ./scripts/build.sh
 ./scripts/test.sh
+./scripts/clean.sh
 exit 0

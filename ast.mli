@@ -47,10 +47,10 @@ type expr =
 type stmt =
 	| Block of stmt list
 	| Expr of expr
-  | If of expr * stmt * stmt
-  | Else of stmt
-  | For of expr * expr * expr * stmt
-  | While of expr * stmt
+  	| If of expr * stmt * stmt
+  	| Else of stmt
+  	| For of expr * expr * expr * stmt
+  	| While of expr * stmt
 	| Return of expr
 
 (* Function Declarations *)

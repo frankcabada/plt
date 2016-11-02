@@ -5,6 +5,8 @@ open Printf
 let txt_of_unop = function
   | Not -> "Not"
   | Neg -> "Neg"
+  | Inc -> "Inc"
+  | Dec -> "Dec"
 
 (* Binary operators *)
 let txt_of_binop = function
@@ -38,11 +40,6 @@ let rec txt_of_expr = function
   | Assign(x, e) -> sprintf "Assign(%s, %s)" x (txt_of_expr e)
   | Call(f, args) -> sprintf "Call(%s, [%s])"
       (txt_of_expr f) (txt_of_list args)
-  | Assign(x, e) -> sprintf "Assign(%s, %s)" x (txt_of_expr e)
-  | LDecl(l) -> sprintf "LDecl([%s])" (txt_of_list l)
-  | Fdecl(f)-> txt_of_fdecl f
-  | If(e1, e2, e3) -> sprintf "If(%s, %s, %s)"
-      (txt_of_expr e1) (txt_of_expr e2) (txt_of_expr e3)
   | String(x) -> sprintf "String(%s)" x
   | Double(x) -> sprintf "Double(%s)" (txt_of_num)
 

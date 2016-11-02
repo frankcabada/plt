@@ -25,17 +25,17 @@ rule token = parse
 | '=' { ASSIGN } (* | "++" { INC } | "--" { DEC } *)
 
 (* Types *)
-| "int" { INT } (* | "double" { DOUBLE } *) | "bool" { BOOL } | "void" { VOID }
-(* | "null" { NULL } | "String" { STRING } *) | "true" { TRUE } | "false" { FALSE }
+| "int" { INT } | "float" { FLOAT } | "bool" { BOOL } | "void" { VOID }
+(* | "null" { NULL } *)| "String" { STRING } | "true" { TRUE } | "false" { FALSE }
 
 
 (* Misc. *)
 | ';' { SEMI } | ',' { COMMA } | ':' { COLON }
 
 (* Literals *)
-| ['0'-'9']+ as lxm { LITERAL(int_of_string lxm) }
-| ['0'-'9']* '.' ['0'-'9']+ as lxmd { DOUBLE(float_of_string lxmd) }
-| '"' (([^ '"'] | "\\\"")* as strlit) '"' { STRING(strlit) }
+| ['0'-'9']+ as lxm { INT_LIT(int_of_string lxm) }
+| ['0'-'9']* '.' ['0'-'9']+ as lxmd { FLOAT_LIT(float_of_string lxmd) }
+| '"' (([^ '"'] | "\\\"")* as strlit) '"' { STRING_LIT(strlit) }
 
 (* Matrix Init 
 '[' ['0'-'9']+ ':' ['0'-'9']+ ':' ['0'-'9']+ ']' as matinit { COLON(matinit) }

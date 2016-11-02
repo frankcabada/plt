@@ -25,13 +25,20 @@ type typ =
 	| Int
 	| Bool
 	| Void
+	| String				
+	| Float
+
+(* Matrices *)
+type matrix = 
+	  VectorDec of typ * int * string
+	| MatrixDec of typ * int * int * string
 
 (* Bind *)
 type bind = typ * string
 
 (* Expressions *)
 type expr =
-	| Literal of int
+	| Int_lit of int
 	| BoolLit of bool
 	| Id of string
 	| Noexpr
@@ -39,9 +46,9 @@ type expr =
 	| Unop of uop * expr
 	| Assign of string * expr
 	| Call of string * expr list
-	| String of string 				
-	| Double of float
 	| Mat_init of int * int * int
+	| String_lit of string
+	| Float_lit of float
 
 (* Statements *)
 type stmt =

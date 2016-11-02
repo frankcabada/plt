@@ -13,16 +13,16 @@
 %token PLUS MINUS TIMES DIVIDE ASSIGN INC DEC
 
 /* Types */
-%token INT BOOL VOID NULL TRUE FALSE
+%token INT BOOL VOID NULL STRING FLOAT TRUE FALSE
 
 /* Misc */
 %token SEMI COMMA COLON
 
 /* Literals, identifiers, EOF */
-%token <int> LITERAL
+%token <int> INT_LIT
 %token <string> ID
-%token <string> STRING
-%token <float> DOUBLE
+%token <string> STRING_LIT
+%token <float> FLOAT_LIT
 %token EOF
 
 /* Precedence and associativity of each operator */
@@ -66,6 +66,9 @@ typ:
      INT    { Int }
    | BOOL   { Bool }
    | VOID   { Void }
+   | FLOAT  { Float }
+   | STRING { String } 
+
 /*   | NULL   { Null } */
 
 /*
@@ -73,16 +76,10 @@ mdecl_list:  nothing  { [] }
      | mdecl_list mdecl { $2 :: $1 }
 
 
-mdecl:
-     | typ LBRACKET LITERAL RBRACKET ID SEMI                { ($1, $2) }
-     | typ LBRACKET LITERAL COMMA LITERAL RBRACKET ID SEMI  { ($1, $2, $3) }
+matrix:
+       typ LBRACKET INT_LIT RBRACKET ID                { VectorDec($1, $3, $5) }
+     | typ LBRACKET INT_LIT COMMA INT_LIT RBRACKET ID  { MatrixDec($1, $3, $5, $7) }
 */
-
-/* ??
-matrix_type:
-  primitive LBRACK INTLIT COLON INTLIT RBRACK { MatrixType(DataType($1), $3, $5) }
-*/
-
 vdecl_list: /* nothing */ { [] }
           | vdecl_list vdecl { $2 :: $1 }
 
@@ -93,7 +90,7 @@ stmt_list:
   | stmt_list stmt { $2 :: $1 }
 
 stmt:
-    expr SEMI                                               { Expr $1 }
+    expr SEMI                                               { Expr $1 } 
   | RETURN SEMI                                             { Return Noexpr }
   | RETURN expr SEMI                                        { Return $2 }
   | LBRACE stmt_list RBRACE                                 { Block(List.rev $2) }
@@ -103,10 +100,9 @@ stmt:
   | WHILE LPAREN expr RPAREN stmt                           { While($3, $5) }
 
 expr:
-    LITERAL                                         { Literal($1) }
-  /*| MAT                                             { Mat($1) }     ?? */
-  | DOUBLE                                          { Double($1) }
-  | STRING                                          { String($1) } 
+    INT_LIT                                         { Int_lit($1) }
+  | FLOAT_LIT                                       { Float_lit($1) }
+  | STRING_LIT                                      { String_lit($1) }
   | TRUE                                            { BoolLit(true) }
   | FALSE                                           { BoolLit(false) }
   | ID                                              { Id($1) }
@@ -127,7 +123,7 @@ expr:
   | ID ASSIGN expr                                  { Assign($1, $3) }
   | LPAREN expr RPAREN                              { $2 }
   | ID LPAREN actuals_opt RPAREN                    { Call($1, $3) }
-  | LBRACKET LITERAL COLON LITERAL COLON LITERAL RBRACKET    { Mat_init($2, $4, $6) }
+  | LBRACKET INT_LIT COLON INT_LIT COLON INT_LIT RBRACKET    { Mat_init($2, $4, $6) }
 
 expr_opt:
     /* nothing */ { Noexpr }

@@ -13,7 +13,7 @@
 %token PLUS MINUS TIMES DIVIDE ASSIGN INC DEC
 
 /* Types */
-%token INT DOUBLE BOOL VOID NULL STRING TRUE FALSE
+%token INT BOOL VOID NULL TRUE FALSE
 
 /* Misc */
 %token SEMI COMMA COLON
@@ -21,6 +21,8 @@
 /* Literals, identifiers, EOF */
 %token <int> LITERAL
 %token <string> ID
+%token <string> STRING
+%token <float> DOUBLE
 %token EOF
 
 /* Precedence and associativity of each operator */
@@ -64,9 +66,7 @@ typ:
      INT    { Int }
    | BOOL   { Bool }
    | VOID   { Void }
-   | DOUBLE { Double } 
-/*   | STRING { String } 
-   | NULL   { Null } */
+/*   | NULL   { Null } */
 
 /*
 mdecl_list:  nothing  { [] }
@@ -105,6 +105,8 @@ stmt:
 expr:
     LITERAL                                         { Literal($1) }
   /*| MAT                                             { Mat($1) }     ?? */
+  | DOUBLE                                          { Double($1) }
+  | STRING                                          { String($1) } 
   | TRUE                                            { BoolLit(true) }
   | FALSE                                           { BoolLit(false) }
   | ID                                              { Id($1) }

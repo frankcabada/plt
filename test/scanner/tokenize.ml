@@ -19,7 +19,7 @@ let stringify = function
   | NOT -> "NOT"
 
   (* Assignment Operator *)
-  | ASSIGN -> "ASN"
+  | ASSIGN -> "ASSIGN"
 
   (* Conditional Operators *)
   | IF -> "IF"

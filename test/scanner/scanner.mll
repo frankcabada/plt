@@ -28,7 +28,6 @@ rule token = parse
 | "int" { INT } | "double" { DOUBLE } | "bool" { BOOL } | "void" { VOID }
 | "null" { NULL } | "String" { STRING } | "true" { TRUE } | "false" { FALSE }
 
-
 (* Misc. *)
 | ';' { SEMI } | ',' { COMMA } | ':' { COLON }
 

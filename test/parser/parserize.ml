@@ -4,34 +4,24 @@ open Printf
 (* Unary operators *)
 let txt_of_unop = function
   | Not -> "Not"
-  | Sub -> "Sub"
+  | Neg -> "Neg"
 
 (* Binary operators *)
 let txt_of_binop = function
-  (* Dist *)
-  | D_Plus -> "D_Plus"
-  | D_Times -> "D_Times"
-  | D_Shift -> "D_Shift"
-  | D_Stretch -> "D_Stretch"
-  | D_Power -> "D_Power"
-  | D_Sample -> "D_Sample"
   (* Arithmetic *)
   | Add -> "Add"
   | Sub -> "Sub"
   | Mult -> "Mult"
   | Div -> "Div"
-  | Mod -> "Mod"
-  | Pow -> "Pow"
   (* Boolean *)
   | Or -> "Or"
   | And -> "And"
   | Eq -> "Eq"
   | Neq -> "Neq"
-  | Less -> "Less"
+  | Lt -> "Lt"
+  | Gt -> "Gt"
   | Leq -> "Leq"
-  | Greater -> "Greater"
   | Geq -> "Geq"
-  | Cons -> "::"
 
 (* Expressions *)
 let txt_of_num = function
@@ -55,10 +45,10 @@ let rec txt_of_expr = function
   | Discr_dist(d) -> txt_of_discr_dist d
   | Fdecl(f)-> txt_of_fdecl f
   | Cake(fdecl, args) -> sprintf "Cake(%s, [%s])"
-      (txt_of_expr fdecl) (txt_of_list args) 
+      (txt_of_expr fdecl) (txt_of_list args)
   | If(e1, e2, e3) -> sprintf "If(%s, %s, %s)"
       (txt_of_expr e1) (txt_of_expr e2) (txt_of_expr e3)
-  
+
 and txt_of_dist d =
   sprintf "Dist({ min=%s ; max=%s ; dist_func=%s })"
     (txt_of_expr d.min) (txt_of_expr d.max) (txt_of_expr d.dist_func)

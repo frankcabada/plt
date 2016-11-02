@@ -1,11 +1,24 @@
 %{ open Ast %}
 
-%token LPAREN RPAREN LBRACE RBRACE SEMI COMMA
-%token PLUS MINUS TIMES DIVIDE LBRACKET RBRACKET 
-%token ASSIGN EQ NEQ LT LEQ GT GEQ AND OR NOT INC DEC COLON
-%token IF ELSE ELSIF FOR WHILE RETURN MAIN
-%token TRUE FALSE
-%token INT BOOL VOID STRING DOUBLE NULL
+/* Delimiters */
+%token LPAREN RPAREN LBRACE RBRACE LBRACKET RBRACKET
+
+/* Control Flow */
+%token IF ELSIF ELSE WHILE FOR RETURN MAIN BREAK
+
+/* Conditionals */
+%token EQ NEQ LT GT LEQ GEQ AND OR NOT
+
+/* Arithmetic */
+%token PLUS MINUS TIMES DIVIDE ASSIGN INC DEC
+
+/* Types */
+%token INT DOUBLE BOOL VOID NULL STRING TRUE FALSE
+
+/* Misc */
+%token SEMI COMMA COLON
+
+/* Literals, identifiers, EOF */
 %token <int> LITERAL
 %token <string> ID
 %token EOF
@@ -37,13 +50,13 @@ decls: /* nothing */ { [], [] }
 
 fdecl:
   typ ID LPAREN formals_opt RPAREN LBRACE vdecl_list stmt_list RBRACE
-    { { typ = $1; fname = $2; formals = $4; 
+    { { typ = $1; fname = $2; formals = $4;
       locals = List.rev $7; body = List.rev $8 } } /* change this ?? */
 
 formals_opt: /* nothing */ { [] }
            | formal_list   { List.rev $1 }
 
-formal_list: 
+formal_list:
             typ ID { [($1,$2)] }
            | formal_list COMMA typ ID { ($3,$4) :: $1 }
 
@@ -60,7 +73,7 @@ mdecl_list:  nothing  { [] }
      | mdecl_list mdecl { $2 :: $1 }
 
 
-mdecl: 
+mdecl:
      | typ LBRACKET LITERAL RBRACKET ID SEMI                { ($1, $2) }
      | typ LBRACKET LITERAL COMMA LITERAL RBRACKET ID SEMI  { ($1, $2, $3) }
 */

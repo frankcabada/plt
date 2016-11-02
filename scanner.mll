@@ -32,8 +32,12 @@ rule token = parse
 (* Misc. *)
 | ';' { SEMI } | ',' { COMMA } (* | ':' { COLON } *)
 
-(* Literals, Identifiers, EOF *)
+(* Literals *)
 | ['0'-'9']+ as lxm { LITERAL(int_of_string lxm) }
+| ['0'-'9']* '.' ['0'-'9']+ as lxmd { DOUBLE(float_of_string lxmd) }
+| '"' (([^ '"'] | "\\\"")* as strlit) '"' { STRING(strlit) }
+
+(* Identifiers, EOF *)
 | ['a'-'z' 'A'-'Z']['a'-'z' 'A'-'Z' '0'-'9' '_']* as lxm { ID(lxm) }
 | eof { EOF }
 | _ as char { raise (Failure("illegal character " ^

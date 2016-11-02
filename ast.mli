@@ -25,11 +25,11 @@ type typ =
 	| Int
 	| Bool
 	| Void
-	| String				
+	| String
 	| Float
 
 (* Matrices *)
-type matrix = 
+type matrix =
 	  VectorDec of typ * int * string
 	| MatrixDec of typ * int * int * string
 
@@ -39,7 +39,7 @@ type bind = typ * string
 (* Expressions *)
 type expr =
 	| Int_lit of int
-	| BoolLit of bool
+	| Bool_lit of bool
 	| Id of string
 	| Noexpr
 	| Binop of expr * op * expr
@@ -54,10 +54,10 @@ type expr =
 type stmt =
 	| Block of stmt list
 	| Expr of expr
-  	| If of expr * stmt * stmt
-  	| Else of stmt
-  	| For of expr * expr * expr * stmt
-  	| While of expr * stmt
+	| If of expr * stmt * stmt
+	| Else of stmt
+	| For of expr * expr * expr * stmt
+	| While of expr * stmt
 	| Return of expr
 
 (* Function Declarations *)

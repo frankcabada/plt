@@ -81,3 +81,15 @@ else
   echo "|  SCANNER: MISCELLANEOUS TEST FAILED   |"
   echo "-----------------------------------------"
 fi
+
+cat _program.test | ./tokenize > _program.res
+diff _program.out _program.res > /dev/null
+if [ $? = 0 ]; then
+  echo "-----------------------------------------"
+  echo "|  SCANNER: SIMPLE PROGRAM TEST PASSED  |"
+  echo "-----------------------------------------"
+else
+  echo "-----------------------------------------"
+  echo "|  SCANNER: SIMPLE PROGRAM TEST FAILED  |"
+  echo "-----------------------------------------"
+fi

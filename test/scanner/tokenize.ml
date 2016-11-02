@@ -37,9 +37,9 @@ let stringify = function
   | COLON -> "COLON" | FOR -> "FOR" | WHILE -> "WHILE" | BREAK -> "BREAK"
   | RETURN -> "RETURN" | MAIN -> "MAIN"
   | TRUE -> "TRUE" | FALSE -> "FALSE"
-  | INT -> "INT" | BOOL -> "BOOL" | VOID -> "VOID" | DOUBLE -> "DOUBLE"
-  | STRING -> "STRING" |NULL -> "NULL" | LITERAL(int) -> "LITERAL"
-
+  | INT -> "INT" | BOOL -> "BOOL" | VOID -> "VOID" | FLOAT -> "FLOAT"
+  | STRING -> "STRING" | NULL -> "NULL" | INT_LIT(int) -> "INT_LIT"
+  | STRING_LIT(string) -> "STRING_LIT" | FLOAT_LIT(float) -> "FLOAT_LIT"
 let _ =
   let lexbuf = Lexing.from_channel stdin in
   let rec print_tokens = function

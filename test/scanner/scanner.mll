@@ -6,7 +6,7 @@ rule token = parse
 	(* ['n'] { token lexbux n+1 ? }  *)
 
 (* Comments *)
-| "/*" { comment lexbuf } | "//" { comment2 lexbuf }
+| "/*" { comment lexbuf } (* | "//" { comment2 lexbuf } *)
 
 (* Delimiters *)
 | '(' { LPAREN }  | ')' { RPAREN } | '{' { LBRACE } | '}' { RBRACE }
@@ -25,14 +25,23 @@ rule token = parse
 | '=' { ASSIGN } | "++" { INC } | "--" { DEC }
 
 (* Types *)
-| "int" { INT } | "double" { DOUBLE } | "bool" { BOOL } | "void" { VOID }
+| "int" { INT } | "float" { FLOAT } | "bool" { BOOL } | "void" { VOID }
 | "null" { NULL } | "String" { STRING } | "true" { TRUE } | "false" { FALSE }
+
 
 (* Misc. *)
 | ';' { SEMI } | ',' { COMMA } | ':' { COLON }
 
-(* Literals, Identifiers, EOF *)
-| ['0'-'9']+ as lxm { LITERAL(int_of_string lxm) }
+(* Literals *)
+| ['0'-'9']+ as lxm { INT_LIT(int_of_string lxm) }
+| ['0'-'9']* '.' ['0'-'9']+ as lxmd { FLOAT_LIT(float_of_string lxmd) }
+| '"' (([^ '"'] | "\\\"")* as strlit) '"' { STRING_LIT(strlit) }
+
+(* Matrix Init
+'[' ['0'-'9']+ ':' ['0'-'9']+ ':' ['0'-'9']+ ']' as matinit { COLON(matinit) }
+*)
+
+(* Identifiers, EOF *)
 | ['a'-'z' 'A'-'Z']['a'-'z' 'A'-'Z' '0'-'9' '_']* as lxm { ID(lxm) }
 | eof { EOF }
 | _ as char { raise (Failure("illegal character " ^
@@ -42,7 +51,7 @@ and comment = parse
 	"*/" { token lexbuf }
 | _ { comment lexbuf }
 
-(* ?? *)
+(* ??
 and comment2 = parse
 	'\n' { token lexbuf}
-| _ { comment2 lexbuf }
+| _ { comment2 lexbuf } *)

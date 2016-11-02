@@ -13,8 +13,8 @@ rule token = parse
 | '[' { LBRACKET } | ']' { RBRACKET }
 
 (* Control Flow *)
-| "if" { IF } (* | "elsif" { ELSIF } *) | "else" { ELSE } | "while" { WHILE } | "for" { FOR }
-| "return" { RETURN } (* | "main" { MAIN } | "break" { BREAK } *)
+| "if" { IF } | "elsif" { ELSIF } | "else" { ELSE } | "while" { WHILE } | "for" { FOR }
+| "return" { RETURN } | "main" { MAIN } | "break" { BREAK }
 
 (* Conditionals *)
 | "==" { EQ } | "!=" { NEQ } | '<' { LT } | ">" { GT }
@@ -22,11 +22,11 @@ rule token = parse
 
 (* Arithmetic *)
 | '+' { PLUS } | '-' { MINUS } | '*' { TIMES } | '/' { DIVIDE }
-| '=' { ASSIGN } (* | "++" { INC } | "--" { DEC } *)
+| '=' { ASSIGN } | "++" { INC } | "--" { DEC }
 
 (* Types *)
 | "int" { INT } | "float" { FLOAT } | "bool" { BOOL } | "void" { VOID }
-(* | "null" { NULL } *)| "String" { STRING } | "true" { TRUE } | "false" { FALSE }
+| "null" { NULL } | "String" { STRING } | "true" { TRUE } | "false" { FALSE }
 
 
 (* Misc. *)
@@ -37,7 +37,7 @@ rule token = parse
 | ['0'-'9']* '.' ['0'-'9']+ as lxmd { FLOAT_LIT(float_of_string lxmd) }
 | '"' (([^ '"'] | "\\\"")* as strlit) '"' { STRING_LIT(strlit) }
 
-(* Matrix Init 
+(* Matrix Init
 '[' ['0'-'9']+ ':' ['0'-'9']+ ':' ['0'-'9']+ ']' as matinit { COLON(matinit) }
 *)
 
@@ -51,7 +51,7 @@ and comment = parse
 	"*/" { token lexbuf }
 | _ { comment lexbuf }
 
-(* ?? 
+(* ??
 and comment2 = parse
 	'\n' { token lexbuf}
 | _ { comment2 lexbuf } *)

@@ -62,12 +62,12 @@ formal_list:
             typ ID { [($1,$2)] }
            | formal_list COMMA typ ID { ($3,$4) :: $1 }
 
-typ: 
+typ:
      INT    { Int }
    | BOOL   { Bool }
    | VOID   { Void }
    | FLOAT  { Float }
-   | STRING { String } 
+   | STRING { String }
 
 /*   | NULL   { Null } */
 
@@ -90,7 +90,7 @@ stmt_list:
   | stmt_list stmt { $2 :: $1 }
 
 stmt:
-    expr SEMI                                               { Expr $1 } 
+    expr SEMI                                               { Expr $1 }
   | RETURN SEMI                                             { Return Noexpr }
   | RETURN expr SEMI                                        { Return $2 }
   | LBRACE stmt_list RBRACE                                 { Block(List.rev $2) }
@@ -103,8 +103,8 @@ expr:
     INT_LIT                                         { Int_lit($1) }
   | FLOAT_LIT                                       { Float_lit($1) }
   | STRING_LIT                                      { String_lit($1) }
-  | TRUE                                            { BoolLit(true) }
-  | FALSE                                           { BoolLit(false) }
+  | TRUE                                            { Bool_lit(true) }
+  | FALSE                                           { Bool_lit(false) }
   | ID                                              { Id($1) }
   | expr PLUS expr                                  { Binop($1, Add, $3) }
   | expr MINUS expr                                 { Binop($1, Sub, $3) }

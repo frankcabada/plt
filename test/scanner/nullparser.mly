@@ -5,8 +5,10 @@
 %token ASSIGN EQ NEQ LT LEQ GT GEQ AND OR NOT INC DEC COLON
 %token IF ELSE ELSIF FOR WHILE RETURN MAIN BREAK
 %token TRUE FALSE
-%token INT BOOL VOID STRING NULL DOUBLE
-%token <int> LITERAL
+%token INT BOOL VOID STRING NULL FLOAT
+%token <int> INT_LIT
+%token <string> STRING_LIT
+%token <float> FLOAT_LIT
 %token <string> ID
 %token EOF
 

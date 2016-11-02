@@ -19,7 +19,9 @@
 %token SEMI COMMA COLON
 
 /* Literals, identifiers, EOF */
-%token <int> LITERAL
+%token <int> INT_LIT
+%token <string> STRING_LIT
+%token <float> FLOAT_LIT
 %token <string> ID
 %token EOF
 
@@ -45,9 +47,11 @@
 program: decls EOF { $1 } /* ?? anything else */
 
 expr:
-    LITERAL                                         { Literal($1) }
-  | TRUE                                            { BoolLit(true) }
-  | FALSE                                           { BoolLit(false) }
+  | INT_LIT                                         { Int_lit($1) }
+  | STRING_LIT                                      { String_lit($1) }
+  | FLOAT_LIT                                       { Float_lit($1) }
+  | TRUE                                            { Bool_lit(true) }
+  | FALSE                                           { Bool_lit(false) }
   | ID                                              { Id($1) }
   | expr PLUS expr                                  { Binop($1, Add, $3) }
   | expr MINUS expr                                 { Binop($1, Sub, $3) }

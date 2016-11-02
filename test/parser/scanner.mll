@@ -1,4 +1,4 @@
-{ open Parser }
+{ open Nullparser }
 
 rule token = parse
 (* Whitespace *)

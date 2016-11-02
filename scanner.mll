@@ -16,6 +16,7 @@ rule token = parse
 | "if" { IF } | "elsif" { ELSIF } | "else" { ELSE } | "while" { WHILE } | "for" { FOR }
 | "return" { RETURN } | "main" { MAIN } | "break" { BREAK }
 
+
 (* Conditionals *)
 | "==" { EQ } | "!=" { NEQ } | '<' { LT } | ">" { GT }
 | "<=" { LEQ } | ">=" { GEQ } | "&&" { AND } | "||" { OR } | '!' { NOT }
@@ -26,7 +27,7 @@ rule token = parse
 
 (* Types *)
 | "int" { INT } | "float" { FLOAT } | "bool" { BOOL } | "void" { VOID }
-| "null" { NULL } | "String" { STRING } | "true" { TRUE } | "false" { FALSE }
+| "String" { STRING } | "true" { TRUE } | "false" { FALSE } | "matrix" { MATRIX }
 
 
 (* Misc. *)
@@ -36,6 +37,7 @@ rule token = parse
 | ['0'-'9']+ as lxm { INT_LIT(int_of_string lxm) }
 | ['0'-'9']* '.' ['0'-'9']+ as lxmd { FLOAT_LIT(float_of_string lxmd) }
 | '"' (([^ '"'] | "\\\"")* as strlit) '"' { STRING_LIT(strlit) }
+| "null" { NULL }
 
 (* Matrix Init
 '[' ['0'-'9']+ ':' ['0'-'9']+ ':' ['0'-'9']+ ']' as matinit { COLON(matinit) }

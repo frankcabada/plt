@@ -29,6 +29,11 @@ type primitives =
 	| Float
 	| Matrix of primitives
 
+(* Matrices 
+type matrix =
+	  VectorDec of typ * string * int
+	| MatrixDec of typ * int * int * string *) 
+
 (* Bind *)
 type bind = primitives * string
 
@@ -56,7 +61,7 @@ type stmt =
 	| Block of stmt list
 	| Expr of expr
   	| If of expr * stmt * stmt
-(*   	| Elseif of expr * stmt *)
+(*  	| Elseif of expr * stmt * stmt *)
   	| Else of stmt
   	| For of expr * expr * expr * stmt
   	| While of expr * stmt
@@ -64,8 +69,7 @@ type stmt =
 	| Break of expr
 
 (* Function Declarations *)
-type func_decl = 
-{
+type func_decl = {
 	primitives 	: primitives;
 	fname 		: string;
 	formals 	: bind list;
@@ -73,10 +77,5 @@ type func_decl =
 	body 		: stmt list;
 }
 
-type main_decl = {
-	locals  	: bind list;
-	body 		: stmt list;
-}
-
 (* Start Symbol *)
-type program = Program of main_decl * func_decl list
+type program = bind list * func_decl list

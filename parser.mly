@@ -4,7 +4,7 @@
 %token LPAREN RPAREN LBRACE RBRACE LBRACKET RBRACKET
 
 /* Control Flow */
-%token IF ELSEIF ELSE WHILE FOR RETURN MAIN BREAK
+%token IF /* ELSEIF */ ELSE WHILE FOR RETURN MAIN BREAK
 
 /* Conditionals */
 %token EQ NEQ LT GT LEQ GEQ AND OR NOT
@@ -30,6 +30,7 @@
 /* Precedence and associativity of each operator */
 %nonassoc RETURN
 %nonassoc NOELSE
+%nonassoc NOELSEIF
 %nonassoc ELSE
 %nonassoc BREAK /* ?? Correct precendence */
 %right ASSIGN
@@ -42,23 +43,32 @@
 %right NOT NEG
 
 %start program
-/* %type <int> main  ?? */
 %type <Ast.program> program
 
 %%
 
 program: 
-    decls EOF { $1 } /* ?? anything else */
+    mdecl fdecl_list EOF { Program($1, $2) } /* ?? add vdecl */
 
-decls: 
-    /* nothing */      { [], [] }
+/*decls: 
+     nothing       { [], [], [] }
   | decls vdecl        { ($2 :: fst $1), snd $1 }
+  | decls mdecl        { $2 } 
   | decls fdecl        { fst $1, ($2 :: snd $1) }
+*/
+
+mdecl:
+    INT MAIN LPAREN RPAREN LBRACE vdecl_list stmt_list RBRACE
+    { { locals = List.rev $6; body = List.rev $7 } } 
+
+fdecl_list:
+    /* nothing */      { [] }
+  | fdecl_list fdecl   { $2 :: $1 }
 
 fdecl:
-  primitives ID LPAREN formals_opt RPAREN LBRACE vdecl_list stmt_list RBRACE
+    primitives ID LPAREN formals_opt RPAREN LBRACE vdecl_list stmt_list RBRACE
     { { primitives = $1; fname = $2; formals = $4;
-      locals = List.rev $7; body = List.rev $8 } } /* change this ?? */
+      locals = List.rev $7; body = List.rev $8 } } 
 
 formals_opt: 
     /* nothing */ { [] }
@@ -95,12 +105,15 @@ stmt:
   | LBRACE stmt_list RBRACE                                 { Block(List.rev $2) }
   | IF LPAREN expr RPAREN stmt %prec NOELSE                 { If($3, $5, Block([])) }
   | IF LPAREN expr RPAREN stmt ELSE stmt                    { If($3, $5, $7) }
+/*  | IF LPAREN expr RPAREN stmt ELSEIF LPAREN expr RPAREN stmt %prec NOELSE { If($3, $5 Elseif($8, $10), Block([])) }
+  | IF LPAREN expr RPAREN stmt ELSEIF LPAREN expr RPAREN stmt ELSE stmt    { If($3, $5, $8, $10) }
+*/
   | FOR LPAREN expr_opt SEMI expr SEMI expr_opt RPAREN stmt { For($3, $5, $7, $9) }
   | WHILE LPAREN expr RPAREN stmt                           { While($3, $5) }
 
 expr:
     INT_LIT                                                  { Int_lit($1) }
-  | FLOAT_LIT                                                { Float_lit($1) }
+  | FLOAT_LIT                                                { Float_lit($1) } 
   | STRING_LIT                                               { String_lit($1) }
   | TRUE                                                     { Bool_lit(true) }
   | FALSE                                                    { Bool_lit(false) }

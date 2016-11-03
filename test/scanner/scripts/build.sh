@@ -1,9 +1,10 @@
 #!/bin/bash
 
 ocamllex scanner.mll
-ocamlyacc nullparser.mly
-ocamlc -c nullparser.mli
+ocamlyacc parser.mly
+ocamlc -c ast.mli
+ocamlc -c parser.mli
 ocamlc -c scanner.ml
-ocamlc -c nullparser.ml
+ocamlc -c parser.ml
 ocamlc -c tokenize.ml
-ocamlc -o tokenize nullparser.cmo scanner.cmo tokenize.cmo
+ocamlc -o tokenize parser.cmo scanner.cmo tokenize.cmo

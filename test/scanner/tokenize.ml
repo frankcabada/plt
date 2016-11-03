@@ -1,4 +1,4 @@
-open Nullparser
+open Parser
 
 let stringify = function
   (* Punctuation *)
@@ -24,21 +24,27 @@ let stringify = function
   (* Conditional Operators *)
   | IF -> "IF"
   | ELSE -> "ELSE"
-  | ELSIF -> "ELSIF"
+  (*| ELSEIF -> "ELSEIF"*)
 
   (* End-of-File *)
   | EOF -> "EOF"
 
   (* Identifiers *)
   | ID(string) -> "ID"
+  (*| CONST -> "CONST"*)
 
-  | SEMI -> "SEMI"  | LBRACKET -> "LBRACKET" | RBRACKET -> "RBRACKET"
+  (* Literals *)
+  | INT_LIT(int) -> "INT_LIT"
+  | STRING_LIT(string) -> "STRING_LIT"
+  | FLOAT_LIT(float) -> "FLOAT_LIT"
+
+  | SEMI -> "SEMI" | LBRACKET -> "LBRACKET" | RBRACKET -> "RBRACKET"
   | LT -> "LT" | GT -> "GT" | INC -> "INC" | DEC -> "DEC"
   | COLON -> "COLON" | FOR -> "FOR" | WHILE -> "WHILE" | BREAK -> "BREAK"
   | RETURN -> "RETURN" | MAIN -> "MAIN"
   | TRUE -> "TRUE" | FALSE -> "FALSE"
-  | INT -> "INT" | BOOL -> "BOOL" | VOID -> "VOID" | DOUBLE -> "DOUBLE"
-  | STRING -> "STRING" |NULL -> "NULL" | LITERAL(int) -> "LITERAL"
+  | INT -> "INT" | BOOL -> "BOOL" | VOID -> "VOID" | FLOAT -> "FLOAT"
+  | STRING -> "STRING" |NULL -> "NULL" | MATRIX -> "MATRIX"
 
 let _ =
   let lexbuf = Lexing.from_channel stdin in

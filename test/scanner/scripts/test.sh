@@ -70,6 +70,18 @@ else
   echo "-----------------------------------------"
 fi
 
+cat _matrix.test | ./tokenize > _matrix.res
+diff _matrix.out _matrix.res > /dev/null
+if [ $? = 0 ]; then
+  echo "-----------------------------------------"
+  echo "|      SCANNER: MATRIX TEST PASSED       |"
+  echo "-----------------------------------------"
+else
+  echo "-----------------------------------------"
+  echo "|      SCANNER: MATRIX TEST FAILED       |"
+  echo "-----------------------------------------"
+fi
+
 cat _misc.test | ./tokenize > _misc.res
 diff _misc.out _misc.res > /dev/null
 if [ $? = 0 ]; then

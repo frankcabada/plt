@@ -1,47 +1,63 @@
 open Ast
 open Printf
 
-(* Unary operators *)
-let txt_of_unop = function
-  | Not -> "Not"
-  | Neg -> "Neg"
-  | Inc -> "Inc"
-  | Dec -> "Dec"
-
 (* Binary operators *)
-let txt_of_binop = function
+let txt_of_op = function
   (* Arithmetic *)
   | Add -> "Add"
   | Sub -> "Sub"
   | Mult -> "Mult"
   | Div -> "Div"
   (* Boolean *)
-  | Or -> "Or"
-  | And -> "And"
   | Equal -> "Equal"
   | Neq -> "Neq"
   | Less -> "Less"
-  | Greater -> "Greater"
   | Leq -> "Leq"
+  | Greater -> "Greater"
   | Geq -> "Geq"
+  | And -> "And"
+  | Or -> "Or"
+
+(* Unary operators *)
+let txt_of_uop = function
+  | Not -> "Not"
+  | Neg -> "Neg"
+  | Inc -> "Inc"
+  | Dec -> "Dec"
+
+(* Primitives *)
+let rec txt_of_primitives = function (* ?? because of matrix *)
+  | Int -> "Int"
+  | Bool -> "Bool"
+  | Void -> "Void"
+  | String -> "String"
+  | Float -> "Float"
+  | Matrix(x) -> txt_of_primitives x
+
+let rec txt_of_expr = function
+  | Int_lit(x) -> sprintf "Int_lit(%s)" (txt_of_primitives x)
+  | BoolLit(x) -> sprintf "BoolLit(%s)" (string_of_bool x)
+  | Id(x) -> sprintf "Id(%s)" x
+  | Noexpr (* ?? *)
+  | Binop(e1, op, e2) -> sprintf "Binop(%s, %s, %s)"
+      (txt_of_expr e1) (txt_of_op op) (txt_of_expr e2)
+  | Unop(op, e) -> sprintf "Unop(%s, %s)" (txt_of_uop op) (txt_of_expr e)
+  | Assign(x, e) -> sprintf "Assign(%s, %s)" x (txt_of_expr e)
+  | Call(x, args) -> sprintf "Call(%s, [%s])" x (txt_of_list args)
+  | Mat_init(e1, e2, e3) -> sprintf "Mat_init(%s,%s,%s)" (txt_of_expr e1) (txt_of_expr e2) (txt_of_expr e3)
+  | String_lit(x) -> sprintf "String_lit(%s)" x
+  | Float_lit(x) -> sprintf "Float_lit(%s)" (float_of_string x)
+  | Null
+  | Matrix_lit(args) -> sprintf "Matrix_lit([%s])" (txt_of_list args)
+  | Matrix_access(x,e1,e2) -> sprintf "Matrix_access(%s,%s,%s)" x (txt_of_expr e1) (txt_of_expr e2)
+  | Matrix_row(x,e) -> sprintf "Matrix_row(%s,%s)" x (txt_of_expr e)
+
+
+
 
 (* Expressions *)
 (* let txt_of_num = function
   | Num_int(x) -> string_of_int x
-
-let rec txt_of_expr = function
-  | Literal(x) -> sprintf "Literal(%s)" (txt_of_num x)
-  | BoolLit(x) -> sprintf "BoolLit(%s)" (string_of_bool x)
-  | Id(x) -> sprintf "Id(%s)" x
-  | Noexpr
-  | Binop(e1, op, e2) -> sprintf "Binop(%s, %s, %s)"
-      (txt_of_expr e1) (txt_of_binop op) (txt_of_expr e2)
-  | Unop(op, e) -> sprintf "Unop(%s, %s)" (txt_of_unop op) (txt_of_expr e)
-  | Assign(x, e) -> sprintf "Assign(%s, %s)" x (txt_of_expr e)
-  | Call(f, args) -> sprintf "Call(%s, [%s])"
-      (txt_of_expr f) (txt_of_list args)
-  | String(x) -> sprintf "String(%s)" x
-  | Double(x) -> sprintf "Double(%s)" (txt_of_num)
 
 (* Function declarations *)
 and txt_of_fdecl f =

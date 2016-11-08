@@ -1,3 +1,3 @@
 #!/bin/bash
 
-rm -f *.cmo *.cmi *.res parser.mli parser.ml scanner.ml parserize
+rm -f *.cmo *.cmi *.res parser.* scanner.* ast.* parserize

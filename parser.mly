@@ -46,11 +46,11 @@
 
 %%
 
-program: 
+program:
     mdecl fdecls EOF { Program($1, $2) }
 
-/* 
-decls: 
+/*
+decls:
     nothing      { [], [] }
   | decls vdecl        { ($2 :: fst $1), snd $1 }
   | decls fdecl        { fst $1, ($2 :: snd $1) }
@@ -58,18 +58,18 @@ decls:
 
 mdecl:
   INT MAIN LPAREN RPAREN LBRACE vdecl_list stmt_list RBRACE
-    { { mainlocals = List.rev $6; mainbody = List.rev $7 } } 
+    { { mainlocals = List.rev $6; mainbody = List.rev $7 } }
 
 fdecls:
     /* nothing */ {[]}
-  | fdecls fdecl  { $2 :: $1} 
+  | fdecls fdecl  { $2 :: $1}
 
 fdecl:
   primitives ID LPAREN formals_opt RPAREN LBRACE vdecl_list stmt_list RBRACE
     { { primitives = $1; fname = $2; formals = $4;
-      locals = List.rev $7; body = List.rev $8 } } 
+      locals = List.rev $7; body = List.rev $8 } }
 
-formals_opt: 
+formals_opt:
     /* nothing */ { [] }
   | formal_list   { List.rev $1 }
 
@@ -77,19 +77,20 @@ formal_list:
     primitives ID { [($1,$2)] }
   | formal_list COMMA primitives ID { ($3,$4) :: $1 }
 
-primitives: 
-    INT               { Int }
-  | BOOL              { Bool }
-  | VOID              { Void }
-  | FLOAT             { Float }
-  | STRING            { String } 
-  | MATRIX primitives { Matrix($2) }
+primitives:
+    INT                                                         { Int }
+  | BOOL                                                        { Bool }
+  | VOID                                                        { Void }
+  | FLOAT                                                       { Float }
+  | STRING                                                      { String }
+  | MATRIX primitives LBRACKET INT_LIT RBRACKET                 { Vector($2, $4) }
+  | MATRIX primitives LBRACKET INT_LIT COMMA INT_LIT RBRACKET   { Matrix($2, $4, $6) }
 
-vdecl_list: 
+vdecl_list:
     /* nothing */    { [] }
   | vdecl_list vdecl { $2 :: $1 }
 
-vdecl: 
+vdecl:
     primitives ID SEMI { ($1, $2) }
 
 stmt_list:
@@ -97,7 +98,7 @@ stmt_list:
   | stmt_list stmt { $2 :: $1 }
 
 stmt:
-    expr SEMI                                               { Expr $1 } 
+    expr SEMI                                               { Expr $1 }
   | RETURN SEMI                                             { Return Noexpr }
   | BREAK SEMI                                              { Break Noexpr }
   | RETURN expr SEMI                                        { Return $2 }
@@ -139,7 +140,7 @@ expr:
   | LBRACKET actuals_opt RBRACKET                            { Matrix_lit($2) }
   | ID LBRACKET expr COMMA expr RBRACKET                     { Matrix_access($1, $3, $5) }
   | ID LBRACKET expr COMMA COLON RBRACKET                    { Matrix_row($1, $3) } /* ?? that's all */
-  | ID LBRACKET COLON COMMA expr RBRACKET                    { Matrix_row($1, $5) } /* ?? that's all */
+  | ID LBRACKET COLON COMMA expr RBRACKET                    { Matrix_col($1, $5) } /* ?? that's all */
 
 expr_opt:
     /* nothing */ { Noexpr }
@@ -153,4 +154,3 @@ actuals_list:
     expr                         { [$1] }
   | actuals_list COMMA expr      { $3 :: $1 }
   | actuals_list COMMA expr SEMI { $3 :: $1 }
-/* ?? how to check every row has the same number of columns */

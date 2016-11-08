@@ -42,23 +42,32 @@
 %right NOT NEG
 
 %start program
-/* %type <int> main  ?? */
 %type <Ast.program> program
 
 %%
 
 program: 
-    decls EOF { $1 } /* ?? anything else */
+    mdecl fdecls EOF { Program($1, $2) }
 
+/* 
 decls: 
-    /* nothing */      { [], [] }
+    nothing      { [], [] }
   | decls vdecl        { ($2 :: fst $1), snd $1 }
   | decls fdecl        { fst $1, ($2 :: snd $1) }
+*/
+
+mdecl:
+  INT MAIN LPAREN RPAREN LBRACE vdecl_list stmt_list RBRACE
+    { { mainlocals = List.rev $6; mainbody = List.rev $7 } } 
+
+fdecls:
+    /* nothing */ {[]}
+  | fdecls fdecl  { $2 :: $1} 
 
 fdecl:
   primitives ID LPAREN formals_opt RPAREN LBRACE vdecl_list stmt_list RBRACE
     { { primitives = $1; fname = $2; formals = $4;
-      locals = List.rev $7; body = List.rev $8 } } /* change this ?? */
+      locals = List.rev $7; body = List.rev $8 } } 
 
 formals_opt: 
     /* nothing */ { [] }

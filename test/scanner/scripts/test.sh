@@ -94,6 +94,90 @@ else
   echo "-----------------------------------------"
 fi
 
+cat _comment.test | ./tokenize > _comment.res
+diff _comment.out _comment.res > /dev/null
+if [ $? = 0 ]; then
+  echo "-----------------------------------------"
+  echo "|      SCANNER: COMMENTS TEST PASSED     |"
+  echo "-----------------------------------------"
+else
+  echo "-----------------------------------------"
+  echo "|      SCANNER: COMMENTS TEST FAILED     |"
+  echo "-----------------------------------------"
+fi
+
+cat _identifier.test | ./tokenize > _identifier.res
+diff _identifier.out _identifier.res > /dev/null
+if [ $? = 0 ]; then
+  echo "-----------------------------------------"
+  echo "|      SCANNER: IDENTIFIER TEST PASSED  |"
+  echo "-----------------------------------------"
+else
+  echo "-----------------------------------------"
+  echo "|      SCANNER: IDENTIFIER TEST FAILED  |"
+  echo "-----------------------------------------"
+fi
+
+cat _mixed_arithmetic.test | ./tokenize > _mixed_arithmetic.res
+diff _mixed_arithmetic.out _mixed_arithmetic.res > /dev/null
+if [ $? = 0 ]; then
+  echo "-----------------------------------------"
+  echo "| SCANNER: MIXED ARITHMETIC TEST PASSED |"
+  echo "-----------------------------------------"
+else
+  echo "-----------------------------------------"
+  echo "| SCANNER: MIXED ARITHMETIC TEST FAILED  |"
+  echo "-----------------------------------------"
+fi
+
+cat _literal.test | ./tokenize > _literal.res
+diff _literal.out _literal.res > /dev/null
+if [ $? = 0 ]; then
+  echo "-----------------------------------------"
+  echo "|      SCANNER: LITERAL TEST PASSED     |"
+  echo "-----------------------------------------"
+else
+  echo "-----------------------------------------"
+  echo "|      SCANNER: LITERAL TEST FAILED     |"
+  echo "-----------------------------------------"
+fi
+
+cat _assignment.test | ./tokenize > _assignment.res
+diff _assignment.out _assignment.res > /dev/null
+if [ $? = 0 ]; then
+  echo "-----------------------------------------"
+  echo "|      SCANNER: ASSIGNMENT TEST PASSED  |"
+  echo "-----------------------------------------"
+else
+  echo "-----------------------------------------"
+  echo "|      SCANNER: ASSIGNMENT TEST FAILED  |"
+  echo "-----------------------------------------"
+fi
+
+cat _main_function.test | ./tokenize > _main_function.res
+diff _main_function.out _main_function.res > /dev/null
+if [ $? = 0 ]; then
+  echo "-----------------------------------------"
+  echo "|   SCANNER: MAIN FUNCTION TEST PASSED  |"
+  echo "-----------------------------------------"
+else
+  echo "-----------------------------------------"
+  echo "|   SCANNER: MAIN FUNCTION TEST FAILED  |"
+  echo "-----------------------------------------"
+fi
+
+cat _function.test | ./tokenize > _function.res
+diff _function.out _function.res > /dev/null
+if [ $? = 0 ]; then
+  echo "-----------------------------------------"
+  echo "|        SCANNER: FUNCTION TEST PASSED  |"
+  echo "-----------------------------------------"
+else
+  echo "-----------------------------------------"
+  echo "|        SCANNER: FUNCTION TEST FAILED  |"
+  echo "-----------------------------------------"
+fi
+
 cat _misc.test | ./tokenize > _misc.res
 diff _misc.out _misc.res > /dev/null
 if [ $? = 0 ]; then

@@ -56,7 +56,7 @@ type stmt =
 	| Block of stmt list
 	| Expr of expr
   	| If of expr * stmt * stmt
-(*   	| Elseif of expr * stmt *)
+(*  	| Elseif of expr * stmt * stmt *)
   	| Else of stmt
   	| For of expr * expr * expr * stmt
   	| While of expr * stmt
@@ -64,8 +64,7 @@ type stmt =
 	| Break of expr
 
 (* Function Declarations *)
-type func_decl = 
-{
+and func_decl = {
 	primitives 	: primitives;
 	fname 		: string;
 	formals 	: bind list;
@@ -73,9 +72,9 @@ type func_decl =
 	body 		: stmt list;
 }
 
-type main_decl = {
-	locals  	: bind list;
-	body 		: stmt list;
+and main_decl = {
+	mainlocals	: bind list;
+	mainbody	: stmt list;
 }
 
 (* Start Symbol *)

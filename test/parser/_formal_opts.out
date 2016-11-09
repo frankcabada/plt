@@ -1,0 +1,28 @@
+ACCEPT
+[program:
+  [mdecl:
+    INT
+    MAIN
+    LPAREN
+    RPAREN
+    LBRACE
+    [vdecl_list:]
+    [stmt_list: [stmt_list:] [stmt: RETURN SEMI]]
+    RBRACE
+  ]
+  [fdecls:
+    [fdecls:]
+    [fdecl:
+      [primitives: FLOAT]
+      ID
+      LPAREN
+      [formals_opt: [formal_list: [primitives: INT] ID]]
+      RPAREN
+      LBRACE
+      [vdecl_list:]
+      [stmt_list:]
+      RBRACE
+    ]
+  ]
+  EOF
+]

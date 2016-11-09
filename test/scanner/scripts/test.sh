@@ -85,46 +85,54 @@ fi
 cat _matrix.test | ./tokenize > _matrix.res
 diff _matrix.out _matrix.res > /dev/null
 if [ $? = 0 ]; then
+  echo -e "\e[0;32m"
   echo "-----------------------------------------"
-  echo "|      SCANNER: MATRIX TEST PASSED       |"
+  echo "|     SCANNER: MATRIX TEST PASSED       |"
   echo "-----------------------------------------"
 else
+  echo -e "\e[0;31m"
   echo "-----------------------------------------"
-  echo "|      SCANNER: MATRIX TEST FAILED       |"
+  echo "|     SCANNER: MATRIX TEST FAILED       |"
   echo "-----------------------------------------"
 fi
 
 cat _comment.test | ./tokenize > _comment.res
 diff _comment.out _comment.res > /dev/null
 if [ $? = 0 ]; then
+  echo -e "\e[0;32m"
   echo "-----------------------------------------"
-  echo "|      SCANNER: COMMENTS TEST PASSED     |"
+  echo "|     SCANNER: COMMENTS TEST PASSED     |"
   echo "-----------------------------------------"
 else
+  echo -e "\e[0;31m"
   echo "-----------------------------------------"
-  echo "|      SCANNER: COMMENTS TEST FAILED     |"
+  echo "|     SCANNER: COMMENTS TEST FAILED     |"
   echo "-----------------------------------------"
 fi
 
 cat _identifier.test | ./tokenize > _identifier.res
 diff _identifier.out _identifier.res > /dev/null
 if [ $? = 0 ]; then
+  echo -e "\e[0;32m"
   echo "-----------------------------------------"
-  echo "|      SCANNER: IDENTIFIER TEST PASSED  |"
+  echo "|    SCANNER: IDENTIFIER TEST PASSED    |"
   echo "-----------------------------------------"
 else
+  echo -e "\e[0;31m"
   echo "-----------------------------------------"
-  echo "|      SCANNER: IDENTIFIER TEST FAILED  |"
+  echo "|    SCANNER: IDENTIFIER TEST FAILED    |"
   echo "-----------------------------------------"
 fi
 
 cat _mixed_arithmetic.test | ./tokenize > _mixed_arithmetic.res
 diff _mixed_arithmetic.out _mixed_arithmetic.res > /dev/null
 if [ $? = 0 ]; then
+  echo -e "\e[0;32m"
   echo "-----------------------------------------"
   echo "| SCANNER: MIXED ARITHMETIC TEST PASSED |"
   echo "-----------------------------------------"
 else
+  echo -e "\e[0;31m"
   echo "-----------------------------------------"
   echo "| SCANNER: MIXED ARITHMETIC TEST FAILED  |"
   echo "-----------------------------------------"
@@ -133,34 +141,40 @@ fi
 cat _literal.test | ./tokenize > _literal.res
 diff _literal.out _literal.res > /dev/null
 if [ $? = 0 ]; then
+  echo -e "\e[0;32m"
   echo "-----------------------------------------"
-  echo "|      SCANNER: LITERAL TEST PASSED     |"
+  echo "|     SCANNER: LITERAL TEST PASSED      |"
   echo "-----------------------------------------"
 else
+  echo -e "\e[0;31m"
   echo "-----------------------------------------"
-  echo "|      SCANNER: LITERAL TEST FAILED     |"
+  echo "|     SCANNER: LITERAL TEST FAILED      |"
   echo "-----------------------------------------"
 fi
 
 cat _assignment.test | ./tokenize > _assignment.res
 diff _assignment.out _assignment.res > /dev/null
 if [ $? = 0 ]; then
+  echo -e "\e[0;32m"
   echo "-----------------------------------------"
-  echo "|      SCANNER: ASSIGNMENT TEST PASSED  |"
+  echo "|    SCANNER: ASSIGNMENT TEST PASSED    |"
   echo "-----------------------------------------"
 else
+  echo -e "\e[0;31m"
   echo "-----------------------------------------"
-  echo "|      SCANNER: ASSIGNMENT TEST FAILED  |"
+  echo "|    SCANNER: ASSIGNMENT TEST FAILED    |"
   echo "-----------------------------------------"
 fi
 
 cat _main_function.test | ./tokenize > _main_function.res
 diff _main_function.out _main_function.res > /dev/null
 if [ $? = 0 ]; then
+  echo -e "\e[0;32m"
   echo "-----------------------------------------"
   echo "|   SCANNER: MAIN FUNCTION TEST PASSED  |"
   echo "-----------------------------------------"
 else
+  echo -e "\e[0;31m"
   echo "-----------------------------------------"
   echo "|   SCANNER: MAIN FUNCTION TEST FAILED  |"
   echo "-----------------------------------------"
@@ -169,12 +183,14 @@ fi
 cat _function.test | ./tokenize > _function.res
 diff _function.out _function.res > /dev/null
 if [ $? = 0 ]; then
+  echo -e "\e[0;32m"
   echo "-----------------------------------------"
-  echo "|        SCANNER: FUNCTION TEST PASSED  |"
+  echo "|    SCANNER: FUNCTION TEST PASSED      |"
   echo "-----------------------------------------"
 else
+  echo -e "\e[0;31m"
   echo "-----------------------------------------"
-  echo "|        SCANNER: FUNCTION TEST FAILED  |"
+  echo "|    SCANNER: FUNCTION TEST FAILED      |"
   echo "-----------------------------------------"
 fi
 

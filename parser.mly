@@ -28,10 +28,8 @@
 %token EOF
 
 /* Precedence and associativity of each operator */
-%nonassoc RETURN
 %nonassoc NOELSE
 %nonassoc ELSE
-%nonassoc BREAK /* ?? Correct precendence */
 %right ASSIGN
 %left OR
 %left AND

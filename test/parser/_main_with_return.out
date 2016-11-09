@@ -7,7 +7,7 @@ ACCEPT
     RPAREN
     LBRACE
     [vdecl_list:]
-    [stmt_list:]
+    [stmt_list: [stmt_list:] [stmt: RETURN SEMI]]
     RBRACE
   ]
   [fdecls:]

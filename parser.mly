@@ -19,10 +19,9 @@
 %token SEMI COMMA COLON
 
 /* Literals, identifiers, EOF */
-%token <int> INT_LIT
+%token <Ast.num> NUM_LIT
 %token <string> ID
 %token <string> STRING_LIT
-%token <float> FLOAT_LIT
 %token NULL
 /*%token CONST*/
 %token EOF
@@ -81,8 +80,8 @@ primitives:
   | VOID                                                        { Void }
   | FLOAT                                                       { Float }
   | STRING                                                      { String }
-  | MATRIX primitives LBRACKET INT_LIT RBRACKET                 { Vector($2, $4) }
-  | MATRIX primitives LBRACKET INT_LIT COMMA INT_LIT RBRACKET   { Matrix($2, $4, $6) }
+  | MATRIX primitives LBRACKET NUM_LIT RBRACKET                 { Vector($2, $4) }
+  | MATRIX primitives LBRACKET NUM_LIT COMMA NUM_LIT RBRACKET   { Matrix($2, $4, $6) }
 
 vdecl_list:
     /* nothing */    { [] }
@@ -107,8 +106,7 @@ stmt:
   | WHILE LPAREN expr RPAREN stmt                           { While($3, $5) }
 
 expr:
-    INT_LIT                                                  { Int_lit($1) }
-  | FLOAT_LIT                                                { Float_lit($1) }
+    NUM_LIT                                                  { Num_lit($1) }
   | STRING_LIT                                               { String_lit($1) }
   | TRUE                                                     { Bool_lit(true) }
   | FALSE                                                    { Bool_lit(false) }

@@ -32,8 +32,8 @@ rule token = parse
 | ';' { SEMI } | ',' { COMMA } | ':' { COLON }
 
 (* Literals *)
-| ['0'-'9']+ as lxm { INT_LIT(int_of_string lxm) }
-| ['0'-'9']* '.' ['0'-'9']+ as lxmd { FLOAT_LIT(float_of_string lxmd) }
+| ['0'-'9']+ as lxm { NUM_LIT(Ast.Int_lit(int_of_string lxm)) }
+| ['0'-'9']* '.' ['0'-'9']+ as lxmd { NUM_LIT(Ast.Float_lit(float_of_string lxmd)) }
 | '"' (([^ '"'] | "\\\"")* as strlit) '"' { STRING_LIT(strlit) }
 | "null" { NULL }
 

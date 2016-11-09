@@ -14,19 +14,21 @@ type op =
 	| Or
 
 (* Unary Operators *)
-(* unnecessary comment *)
 type uop =
 	| Neg
 	| Not
 	| Inc
 	| Dec
 
+type num =
+	| Int_lit of int
+	| Float_lit of float
+
 (* Expressions *)
 type expr =
-	| Int_lit of int
+	| Num_lit of num
 	| Bool_lit of bool
 	| String_lit of string
-	| Float_lit of float
 	| Matrix_lit of expr list
 	| Id of string
 	(*| Const of primitives * expr (* ?? is this correct *)*)
@@ -48,8 +50,8 @@ type primitives =
 	| Void
 	| String
 	| Float
-	| Vector of primitives * int
-	| Matrix of primitives * int * int
+	| Vector of primitives * num
+	| Matrix of primitives * num * num
 
 (* Bind *)
 type bind = primitives * string

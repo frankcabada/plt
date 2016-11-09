@@ -1,5 +1,9 @@
 open Parser
 
+type num =
+  | Int_lit of int
+  | Float_lit of float
+
 let stringify = function
   (* Punctuation *)
   | LPAREN -> "LPAREN"  | RPAREN -> "RPAREN"
@@ -34,9 +38,8 @@ let stringify = function
   (*| CONST -> "CONST"*)
 
   (* Literals *)
-  | INT_LIT(int) -> "INT_LIT"
+  | NUM_LIT(num) -> "NUM_LIT"
   | STRING_LIT(string) -> "STRING_LIT"
-  | FLOAT_LIT(float) -> "FLOAT_LIT"
 
   | SEMI -> "SEMI" | LBRACKET -> "LBRACKET" | RBRACKET -> "RBRACKET"
   | LT -> "LT" | GT -> "GT" | INC -> "INC" | DEC -> "DEC"

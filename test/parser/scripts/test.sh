@@ -97,3 +97,17 @@ else
   echo "|    PARSER: STATEMENTS TEST FAILED     |"
   echo "-----------------------------------------"
 fi
+
+cat _expr.test | menhir --interpret --interpret-show-cst parser.mly > _expr.res
+diff _expr.out _expr.res > /dev/null
+if [ $? = 0 ]; then
+  echo -e "\e[0;32m"
+  echo "-----------------------------------------"
+  echo "|   PARSER: EXPRESSIONS TEST PASSED     |"
+  echo "-----------------------------------------"
+else
+  echo -e "\e[0;31m"
+  echo "-----------------------------------------"
+  echo "|   PARSER: EXPRESSIONS TEST FAILED     |"
+  echo "-----------------------------------------"
+fi

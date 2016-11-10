@@ -1,0 +1,203 @@
+ACCEPT
+[program:
+  [mdecl:
+    INT
+    MAIN
+    LPAREN
+    RPAREN
+    LBRACE
+    [vdecl_list:]
+    [stmt_list:
+      [stmt_list:
+        [stmt_list:
+          [stmt_list:
+            [stmt_list:
+              [stmt_list:
+                [stmt_list:
+                  [stmt_list:
+                    [stmt_list:
+                      [stmt_list:
+                        [stmt_list:
+                          [stmt_list:
+                            [stmt_list:
+                              [stmt_list:
+                                [stmt_list:
+                                  [stmt_list:
+                                    [stmt_list:
+                                      [stmt_list:
+                                        [stmt_list:
+                                          [stmt_list:
+                                            [stmt_list:
+                                              [stmt_list:
+                                                [stmt_list:
+                                                  [stmt_list:
+                                                    [stmt_list:
+                                                      [stmt_list:
+                                                        [stmt_list:
+                                                          [stmt_list:
+                                                            [stmt_list:]
+                                                            [stmt:
+                                                              [expr: NUM_LIT]
+                                                              SEMI
+                                                            ]
+                                                          ]
+                                                          [stmt:
+                                                            [expr: STRING_LIT]
+                                                            SEMI
+                                                          ]
+                                                        ]
+                                                        [stmt: [expr: TRUE] SEMI]
+                                                      ]
+                                                      [stmt: [expr: FALSE] SEMI]
+                                                    ]
+                                                    [stmt: [expr: NULL] SEMI]
+                                                  ]
+                                                  [stmt: [expr: ID] SEMI]
+                                                ]
+                                                [stmt:
+                                                  [expr:
+                                                    [expr: NUM_LIT]
+                                                    PLUS
+                                                    [expr: NUM_LIT]
+                                                  ]
+                                                  SEMI
+                                                ]
+                                              ]
+                                              [stmt:
+                                                [expr:
+                                                  [expr: NUM_LIT]
+                                                  MINUS
+                                                  [expr: NUM_LIT]
+                                                ]
+                                                SEMI
+                                              ]
+                                            ]
+                                            [stmt:
+                                              [expr:
+                                                [expr: NUM_LIT]
+                                                TIMES
+                                                [expr: NUM_LIT]
+                                              ]
+                                              SEMI
+                                            ]
+                                          ]
+                                          [stmt:
+                                            [expr:
+                                              [expr: NUM_LIT]
+                                              DIVIDE
+                                              [expr: NUM_LIT]
+                                            ]
+                                            SEMI
+                                          ]
+                                        ]
+                                        [stmt:
+                                          [expr:
+                                            [expr: NUM_LIT]
+                                            EQ
+                                            [expr: NUM_LIT]
+                                          ]
+                                          SEMI
+                                        ]
+                                      ]
+                                      [stmt:
+                                        [expr:
+                                          [expr: NUM_LIT]
+                                          NEQ
+                                          [expr: NUM_LIT]
+                                        ]
+                                        SEMI
+                                      ]
+                                    ]
+                                    [stmt:
+                                      [expr: [expr: NUM_LIT] LEQ [expr: NUM_LIT]]
+                                      SEMI
+                                    ]
+                                  ]
+                                  [stmt:
+                                    [expr: [expr: NUM_LIT] GEQ [expr: NUM_LIT]]
+                                    SEMI
+                                  ]
+                                ]
+                                [stmt:
+                                  [expr: [expr: NUM_LIT] AND [expr: NUM_LIT]]
+                                  SEMI
+                                ]
+                              ]
+                              [stmt:
+                                [expr: [expr: NUM_LIT] OR [expr: NUM_LIT]]
+                                SEMI
+                              ]
+                            ]
+                            [stmt: [expr: MINUS [expr: NUM_LIT]] SEMI]
+                          ]
+                          [stmt: [expr: NOT [expr: NUM_LIT]] SEMI]
+                        ]
+                        [stmt: [expr: INC [expr: NUM_LIT]] SEMI]
+                      ]
+                      [stmt: [expr: DEC [expr: NUM_LIT]] SEMI]
+                    ]
+                    [stmt: [expr: ID ASSIGN [expr: NUM_LIT]] SEMI]
+                  ]
+                  [stmt: [expr: LPAREN [expr: NUM_LIT] RPAREN] SEMI]
+                ]
+                [stmt: [expr: ID LPAREN [actuals_opt:] RPAREN] SEMI]
+              ]
+              [stmt:
+                [expr:
+                  ID
+                  ASSIGN
+                  [expr:
+                    LBRACKET
+                    [expr: NUM_LIT]
+                    COLON
+                    [expr: NUM_LIT]
+                    COLON
+                    [expr: NUM_LIT]
+                    RBRACKET
+                  ]
+                ]
+                SEMI
+              ]
+            ]
+            [stmt:
+              [expr:
+                LBRACKET
+                [actuals_opt:
+                  [actuals_list:
+                    [actuals_list: [expr: NUM_LIT]]
+                    COMMA
+                    [expr: NUM_LIT]
+                  ]
+                ]
+                RBRACKET
+              ]
+              SEMI
+            ]
+          ]
+          [stmt:
+            [expr:
+              ID
+              LBRACKET
+              [expr: NUM_LIT]
+              COMMA
+              [expr: NUM_LIT]
+              RBRACKET
+            ]
+            SEMI
+          ]
+        ]
+        [stmt:
+          [expr: ID LBRACKET [expr: NUM_LIT] COMMA COLON RBRACKET]
+          SEMI
+        ]
+      ]
+      [stmt:
+        [expr: ID LBRACKET COLON COMMA [expr: NUM_LIT] RBRACKET]
+        SEMI
+      ]
+    ]
+    RBRACE
+  ]
+  [fdecls:]
+  EOF
+]

@@ -1,3 +1,5 @@
 .DS_Store
 *.cmi
 *.cmo
+clean.sh
+semant_comp.sh

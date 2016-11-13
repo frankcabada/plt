@@ -1,169 +1,97 @@
 open Ast
+open Sast
+open Exceptions
+open Utils
 
 module StringMap = Map.Make(String)
 
-(* Semantic checking of a program. Returns void if successful,
-throws an exception if something is wrong.
-Check each global variable, then check each function *)
+type env = {
+	env_name      	: string;
+	env_locals    	: datatype StringMap.t;
+	env_parameters	: Ast.formal StringMap.t;
+	env_returnType	: datatype;
+	env_in_for    	: bool;
+	env_in_while  	: bool;
+}
 
-let check (globals, functions) =
-	(* Raise an exception if the given list has a duplicate *)
-	let report_duplicate exceptf list =
-		let rec helper = function
-			n1 :: n2 :: _ when n1 = n2 -> raise (Failure (exceptf n1))
-		  | _ :: t -> helper t
-		  | [] -> ()
-		in helper (List.sort compare list)
+let rec get_ID_type env s =
+	try StringMap.find s env.env_locals
+	with | Not_found ->
+	try let formal = StringMap.find s env.env_parameters in
+		(function Formal(t, _) -> t ) formal
+	with | Not_found -> raise (Exceptions.UndefinedID s)
+
+and check_assign env s e =
+	let ss, env = s env e in
+	let se, env = expr_to_sexpr env e in
+	let type1 = get_ID_type env s in
+	let type2 = get_type_from_sexpr se in
+	if type1 = type2
+		then SAssign(s, se, type1)
+		else raise (Exceptions.AssignmentTypeMismatch(Utils.string_of_datatype type1, Utils.string_of_datatype type2))
+
+and check_unop env op e =
+	let check_num_unop t = function
+			Sub 	-> t
+		| 	_ 		-> raise(Exceptions.InvalidUnaryOperation)
 	in
-	(* Raise an exception if a given binding is to a void type *)
-	let check_not_void exceptf = function
-		(Void, n) -> raise (Failure (exceptf n))
-	  | _ -> ()
+	let check_bool_unop = function
+			Not 	-> Datatype(Bool_t)
+		| 	_ 		-> raise(Exceptions.InvalidUnaryOperation)
 	in
-	(* Raise an exception of the given rvalue type cannot be assigned
-	to the given lvalue type or return the type of the assignment *)
-	let check_assign lvaluet rvaluet err =
-		if lvaluet == rvaluet then lvaluet else raise err
-	in
+	let se, env = expr_to_sexpr env e in
+	let t = get_type_from_sexpr se in
+	match t with
+		Datatype(Int_t)
+	|	Datatype(Float_t) 	-> SUnop(op, se, check_num_unop t op)
+	|  	Datatype(Bool_t) 	-> SUnop(op, se, check_bool_unop op)
+	| 	_ -> raise(Exceptions.InvalidUnaryOperation)
 
-	(**** Checking Global Variables ****)
-	List.iter (check_not_void (fun n -> "illegal void global " ^ n))
-		globals;
-	report_duplicate (fun n -> "duplicate global " ^ n)
-					 (List.map snd globals);
+and check_binop env e1 op e2 =
+	let se1, env = expr_to_sexpr env e1 in
+	let se2, env = expr_to_sexpr env e2 in
+	let type1 = get_type_from_sexpr se1 in
+	let type2 = get_type_from_sexpr se2 in
+	match op with
+	Equal | Neq -> get_equality_binop_type type1 type2 se1 se2 op
+	| And | Or -> get_logical_binop_type se1 se2 op (type1, type2)
+	| Less | Leq | Greater | Geq -> get_comparison_binop_type type1 type2 se1 se2 op
+	| Add | Mult | Sub | Div | Mod -> get_arithmetic_binop_type se1 se2 op (type1, type2)
+	| _ -> raise (Exceptions.InvalidBinopExpression ((Utils.string_of_op op) ^ " is not a supported binary op"))
 
-	(**** Checking Functions ****)
-	if List.mem "print" (List.map (fun fd -> fd.fname) functions)
-	then raise (Failure ("function print may not be defined")) else ();
-	report_duplicate (fun n -> "duplicate function " ^ n)
-		(List.map (fun fd -> fd.fname) functions);
+and expr_to_sexpr env = function
+		  Int_Lit i           -> SInt_Lit(i), env
+	|   Boolean_Lit b       -> SBoolean_Lit(b), env
+	|   Float_Lit f         -> SFloat_Lit(f), env
+	|   String_Lit s        -> SString_Lit(s), env
+	|   Char_Lit c          -> SChar_Lit(c), env
+	|   This                -> SId("this", Datatype(Objecttype(env.env_name))), env
+	|   Id s                -> SId(s, get_ID_type env s), env
+	|   Null                -> SNull, env
+	|   Noexpr              -> SNoexpr, env
+	|   Call(s, el)         -> check_call_type env false env s el, env
+	|   Assign(s, e2)      	-> check_assign env s e2, env
+	|   Unop(op, e)         -> check_unop env op e, env
+	|   Binop(e1, op, e2)   -> check_binop env e1 op e2, env
 
-	(* Function declaration for a named function *)
-	let built_in_decls = StringMap.add "print"
-		{ primitives = Void; fname = "print"; formals = [(Int, "x")];
-			locals = []; body = [] } (StringMap.singleton "printb"
-		{ primitives = Void; fname = "printb"; formals = [(Bool, "x")];
-			locals = []; body = [] })
-	in
+and get_type_from_sexpr = function
+		 	SNum_Lit(_)						-> Datatype(Int)
+	| 	SBoolean_Lit(_)				-> Datatype(Bool)
+	| 	SString_Lit(_) 				-> Arraytype(Char, 1)
+	| 	SChar_Lit(_) 					-> Datatype(Char)
+	| 	SId(_, d) 						-> d
+	| 	SBinop(_, _, _, d) 		-> d
+	| 	SAssign(_, _, d) 			-> d
+	| 	SNoexpr 							-> Datatype(Void)
+	| 	SCall(_, _, d, _)			-> d
+	|  	SUnop(_, _, d) 				-> d
+	| 	SNull									-> Datatype(Null)
 
-	let function_decls =
-		List.fold_left (fun m fd -> StringMap.add fd.fname fd m)
-						built_in_decls functions
-	in
+let get_arithmetic_binop_type se1 se2 op = function
+				(Datatype(Int), Datatype(Float))
+		| 	(Datatype(Float), Datatype(Int))
+		| 	(Datatype(Float), Datatype(Float)) 	-> SBinop(se1, op, se2, Datatype(Float))
 
-	let function_decl s = try StringMap.find s function_decls
-	  with Not_found -> raise (Failure ("unrecognized function " ^ s))
-	in
+		| 	(Datatype(Int), Datatype(Int)) 		-> SBinop(se1, op, se2, Datatype(Int))
 
-	(* Ensure "main" is defined *)
-	let _ = function_decl "main" in
-
-	let check_function func =
-		List.iter (check_not_void (fun n ->
-			"illegal void formal " ^ n ^ " in " ^ func.fname))
-		  func.formals;
-		
-		report_duplicate (fun n ->
-			"duplicate formal " ^ n ^ " in " ^ func.fname)
-		  (List.map snd func.formals);
-
-		List.iter (check_not_void (fun n ->
-			"illegal void local " ^ n ^ " in " ^ func.fname))
-		  func.locals;
-
-		report_duplicate (fun n ->
-			"duplicate local " ^ n ^ " in " ^ func.fname)
-		  (List.map snd func.locals);
-
-	(* Variable symbol table: type of each global, formal, local *)
-	let symbols = List.fold_left
-					(fun m (t, n) -> StringMap.add n t m)
-					StringMap.empty
-					( globals @ func.formals @ func.locals )
-	in
-
-	let type_of_identifier s =
-		try StringMap.find s symbols
-		with Not_found ->
-			raise (Failure ("undeclared identifier " ^ s))
-	in
-	let string_of_typ t = function
-		| Int -> "int"
-		| Bool -> "bool"
-		| Void -> "void"
-		| String -> "string"		
-		| Float -> "float"
-		(*| Matrix -> "matrix"*)
-	in
-	(* Return the type of an expression or throw an exception *)
-	let rec expr = function
-		Num_lit _ -> Int
-	  | Bool_lit _ -> Bool
-	  | Noexpr -> Void
-	  | Id s -> type_of_identifier s
-	  | Assign(var, e) as ex -> let lt = type_of_identifier var
-								and rt = expr e in
-		check_assign lt rt
-			(Failure ("illegal assignment " ^ string_of_typ lt ^
-			" = " ^ string_of_typ rt ^ " in " ^ string_of_expr ex))
-	| Binop(e1, op, e2) as e -> let t1 = expr e1
-								and t2 = expr e2 in
-	  (match op with
-		Add | Sub | Mult | Div when t1 = Int && t2 = Int -> Int
-	  | Equal | Neq when t1 = t2 -> Bool
-	  | Less | Leq | Greater | Geq when t1 = Int && t2 = Int -> Bool
-	  | And | Or when t1 = Bool && t2 = Bool -> Bool
-	  | _ -> raise (Failure ("illegal binary operator " ^
-						string_of_typ t1 ^ " " ^ string_of_op op ^ " " ^
-						string_of_typ t2 ^ " in " ^ string_of_expr e))
-	  )
-	| Unop(op, e) as ex -> let t = expr e in
-		(match op with
-		  Neg when t = Int -> Int
-		| Not when t = Bool -> Bool
-		| _ -> raise (Failure ("illegal unary operator " ^
-						string_of_uop op ^ string_of_typ t ^
-						" in " ^ string_of_expr ex)))
-	| Call(fname, actuals) as call -> let fd = function_decl fname in
-		if List.length actuals != List.length fd.formals then
-			raise (Failure ("expecting " ^ string_of_int
-				(List.length fd.formals) ^ " arguments in " ^
-				string_of_expr call))
-		else
-			List.iter2 (fun (ft, _) e -> let et = expr e in
-				ignore (check_assign ft et
-					(Failure ("illegal actual argument found " ^
-						string_of_typ et ^ " expected " ^
-						string_of_typ ft ^ " in " ^ string_of_expr e))))
-					fd.formals actuals;
-				fd.prmitives (* Finally, the call returns the function’s type *)
-	in
-
-	let check_bool_expr e = if expr e != Bool
-		then raise (Failure ("expected Boolean expression in " ^
-								string_of_expr e))
-		else () in
-
-	(* Verify a statement or throw an exception *)
-	let rec stmt = function
-		Expr e -> ignore (expr e)
-	  | If(p, b1, b2) -> check_bool_expr p; stmt b1; stmt b2
-	  | For(e1, e2, e3, st) -> ignore (expr e1); check_bool_expr e2;
-								ignore (expr e3); stmt st
-	  | While(p, s) -> check_bool_expr p; stmt s
-	  | Return e ->
-			let t = expr e in
-			if t = func.primitives then ()
-			else raise (Failure ("return gives " ^ string_of_typ t ^
-						" expected " ^ string_of_typ func.typ ^ " in " ^
-						string_of_expr e))
-	  | Block sl -> let rec check_block = function
-			[Return _ as s] -> stmt s
-		| Return _ :: _ ->
-			raise (Failure "nothing may follow a return")
-		| Block sl :: ss -> check_block (sl @ ss)
-		| s :: ss -> stmt s ; check_block ss
-		| [] -> ()
-	in check_block sl
-	in stmt (Block func.body) (* body of check_function *)
-	in List.iter check_function functions (* body of check *)
+		| _ -> raise (Exceptions.InvalidBinopExpression "Arithmetic operators don't support these types")

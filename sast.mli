@@ -4,42 +4,46 @@
  * Authors:
  *  - Marissa Ojeda
  *  - Daniel Rojas
- *  - Mike B
+ *  - Mike Berkowitz
  *  - Frank Cabada
  *)
 
 open Ast
 
+type snum =
+		SInt_lit of int
+	|	SFloat_lit of float
+
 (* Expressions *)
 type sexpr =
-	  SNum_lit of num
+	  SNum_lit of snum
 	| SBool_lit of bool
 	| SString_lit of string
 	| SMatrix_lit of sexpr list
-	| SId of string
+	| SId of string * datatype
 	(*| Const of primitives * expr (* ?? is this correct *)*)
 	| SNoexpr
 	| SNull
-	| SBinop of sexpr * op * sexpr
-	| SUnop of uop * sexpr
-	| SAssign of string * sexpr
-	| SCall of string * sexpr list
-	| SMat_init of sexpr * sexpr * sexpr 
-	| SMatrix_access of string * sexpr * sexpr 
+	| SBinop of sexpr * op * sexpr * datatype
+	| SUnop of uop * sexpr * datatype
+	| SAssign of string * sexpr * datatype
+	| SCall of string * sexpr list * datatype
+	| SMat_init of sexpr * sexpr * sexpr
+	| SMatrix_access of string * sexpr * sexpr
 	| SMatrix_row of string * sexpr
 	| SMatrix_col of string * sexpr
 
 (* Statements *)
 type sstmt =
 	  SBlock of sstmt list
-	| SExpr of sexpr
+	| SExpr of sexpr * datatype
 	| SIf of sexpr * sstmt * sstmt
 (*  	| Elseif of expr * stmt * stmt *)
 	| SElse of sstmt
 	| SFor of sexpr * sexpr * sexpr * sstmt
 	| SWhile of sexpr * sstmt
-	| SReturn of sexpr
-	| SBreak of sexpr
+	| SReturn of sexpr * datatype
+	| SBreak
 
 (* Function Declarations *)
 type sfunc_decl = {
@@ -61,8 +65,8 @@ type sprogram =  {
 	main : smain_decl;
 }
 
-(* Data types 
-type data_type = 
+(* Data types
+type data_type =
 	| Int
 	| Float
 	| String
@@ -86,7 +90,7 @@ type var = {
 type expr_wrapper =
 	| Expr of expr * data_type
 
-and expr = 
+and expr =
 	| Num_lit of Ast.num
 	| String_lit of string
 	| Bool_lit of bool
@@ -113,7 +117,7 @@ and if_decl = {
 	stmt_2: expr_wrapper;
 }
 
-and stmt = 
+and stmt =
 	| Do of expr_wrapper
 
 type program = stmt list

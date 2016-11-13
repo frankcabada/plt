@@ -1,28 +1,24 @@
 (* Binary Operators *)
-type op =
-	| Add
-	| Sub
-	| Mult
-	| Div
-	| Equal
-	| Neq
-	| Less
-	| Leq
-	| Greater
-	| Geq
-	| And
-	| Or
+type op = Add | Sub | Mult | Div | Equal | Neq | Less | Leq | Greater | Geq | And | Or
 
 (* Unary Operators *)
-type uop =
-	| Neg
-	| Not
-	| Inc
-	| Dec
+type uop = Neg | Not | Inc | Dec
 
-type num =
-	| Int_lit of int
-	| Float_lit of float
+(* Nums *)
+type num = Int_lit of int | Float_lit of float
+
+(* Types *)
+type primitives = Int	| Bool	| Void	| String	| Float
+	| Vector of primitives * num
+	| Matrix of primitives * num * num
+
+type datatype = Datatype of primitives
+
+(* Bind *)
+type bind = primitives * string
+
+type formal = Formal of datatype*string
+type local = 	Local of datatype*string
 
 (* Expressions *)
 type expr =
@@ -38,23 +34,10 @@ type expr =
 	| Unop of uop * expr
 	| Assign of string * expr
 	| Call of string * expr list
-	| Mat_init of expr * expr * expr 
-	| Matrix_access of string * expr * expr 
+	| Mat_init of expr * expr * expr
+	| Matrix_access of string * expr * expr
 	| Matrix_row of string * expr
 	| Matrix_col of string * expr
-
-(* Types *)
-type primitives =
-	| Int
-	| Bool
-	| Void
-	| String
-	| Float
-	| Vector of primitives * num
-	| Matrix of primitives * num * num
-
-(* Bind *)
-type bind = primitives * string
 
 (* Statements *)
 type stmt =
@@ -66,19 +49,19 @@ type stmt =
 	| For of expr * expr * expr * stmt
 	| While of expr * stmt
 	| Return of expr
-	| Break of expr
+	| Break
 
 (* Function Declarations *)
 type func_decl = {
 	primitives 	: primitives;
 	fname 		: string;
-	formals 	: bind list;
-	locals  	: bind list;
-	body 		: stmt list;
+	formals 	: formal list;
+	locals  	: local list;
+	body 			: stmt list;
 }
 
 type main_decl = {
-	mainlocals	: bind list;
+	mainlocals	: local list;
 	mainbody	: stmt list;
 }
 

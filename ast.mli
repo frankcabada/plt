@@ -38,8 +38,8 @@ type expr =
 	| Unop of uop * expr
 	| Assign of string * expr
 	| Call of string * expr list
-	| Mat_init of expr * expr * expr (* Int_lit instead of expr? *)
-	| Matrix_access of string * expr * expr (* Int_lit instead of expr? *)
+	| Mat_init of expr * expr * expr 
+	| Matrix_access of string * expr * expr 
 	| Matrix_row of string * expr
 	| Matrix_col of string * expr
 
@@ -69,7 +69,7 @@ type stmt =
 	| Break of expr
 
 (* Function Declarations *)
-and func_decl = {
+type func_decl = {
 	primitives 	: primitives;
 	fname 		: string;
 	formals 	: bind list;
@@ -77,7 +77,7 @@ and func_decl = {
 	body 		: stmt list;
 }
 
-and main_decl = {
+type main_decl = {
 	mainlocals	: bind list;
 	mainbody	: stmt list;
 }

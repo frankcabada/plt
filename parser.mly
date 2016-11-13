@@ -71,8 +71,8 @@ formals_opt:
   | formal_list   { List.rev $1 }
 
 formal_list:
-    primitives ID { [($1,$2)] }
-  | formal_list COMMA primitives ID { ($3,$4) :: $1 }
+    primitives ID { [Formal(Datatype($1),$2)] }
+  | formal_list COMMA primitives ID { Formal(Datatype($3),$4) :: $1 }
 
 primitives:
     INT                                                         { Int }
@@ -88,7 +88,7 @@ vdecl_list:
   | vdecl_list vdecl { $2 :: $1 }
 
 vdecl:
-    primitives ID SEMI { ($1, $2) }
+    primitives ID SEMI { Local(Datatype($1), $2) }
 
 stmt_list:
     /* nothing */  { [] }

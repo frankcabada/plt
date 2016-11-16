@@ -47,11 +47,11 @@ type sstmt =
 
 (* Function Declarations *)
 type sfunc_decl = {
-	sprimitives 	: primitives;
+	sprimitives 	: datatype;
 	sfname 			: string;
-	sformals 		: bind list;
-	slocals  		: bind list;
-	sbody 			: stmt list;
+	sformals 		: formal list;
+	slocals  		: local list;
+	sbody 			: sstmt list;
 }
 
 type smain_decl = {

@@ -53,11 +53,11 @@ type stmt =
 
 (* Function Declarations *)
 type func_decl = {
-	primitives 	: primitives;
+	primitives 	: datatype;
 	fname 		: string;
 	formals 	: formal list;
 	locals  	: local list;
-	body 			: stmt list;
+	body 		: stmt list;
 }
 
 type main_decl = {

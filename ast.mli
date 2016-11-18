@@ -14,9 +14,6 @@ type primitives = Int	| Bool	| Void	| String	| Float
 
 type datatype = Datatype of primitives
 
-(* Bind *)
-type bind = primitives * string
-
 type formal = Formal of datatype*string
 type local = Local of datatype*string
 type var_dec = datatype*string
@@ -54,7 +51,7 @@ type stmt =
 
 (* Function Declarations *)
 type func_decl = {
-	primitives 	: datatype;
+	return_type 	: datatype;
 	fname 		: string;
 	formals 	: formal list;
 	locals  	: local list;

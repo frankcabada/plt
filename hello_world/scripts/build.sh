@@ -10,13 +10,24 @@ cp ../utils.ml ./utils.ml
 cp ../codegen.ml ./codegen.ml
 
 ocamllex scanner.mll
+echo ""
 ocamlyacc parser.mly
+echo ""
 ocamlc -c ast.mli
+echo ""
 ocamlc -c parser.mli
+echo ""
 ocamlc -c scanner.ml
+echo ""
 ocamlc -c parser.ml
+echo ""
 ocamlc -c sast.mli
-ocamlc -I ~/.opam/system/lib/llvm/ -c codegen.ml
-ocamlc -c semant.ml
+echo ""
 ocamlc -c exceptions.ml
+echo ""
 ocamlc -c utils.ml
+echo ""
+ocamlc -c semant.ml
+echo ""
+ocamlc -I ~/.opam/system/lib/llvm/ -c codegen.ml
+echo ""

@@ -15,7 +15,7 @@ type env = {
 	env_reserved    : sfunc_decl list;
 }
 
-let update_env_name env env_name = 
+let update_env_name env env_name =
 {
 	env_name       = env_name;
 	env_locals     = env.env_locals;
@@ -26,7 +26,7 @@ let update_env_name env env_name =
 	env_reserved   = env.env_reserved;
 }
 
-let update_call_stack env in_for in_while = 
+let update_call_stack env in_for in_while =
 {
 	env_name       = env.env_name;
 	env_locals     = env.env_locals;
@@ -88,7 +88,7 @@ and num_lit x = function
 *)
 and expr_to_sexpr env = function
 	(*	Num_lit i           -> SNum_lit(i), env*)
-	|   Bool_lit b       	-> SBool_lit(b), env
+	|   Bool_lit b       		-> SBool_lit(b), env
 	|   String_lit s        -> SString_lit(s), env
 	|   Id s                -> SId(s, get_ID_type env s), env
 	|   Null                -> SNull, env
@@ -99,45 +99,45 @@ and expr_to_sexpr env = function
 (*	|   Binop(e1, op, e2)   -> check_binop env e1 op e2, env *)
 
 and get_type_from_sexpr = function
-		SNum_lit(_)					-> Datatype(Int)
+		SNum_lit(_)						-> Datatype(Int)
 	| 	SBool_lit(_)				-> Datatype(Bool)
-	| 	SString_lit(_) 				-> Datatype(String)
+	| 	SString_lit(_) 			-> Datatype(String)
 	| 	SId(_, d) 					-> d
-	| 	SBinop(_, _, _, d) 			-> d
-	| 	SAssign(_, _, d) 			-> d
-	| 	SNoexpr 					-> Datatype(Void)
+	| 	SBinop(_, _, _, d) 	-> d
+	| 	SAssign(_, _, d) 		-> d
+	| 	SNoexpr 						-> Datatype(Void)
 (*	| 	SCall(_, _, d, _)			-> d*)
-	|  	SUnop(_, _, d) 				-> d
-	| 	SNull						-> Datatype(Void)
+	|  	SUnop(_, _, d) 			-> d
+	| 	SNull								-> Datatype(Void)
 
 let get_arithmetic_binop_type se1 se2 op = function
 			(Datatype(Int), Datatype(Float))
 		| 	(Datatype(Float), Datatype(Int))
 		| 	(Datatype(Float), Datatype(Float)) 	-> SBinop(se1, op, se2, Datatype(Float))
 
-		| 	(Datatype(Int), Datatype(Int)) 		-> SBinop(se1, op, se2, Datatype(Int))
+		| 	(Datatype(Int), Datatype(Int)) 			-> SBinop(se1, op, se2, Datatype(Int))
 
 		| _ -> raise (Exceptions.InvalidBinopExpression "Arithmetic operators don't support these types")
 
 let rec check_sblock sl env = match sl with
 		[] -> SBlock([SExpr(SNoexpr, Datatype(Void))]), env
-	| 	_  -> 
+	| 	_  ->
 		let sl, _ = convert_stmt_list_to_sstmt_list env sl in
 		SBlock(sl), env
 
-and check_expr_stmt e env = 
+and check_expr_stmt e env =
 	let se, env = expr_to_sexpr env e in
-	let t = get_type_from_sexpr se in 
+	let t = get_type_from_sexpr se in
 	SExpr(se, t), env
 
-and check_return e env = 
+and check_return e env =
 	let se, _ = expr_to_sexpr env e in
 	let t = get_type_from_sexpr se in
-	match t, env.env_returnType with 
-		(*Datatype(Null), Datatype(Objecttype(_)) 
+	match t, env.env_returnType with
+		(*Datatype(Null), Datatype(Objecttype(_))
 	| 	Datatype(Null), Arraytype(_, _) -> SReturn(se, t), env*)
-	 	_ -> 
-	if t = env.env_returnType 
+	 	_ ->
+	if t = env.env_returnType
 		then SReturn(se, t), env
 		else raise (Exceptions.ReturnTypeMismatch(Utils.string_of_datatype t, Utils.string_of_datatype env.env_returnType))
 
@@ -146,14 +146,14 @@ and parse_stmt env = function
 	| 	Expr e 					-> check_expr_stmt e env
 	|*) Return e 				-> check_return e env
 	(*| 	If(e, s1, s2) 			-> check_if e s1 s2	env
-	| 	For(e1, e2, e3, e4) 	-> check_for e1 e2 e3 e4 env	
+	| 	For(e1, e2, e3, e4) 	-> check_for e1 e2 e3 e4 env
 	| 	While(e, s)				-> check_while e s env
 	|  	Break 					-> check_break env (* Need to check if in right context *)
 	|   Continue 				-> check_continue env (* Need to check if in right context *)
 	|   Local(d, s, e) 			-> local_handler d s e env*)
 
 (* Update this function to return an env object *)
-and convert_stmt_list_to_sstmt_list env stmt_list = 
+and convert_stmt_list_to_sstmt_list env stmt_list =
 	let env_ref = ref(env) in
 	let rec iter = function
 	  head::tail ->
@@ -161,58 +161,51 @@ and convert_stmt_list_to_sstmt_list env stmt_list =
 		env_ref := env;
 		a_head::(iter tail)
 	| [] -> []
-	in 
+	in
 	let sstmt_list = (iter stmt_list), !env_ref in
 	sstmt_list
 
 let check_fbody fname fbody returnType =
 	let len = List.length fbody in
-	if len = 0 then () else 
+	if len = 0 then () else
 	let final_stmt = List.hd (List.rev fbody) in
 	match returnType, final_stmt with
 		Datatype(Void), _ -> ()
 	| 	_, SReturn(_, _) -> ()
 	| 	_ -> raise(Exceptions.AllNonVoidFunctionsMustEndWithReturn(fname))
 
-let convert_fdecl_to_sfdecl reserved fname fdecl = 
-	let env_param_helper m fname = match fname with 
-			Formal(d, s) -> (StringMap.add s fname m) 
-		| 	_ -> m
+let convert_fdecl_to_sfdecl reserved fname fdecl =
+	let env_param_helper m fname = match fname with
+			Formal(d, s) -> (StringMap.add s fname m)
 	in
-	let env_params = List.fold_left env_param_helper StringMap.empty (class_formal :: fdecl.formals) in
+	let env_params = List.fold_left env_param_helper StringMap.empty (fdecl.formals) in
 	let env = {
 		env_name     	= fname;
 		env_locals    	= StringMap.empty;
 		env_parameters	= env_params;
-		env_returnType	= fdecl.returnType;
+		env_returnType	= fdecl.return_type;
 		env_in_for 		= false;
 		env_in_while 	= false;
 		env_reserved 	= reserved;
-	} 
+	}
 	in
+	let get_name fdecl = fdecl.fname in
 	let fbody = fst (convert_stmt_list_to_sstmt_list env fdecl.body) in
-	let fname = (get_name cname fdecl) in
-	ignore(check_fbody fname fbody fdecl.returnType);
-	let fbody = if fname = "main" 
-		then (append_code_to_main fbody cname (Datatype(Objecttype(cname)))) 
-		else fbody 
-	in
+	let fname = (get_name fdecl) in ignore(check_fbody fname fbody fdecl.return_type);
 	(* We add the class as the first parameter to the function for codegen *)
 	{
-		sfname 			= Ast.FName (get_name cname fdecl);
-		sreturnType 	= fdecl.returnType;
-		sformals 		= class_formal :: fdecl.formals;
-		sbody 			= fbody;
-		func_type		= Sast.User;
-		overrides       = fdecl.overrides;
-		source 			= cname;
+		sfname 				= get_name fdecl;
+		sreturn_type 	= fdecl.return_type;
+		sformals 			= fdecl.formals;
+		slocals 			= fdecl.locals;
+		sbody 				= fbody;
 	}
 
 
-let add_reserved_functions = 
-	let reserved_stub name return_type formals = 
+let add_reserved_functions =
+	let reserved_stub name return_type formals =
 		{
-			sprimitives		= return_type;
+			sreturn_type		= return_type;
 			sfname 			= name;
 			sformals 		= formals;
 			slocals			= [];

@@ -191,7 +191,7 @@ let string_of_local = function
 	Local(d, s) -> (string_of_datatype d) ^ " " ^ s
 
 let string_of_func_decl fdecl =
-	"" ^ (string_of_datatype fdecl.primitives) ^ " " ^ (fdecl.fname) ^ " " ^
+	"" ^ (string_of_datatype fdecl.return_type) ^ " " ^ (fdecl.fname) ^ " " ^
 	(* Formals *)
 	"(" ^ String.concat "," (List.map string_of_formal fdecl.formals) ^ ") {\n" ^
 	(* Locals *)

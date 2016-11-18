@@ -13,8 +13,8 @@ rule token = parse
 | '[' { LBRACKET } | ']' { RBRACKET }
 
 (* Control Flow *)
-| "if" { IF } (* | "elseif" { ELSEIF } *) | "else" { ELSE } | "while" { WHILE } | "for" { FOR }
-| "return" { RETURN } | "main" { MAIN } | "break" { BREAK }
+| "if" { IF } (* | "elseif" { ELSEIF } *) | "else" { ELSE } | "while" { WHILE } 
+| "for" { FOR } | "return" { RETURN } | "break" { BREAK }
 
 (* Conditionals *)
 | "==" { EQ } | "!=" { NEQ } | '<' { LT } | ">" { GT }

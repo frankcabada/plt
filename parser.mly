@@ -4,7 +4,7 @@
 %token LPAREN RPAREN LBRACE RBRACE LBRACKET RBRACKET
 
 /* Control Flow */
-%token IF /*ELSEIF*/ ELSE WHILE FOR RETURN MAIN BREAK
+%token IF /*ELSEIF*/ ELSE WHILE FOR RETURN BREAK
 
 /* Conditionals */
 %token EQ NEQ LT GT LEQ GEQ AND OR NOT
@@ -44,25 +44,15 @@
 %%
 
 program:
-    mdecl fdecls EOF { Program($1, $2) }
+    decls EOF { $1 }
 
-/*
 decls:
-    nothing      { [], [] }
-  | decls vdecl        { ($2 :: fst $1), snd $1 }
+    /* nothing */      { [], [] }
+  | decls gdecl        { ($2 :: fst $1), snd $1 }
   | decls fdecl        { fst $1, ($2 :: snd $1) }
-*/
-
-mdecl:
-  INT MAIN LPAREN RPAREN LBRACE vdecl_list stmt_list RBRACE
-    { { mainlocals = List.rev $6; mainbody = List.rev $7 } }
-
-fdecls:
-    /* nothing */ {[]}
-  | fdecls fdecl  { $2 :: $1}
 
 fdecl:
-  primitives ID LPAREN formals_opt RPAREN LBRACE vdecl_list stmt_list RBRACE
+  datatype ID LPAREN formals_opt RPAREN LBRACE vdecl_list stmt_list RBRACE
     { { primitives = $1; fname = $2; formals = $4;
       locals = List.rev $7; body = List.rev $8 } }
 
@@ -71,8 +61,11 @@ formals_opt:
   | formal_list   { List.rev $1 }
 
 formal_list:
-    primitives ID { [Formal(Datatype($1),$2)] }
-  | formal_list COMMA primitives ID { Formal(Datatype($3),$4) :: $1 }
+    datatype ID                   { [Formal($1,$2)] }
+  | formal_list COMMA datatype ID { Formal($3, $4) :: $1 }
+
+datatype:
+  primitives { Datatype($1) }
 
 primitives:
     INT                                                         { Int }
@@ -88,7 +81,10 @@ vdecl_list:
   | vdecl_list vdecl { $2 :: $1 }
 
 vdecl:
-    primitives ID SEMI { Local(Datatype($1), $2) }
+    datatype ID SEMI { Local($1, $2) }
+
+gdecl:
+    datatype ID SEMI { ($1, $2) }
 
 stmt_list:
     /* nothing */  { [] }

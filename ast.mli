@@ -18,7 +18,8 @@ type datatype = Datatype of primitives
 type bind = primitives * string
 
 type formal = Formal of datatype*string
-type local = 	Local of datatype*string
+type local = Local of datatype*string
+type var_dec = datatype*string
 
 (* Expressions *)
 type expr =
@@ -60,10 +61,5 @@ type func_decl = {
 	body 		: stmt list;
 }
 
-type main_decl = {
-	mainlocals	: local list;
-	mainbody	: stmt list;
-}
-
 (* Start Symbol *)
-type program = Program of main_decl * func_decl list
+type program = var_dec list * func_decl list

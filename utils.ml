@@ -200,16 +200,11 @@ let string_of_func_decl fdecl =
 	String.concat "" (List.map (string_of_stmt 2) fdecl.body) ^
 	"\t}\n\n"
 
-let string_of_main_decl mdecl =
-	"int main () {\n" ^
-	(* Locals *)
-	String.concat "" (List.map string_of_local mdecl.mainlocals) ^
-	(* body *)
-	String.concat "" (List.map (string_of_stmt 2) mdecl.mainbody) ^
-	"\t}\n\n"
+let string_of_vdecl = function
+	(d, s) -> (string_of_datatype d) ^ " " ^ s ^ ";\n"
 
 (* Print whole program *)
 let string_of_program = function
-	Program(mdecl, fdecls) ->
-		"" ^ (string_of_main_decl mdecl) ^ "\n" ^
+	(vars, fdecls) ->
+		String.concat "" (List.map string_of_vdecl vars) ^ "\n" ^
 		String.concat "\n" (List.map string_of_func_decl fdecls)

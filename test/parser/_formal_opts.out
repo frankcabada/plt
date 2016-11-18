@@ -1,22 +1,25 @@
 ACCEPT
 [program:
-  [mdecl:
-    INT
-    MAIN
-    LPAREN
-    RPAREN
-    LBRACE
-    [vdecl_list:]
-    [stmt_list: [stmt_list:] [stmt: RETURN SEMI]]
-    RBRACE
-  ]
-  [fdecls:
-    [fdecls:]
+  [decls:
+    [decls:
+      [decls:]
+      [fdecl:
+        [datatype: [primitives: INT]]
+        ID
+        LPAREN
+        [formals_opt:]
+        RPAREN
+        LBRACE
+        [vdecl_list:]
+        [stmt_list: [stmt_list:] [stmt: RETURN SEMI]]
+        RBRACE
+      ]
+    ]
     [fdecl:
-      [primitives: FLOAT]
+      [datatype: [primitives: FLOAT]]
       ID
       LPAREN
-      [formals_opt: [formal_list: [primitives: INT] ID]]
+      [formals_opt: [formal_list: [datatype: [primitives: INT]] ID]]
       RPAREN
       LBRACE
       [vdecl_list:]

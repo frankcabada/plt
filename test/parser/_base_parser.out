@@ -1,15 +1,18 @@
 ACCEPT
 [program:
-  [mdecl:
-    INT
-    MAIN
-    LPAREN
-    RPAREN
-    LBRACE
-    [vdecl_list:]
-    [stmt_list:]
-    RBRACE
+  [decls:
+    [decls:]
+    [fdecl:
+      [datatype: [primitives: INT]]
+      ID
+      LPAREN
+      [formals_opt:]
+      RPAREN
+      LBRACE
+      [vdecl_list:]
+      [stmt_list:]
+      RBRACE
+    ]
   ]
-  [fdecls:]
   EOF
 ]

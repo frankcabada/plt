@@ -44,7 +44,7 @@ let stringify = function
   | SEMI -> "SEMI" | LBRACKET -> "LBRACKET" | RBRACKET -> "RBRACKET"
   | LT -> "LT" | GT -> "GT" | INC -> "INC" | DEC -> "DEC"
   | COLON -> "COLON" | FOR -> "FOR" | WHILE -> "WHILE" | BREAK -> "BREAK"
-  | RETURN -> "RETURN" | MAIN -> "MAIN"
+  | RETURN -> "RETURN"
   | TRUE -> "TRUE" | FALSE -> "FALSE"
   | INT -> "INT" | BOOL -> "BOOL" | VOID -> "VOID" | FLOAT -> "FLOAT"
   | STRING -> "STRING" |NULL -> "NULL" | MATRIX -> "MATRIX"

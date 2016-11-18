@@ -1,46 +1,67 @@
 ACCEPT
 [program:
-  [mdecl:
-    INT
-    MAIN
-    LPAREN
-    RPAREN
-    LBRACE
-    [vdecl_list:]
-    [stmt_list:
+  [decls:
+    [decls:]
+    [fdecl:
+      [datatype: [primitives: INT]]
+      ID
+      LPAREN
+      [formals_opt:]
+      RPAREN
+      LBRACE
+      [vdecl_list:]
       [stmt_list:
         [stmt_list:
-          [stmt_list: [stmt_list:] [stmt: [expr: NUM_LIT] SEMI]]
-          [stmt: BREAK SEMI]
-        ]
-        [stmt:
-          IF
-          LPAREN
-          [expr: NUM_LIT]
-          RPAREN
+          [stmt_list:
+            [stmt_list: [stmt_list:] [stmt: [expr: NUM_LIT] SEMI]]
+            [stmt: BREAK SEMI]
+          ]
           [stmt:
-            LBRACE
-            [stmt_list:
+            IF
+            LPAREN
+            [expr: NUM_LIT]
+            RPAREN
+            [stmt:
+              LBRACE
               [stmt_list:
                 [stmt_list:
-                  [stmt_list:]
-                  [stmt: [expr: ID ASSIGN [expr: NUM_LIT]] SEMI]
+                  [stmt_list:
+                    [stmt_list:]
+                    [stmt: [expr: ID ASSIGN [expr: NUM_LIT]] SEMI]
+                  ]
+                  [stmt:
+                    FOR
+                    LPAREN
+                    [expr_opt:]
+                    SEMI
+                    [expr: TRUE]
+                    SEMI
+                    [expr_opt:]
+                    RPAREN
+                    [stmt:
+                      LBRACE
+                      [stmt_list:
+                        [stmt_list:]
+                        [stmt:
+                          [expr: ID ASSIGN [expr: [expr: ID] MINUS [expr: ID]]]
+                          SEMI
+                        ]
+                      ]
+                      RBRACE
+                    ]
+                  ]
                 ]
                 [stmt:
-                  FOR
+                  WHILE
                   LPAREN
-                  [expr_opt:]
-                  SEMI
                   [expr: TRUE]
-                  SEMI
-                  [expr_opt:]
                   RPAREN
                   [stmt:
                     LBRACE
                     [stmt_list:
                       [stmt_list:]
                       [stmt:
-                        [expr: ID ASSIGN [expr: [expr: ID] MINUS [expr: ID]]]
+                        [expr: ID ASSIGN [expr: [expr: ID] PLUS [expr: ID]]]
                         SEMI
                       ]
                     ]
@@ -48,32 +69,14 @@ ACCEPT
                   ]
                 ]
               ]
-              [stmt:
-                WHILE
-                LPAREN
-                [expr: TRUE]
-                RPAREN
-                [stmt:
-                  LBRACE
-                  [stmt_list:
-                    [stmt_list:]
-                    [stmt:
-                      [expr: ID ASSIGN [expr: [expr: ID] PLUS [expr: ID]]]
-                      SEMI
-                    ]
-                  ]
-                  RBRACE
-                ]
-              ]
+              RBRACE
             ]
-            RBRACE
           ]
         ]
+        [stmt: RETURN [expr: NUM_LIT] SEMI]
       ]
-      [stmt: RETURN [expr: NUM_LIT] SEMI]
+      RBRACE
     ]
-    RBRACE
   ]
-  [fdecls:]
   EOF
 ]

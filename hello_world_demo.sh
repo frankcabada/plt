@@ -6,9 +6,14 @@ echo "Compiling source"
 ./scripts/build.sh > build.log
 echo "Compilation complete"
 
-read -p "Press [Enter] key to compile hello world"
-cat hello_world.cmat | ./cmat.native -a
+cat hello_world.cmat | ./cmat.native -c
+echo ""
+read -p "Press [Enter] key to run Hello World"
+echo ""
+lli hello_world.ll
+echo ""
 
+echo ""
 echo "Cleaning up"
 ./scripts/clean.sh
 echo "Presentation done"

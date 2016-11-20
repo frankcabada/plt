@@ -23,5 +23,4 @@ let action = if Array.length Sys.argv > 1 then
       | LLVM_IR -> print_string(Llvm.string_of_llmodule(Codegen.translate ast))
       | Compile -> let m = Codegen.translate ast in
           Llvm_analysis.assert_valid_module m; (* Useful built-in check *)
-          print_string("Compiling\n");
-          print_string(Llvm.string_of_llmodule m)
+          print_module ("hello_world.ll") (m);

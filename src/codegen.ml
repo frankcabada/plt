@@ -71,8 +71,9 @@ let translate(globals, functions) =
     in
     let rec expr builder = function
         A.Bool_lit b    -> L.const_int i1_t (if b then 1 else 0)
+      | A.String_lit s  -> L.build_global_stringptr s "tmp" builder
       | A.Noexpr        -> L.const_int i32_t 0
-      | A.Id s          ->  L.build_load (lookup s) s builder
+      | A.Id s          -> L.build_load (lookup s) s builder
       | A.Assign (s, e) -> let e' = expr builder e in
               ignore (L.build_store e' (lookup s) builder); e'
       | A.Unop(op, e)   ->

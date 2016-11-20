@@ -8,26 +8,29 @@ cp ../semant.ml ./semant.ml
 cp ../exceptions.ml ./exceptions.ml
 cp ../utils.ml ./utils.ml
 cp ../codegen.ml ./codegen.ml
+cp ../cmat.ml ./cmat.ml
 
-ocamllex scanner.mll
+ocamllex scanner.mll && echo "Scanner lex-ed"
 echo ""
-ocamlyacc parser.mly
+ocamlyacc parser.mly && echo "Parser yacc-ed"
 echo ""
-ocamlc -c ast.mli
+ocamlc -c ast.mli && echo "Ast compiled"
 echo ""
 ocamlc -c parser.mli
+ocamlc -c scanner.ml && echo "Scanner compiled"
 echo ""
-ocamlc -c scanner.ml
+ocamlc -c parser.ml && echo "Parser compiled"
 echo ""
-ocamlc -c parser.ml
+ocamlc -c sast.mli && echo "Sast compiled"
 echo ""
-ocamlc -c sast.mli
+ocamlc -c exceptions.ml && echo "Exceptions compiled"
 echo ""
-ocamlc -c exceptions.ml
+ocamlc -c utils.ml && echo "Utils compiled"
 echo ""
-ocamlc -c utils.ml
+ocamlc -c semant.ml && echo "Semant compiled"
 echo ""
-ocamlc -c semant.ml
+ocamlc -I ~/.opam/system/lib/llvm/ -c codegen.ml && echo "Codegen compiled"
 echo ""
-ocamlc -I ~/.opam/system/lib/llvm/ -c codegen.ml
+ocamlc -I ~/.opam/system/lib/llvm/ -c cmat.ml && echo "CMAT compiled"
 echo ""
+ocamlc -o cmatc scanner.cmo parser.cmo

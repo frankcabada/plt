@@ -1,14 +1,14 @@
 #!/bin/bash
 
-cp ../scanner.mll ./scanner.mll
-cp ../parser.mly ./parser.mly
-cp ../ast.ml ./ast.ml
-cp ../sast.ml ./sast.ml
-cp ../semant.ml ./semant.ml
-cp ../exceptions.ml ./exceptions.ml
-cp ../utils.ml ./utils.ml
-cp ../codegen.ml ./codegen.ml
-cp ../cmat.ml ./cmat.ml
+cp ../src/scanner.mll ./scanner.mll
+cp ../src/parser.mly ./parser.mly
+cp ../src/ast.ml ./ast.ml
+cp ../src/sast.ml ./sast.ml
+cp ../src/semant.ml ./semant.ml
+cp ../src/exceptions.ml ./exceptions.ml
+cp ../src/utils.ml ./utils.ml
+cp ../src/codegen.ml ./codegen.ml
+cp ../src/cmat.ml ./cmat.ml
 
 ocamlbuild -j 0 -r -use-ocamlfind -pkgs llvm,llvm.analysis,llvm.bitwriter,llvm.bitreader,llvm.linker,llvm.target cmat.native
 #ocamllex scanner.mll && echo "Scanner lex-ed"

@@ -1,4 +1,4 @@
-cp ../../parser.mly ./parser.mly
+cp ../../src/parser.mly ./parser.mly
 
 cat _base_parser.test | menhir --interpret --interpret-show-cst parser.mly > _base_parser.res
 diff _base_parser.out _base_parser.res > /dev/null

@@ -23,6 +23,12 @@ let translate(globals, functions) =
   let ltype_of_datatype = function
     A.Datatype(p) -> ltype_of_typ p in
 
+  let global_vars =
+    let global_var m (t,n) =
+      let init = L.const_int (ltype_of_datatype t) 0
+      in StringMap.add n (L.define_global n init the_module) m in
+    List.fold_left global_var StringMap.empty globals in
+
   let printf_t =
     L.var_arg_function_type i32_t [| L.pointer_type i8_t |] in
   let printf_func =
@@ -46,7 +52,7 @@ let translate(globals, functions) =
     let builder = (* Create an instruction builder *)
       L.builder_at_end context (L.entry_block the_function) in
 
-  (*let local_vars =
+  let local_vars =
     let add_formal m (t, n) p = L.set_value_name n p;
       let local = L.build_alloca (ltype_of_datatype t) n builder in
       ignore (L.build_store p local builder);
@@ -56,25 +62,24 @@ let translate(globals, functions) =
       let local_var = L.build_alloca (ltype_of_datatype t) n builder
       in StringMap.add n local_var m in
 
-    (*let formals = List.fold_left2 add_formal StringMap.empty
-      fdecl.A.formals (Array.to_list (L.params the_function)) in
-    List.fold_left add_local formals fdecl.A.locals in*)
+    let formals = List.fold_left2 add_formal StringMap.empty
+      (List.map (function A.Formal(t,n) -> (t,n)) fdecl.A.formals) (Array.to_list (L.params the_function)) in
+    List.fold_left add_local formals (List.map (function A.Local(t,n) -> (t,n)) fdecl.A.locals) in
 
     let lookup n = try StringMap.find n local_vars
                    with Not_found -> StringMap.find n global_vars
     in
-      *)
     let rec expr builder = function
         A.Bool_lit b    -> L.const_int i1_t (if b then 1 else 0)
       | A.Noexpr        -> L.const_int i32_t 0
-      (*| A.Id s          -> L.build_load (lookup s) s builder
+      | A.Id s          ->  L.build_load (lookup s) s builder
       | A.Assign (s, e) -> let e' = expr builder e in
               ignore (L.build_store e' (lookup s) builder); e'
       | A.Unop(op, e)   ->
-          let e' = expr builder e in match op with
+          let e' = expr builder e in (match op with
             A.Neg   -> L.build_neg
-          | A.Not   -> L.build_not e' "tmp" builder;*)
-      | A.Call ("print", [e]) ->
+          | A.Not   -> L.build_not) e' "tmp" builder;
+      | A.Call ("print_line", [e]) ->
           L.build_call printf_func
             [| (expr builder e) |]
             "printf" builder

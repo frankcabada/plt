@@ -8,9 +8,6 @@ let save file string =
 	 output_string channel string;
 	 close_out channel
 
-let replace input output =
-	Str.global_replace (Str.regexp_string input) output
-
 (* Print data types *)
 let string_of_primitive = function
 			Int							-> "int"

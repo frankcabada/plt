@@ -1,7 +1,10 @@
 export PATH="/usr/bin:$PATH"
+
+sudo apt-get install m4 llvm software-properties-common
+sudo add-apt-repository --yes ppa:avsm/ppa
 sudo apt-get update -qq
-sudo apt-get install -qq -y ocaml ocaml-native-compilers menhir m4 llvm opam
-opam install llvm.3.6 ocamlfind
+sudo apt-get install -qq -y ocaml ocaml-native-compilers menhir opam
+opam install llvm.3.4 ocamlfind
 
 echo "OCaml version: "
 ocaml -version

@@ -6,6 +6,7 @@ sudo apt-get update -qq
 sudo apt-get install -qq -y ocaml ocaml-native-compilers menhir opam
 opam init -a
 eval `opam config env`
+opam depext llvm.3.4
 opam install -y llvm.3.4 ocamlfind
 
 echo "OCaml version: "

@@ -20,15 +20,11 @@ cd ./test/scanner
 cd ../parser
 ./scripts/test.sh
 ./scripts/clean.sh
-echo ""
-echo "-----------------------------------------"
-echo "|           Testing Hello World!        |"
-echo "-----------------------------------------"
-echo ""
+echo "Testing Hello World!" && echo ""
 cd ../../hello_world
 ./scripts/build.sh > build.log
 cat hello_world.cmat | ./cmat.native -c
-lli hello_world.ll
+lli hello_world.ll && echo ""
 echo ""
 echo ""
 exit 0

@@ -219,3 +219,60 @@ let add_reserved_functions =
 		reserved_stub "print_line" 	(void_t) 	([mf str_t "string_in"]);
 	] in
 	reserved
+
+let report_duplicate_global li =
+	let rec helper = function
+		n1 :: n2 :: _ when n1 = n2 -> raise(Exceptions.DuplicateGlobal(n1))
+		| _ :: t -> helper t
+		| [] -> ()
+	in helper (List.sort compare li)
+
+let check_not_void_global var_decl =
+	match var_decl with
+		  (Void, n) -> raise(Exceptions.VoidGlobal(n))
+		| _ -> ()
+
+let report_duplicate_func li =
+	let rec helper = function
+		n1 :: n2 :: _ when n1 = n2 -> raise(Exceptions.DuplicateFunc(n1))
+		| _ :: t -> helper t
+		| [] -> ()
+	in helper (List.sort compare li)
+
+let check_not_void_func_vars var_decl =
+	match var_decl with
+		  (Void, n) -> raise(Exceptions.VoidFunc(n))
+		| _ -> ()
+
+let check_var_decls globals =
+	List.iter check_not_void_global globals;
+	report_duplicate_global (List.map snd globals);
+
+let check_fdecl func =
+	List.iter check_not_void_func_vars func.formals;
+	report_duplicate_func (List.map snd func.formals);
+	List.iter check_not_void_func_vars func.locals;
+	report_duplicate_func (List.map snd func.locals);
+
+let built_in_decls = StringMap.add "print_line"
+	{ datatype = Void; fname = "print_line"; formals = [(Int, "x")];
+	  locals = []; body = [] } 
+in
+
+let function_decls = 
+	List.fold_left (fun m fd -> StringMap.add fd.fname fd m) built_in_decls functions
+in
+
+let function_decl s = try StringMap.find s function_decls
+	with Not_Found -> raise(Exceptions.FunctionNotFound(s))
+in
+
+(* Program entry point *)
+let check (globals, functions) =
+	let _ = function_decl "main" in
+	let reserved = add_reserved_functions in
+	check_var_decls globals;
+	List.iter check_fdecl functions
+
+
+	let sast = convert_fdecl_to_sfdecl reserved fname fdecl in sast

@@ -16,6 +16,10 @@ exception IncorrectNumberOfArgumentsException
 exception ConstructorNotFound of string
 exception DuplicateClassName of string
 exception DuplicateField
+exception DuplicateGlobal of string
+exception VoidGlobal of string
+exception DuplicateFunc of string
+exception VoidFunc of string
 exception DuplicateFunction of string
 exception DuplicateConstructor
 exception DuplicateLocal of string

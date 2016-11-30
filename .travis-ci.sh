@@ -10,9 +10,6 @@ opam install -y depext
 opam depext llvm.3.4
 opam install -y llvm.3.4 ocamlfind
 
-echo "OCaml version: "
-ocaml -version
-
 cd ./test/scanner
 ./scripts/build.sh
 ./scripts/test.sh
@@ -20,11 +17,11 @@ cd ./test/scanner
 cd ../parser
 ./scripts/test.sh
 ./scripts/clean.sh
-echo "Testing Hello World!" && echo ""
 cd ../../hello_world
 ./scripts/build.sh > build.log
 cat hello_world.cmat | ./cmat.native -c
-lli hello_world.ll && echo ""
-echo ""
-echo ""
+lli hello_world.ll > hello_world.res
+diff -q hello_world.out hello_world.res
+./scripts/clean.sh
+
 exit 0

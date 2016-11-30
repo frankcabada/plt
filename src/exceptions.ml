@@ -18,6 +18,8 @@ exception DuplicateClassName of string
 exception DuplicateField
 exception DuplicateGlobal of string
 exception VoidGlobal of string
+exception VoidFunctionFormal of string
+exception VoidFunctionLocal of string
 exception DuplicateFunc of string
 exception VoidFunc of string
 exception DuplicateFunction of string

@@ -128,6 +128,7 @@ and parse_stmt env = function
 	|   Local(d, s, e) 			-> local_handler d s e env*)
 
 (* Update this function to return an env object *)
+
 and convert_stmt_list_to_sstmt_list env stmt_list =
 	let env_ref = ref(env) in
 	let rec iter = function
@@ -194,6 +195,8 @@ let add_reserved_functions =
 	] in
 	reserved
 
+(* Variable Declaration Checking Functions *)
+
 let report_duplicate s li =
 	let rec helper = function
 		n1 :: n2 :: _ when n1 = n2 ->
@@ -210,6 +213,16 @@ let check_not_void s var_decl =
 			else if s = "function" then raise(Exceptions.VoidFunc(n))
 		| _ 									-> ()
 
+let check_not_void_formal form =
+	match form with
+		Formal(Datatype(Void), n) 	-> raise(Exceptions.VoidFunctionFormal(n))
+		| _ 												-> ()
+
+let check_not_void_local local =
+	match local with
+		Local(Datatype(Void), n) 	-> raise(Exceptions.VoidFunctionLocal(n))
+		| _ 											-> ()
+
 let add_to_global_symbol_table globs =
 	List.fold_left
 		(fun m (t,n) -> StringMap.add n t m) StringMap.empty globs
@@ -217,7 +230,24 @@ let add_to_global_symbol_table globs =
 let check_var_decls globals =
 	ignore(List.iter (check_not_void "global") globals);
 	ignore(report_duplicate "global" (List.map snd globals));
-	add_to_global_symbol_table globals;
+	add_to_global_symbol_table globals;;
+
+let get_formal_id = function
+	| Formal(Datatype(p), n) -> n
+
+let get_local_id = function
+	| Local(Datatype(p), n) -> n
+
+(* Function Declaration Checking Functions *)
+
+let check_function global_st func =
+	ignore(List.iter check_not_void_formal func.formals);
+	ignore(List.iter check_not_void_local func.locals);
+	ignore(report_duplicate "function" ((List.map get_formal_id func.formals) @ (List.map get_local_id func.locals)));;
+
+let check_functions global_st funcs =
+	ignore(report_duplicate "function" (List.map (fun fd -> fd.fname) funcs));
+	List.iter (check_function global_st) funcs;
 
 (*and check_assign env s e =
 	let se1, env = expr_to_sexpr env s in

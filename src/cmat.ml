@@ -16,8 +16,8 @@ let action = if Array.length Sys.argv > 1 then
     let lexbuf = Lexing.from_channel stdin in
     let ast = Parser.program Scanner.token lexbuf in
 
-    Semant.check_var_decls (fst ast);
-    (*Semant.check_fdecls (snd ast);*)
+    let gst = Semant.check_var_decls (fst ast) in
+      Semant.check_functions gst (snd ast);
 
     match action with
         Ast -> print_string(Utils.string_of_program ast)

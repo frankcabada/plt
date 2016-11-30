@@ -68,10 +68,10 @@ and expr_to_sexpr env = function
 	|   Id s                -> SId(s, get_ID_type env s), env
 	|   Null                -> SNull, env
 	|   Noexpr              -> SNoexpr, env
-(*	|   Call(s, el)         -> check_call_type env false env s el, env *)
-(*	|   Assign(s, e2)      	-> check_assign env s e2, env *)
+	(*	|   Call(s, el)         -> check_call_type env false env s el, env *)
+	(*	|   Assign(s, e2)      	-> check_assign env s e2, env *)
 	|   Unop(op, e)         -> check_unop env op e, env
-(*	|   Binop(e1, op, e2)   -> check_binop env e1 op e2, env *)
+	(*	|   Binop(e1, op, e2)   -> check_binop env e1 op e2, env *)
 
 and get_type_from_sexpr = function
 		SNum_lit(_)						-> Datatype(Int)
@@ -81,7 +81,7 @@ and get_type_from_sexpr = function
 	| 	SBinop(_, _, _, d) 	-> d
 	| 	SAssign(_, _, d) 		-> d
 	| 	SNoexpr 						-> Datatype(Void)
-(*	| 	SCall(_, _, d, _)			-> d*)
+	(*	| 	SCall(_, _, d, _)			-> d*)
 	|  	SUnop(_, _, d) 			-> d
 	| 	SNull								-> Datatype(Void)
 
@@ -176,7 +176,6 @@ let convert_fdecl_to_sfdecl reserved fname fdecl =
 		sbody 				= fbody;
 	}
 
-
 let add_reserved_functions =
 	let reserved_stub name return_type formals =
 		{
@@ -195,34 +194,30 @@ let add_reserved_functions =
 	] in
 	reserved
 
-	let report_duplicate_func li =
+let report_duplicate s li =
 	let rec helper = function
-	n1 :: n2 :: _ when n1 = n2 -> raise(Exceptions.DuplicateFunc(n1))
-	| _ :: t -> helper t
-	| [] -> ()
-	in helper (List.sort compare li)
-
-	let check_not_void_func_vars var_decl =
-	match var_decl with
-	(Void, n) -> raise(Exceptions.VoidFunc(n))
-	| _ -> ()
-
-let report_duplicate_global li =
-	let rec helper = function
-		n1 :: n2 :: _ when n1 = n2 -> raise(Exceptions.DuplicateGlobal(n1))
+		n1 :: n2 :: _ when n1 = n2 ->
+			if s = "global" then raise(Exceptions.DuplicateGlobal(n1))
+			else if s = "function" then raise(Exceptions.DuplicateFunc(n1))
 		| _ :: t -> helper t
 		| [] -> ()
 	in helper (List.sort compare li)
 
-let check_not_void_global var_decl =
+let check_not_void s var_decl =
 	match var_decl with
-		  (Datatype(Void), n) -> raise(Exceptions.VoidGlobal(n))
-		| _ -> ()
+		(Datatype(Void), n) 	->
+			if s = "global" then raise(Exceptions.VoidGlobal(n))
+			else if s = "function" then raise(Exceptions.VoidFunc(n))
+		| _ 									-> ()
+
+let add_to_global_symbol_table globs =
+	List.fold_left
+		(fun m (t,n) -> StringMap.add n t m) StringMap.empty globs
 
 let check_var_decls globals =
-	ignore(List.iter check_not_void_global globals);
-	ignore(report_duplicate_global (List.map snd globals));
-	ignore();
+	ignore(List.iter (check_not_void "global") globals);
+	ignore(report_duplicate "global" (List.map snd globals));
+	add_to_global_symbol_table globals;
 
 (*and check_assign env s e =
 	let se1, env = expr_to_sexpr env s in

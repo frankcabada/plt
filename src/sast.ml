@@ -51,11 +51,11 @@ type sfunc_decl = {
 	sfname 			: string;
 	sformals 		: formal list;
 	slocals  		: local list;
-	sbody 			: sstmt list;
+	sbody 			: stmt list;
 }
 
 (* All method declarations | Main entry method *)
 type sprogram =  {
 	var_dec : var_dec list;
-	functions : sfunc_decl list;
+	funcs : sfunc_decl list;
 }

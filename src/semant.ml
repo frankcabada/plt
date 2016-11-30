@@ -146,12 +146,12 @@ let check_fbody fname fbody returnType =
 	if len = 0 then () else
 	let final_stmt = List.hd (List.rev fbody) in
 	match returnType, final_stmt with
-		Datatype(Void), _ -> ()
-	| 	_, SReturn(_, _) -> ()
-	| 	_ -> raise(Exceptions.AllNonVoidFunctionsMustEndWithReturn(fname))
+		Datatype(Void), _ 	-> ()
+	| 	_, Return(_)	 	-> ()
+	| 	_					-> raise(Exceptions.AllNonVoidFunctionsMustEndWithReturn(fname))
 
-let convert_fdecl_to_sfdecl reserved fname fdecl =
-	let env_param_helper m fname = match fname with
+let convert_fdecl_to_sfdecl reserved fdecl =
+	(*let env_param_helper m fname = match fname with
 			Formal(d, s) -> (StringMap.add s fname m)
 	in
 	let env_params = List.fold_left env_param_helper StringMap.empty (fdecl.formals) in
@@ -168,19 +168,20 @@ let convert_fdecl_to_sfdecl reserved fname fdecl =
 	let get_name fdecl = fdecl.fname in
 	let fbody = fst (convert_stmt_list_to_sstmt_list env fdecl.body) in
 	let fname = (get_name fdecl) in ignore(check_fbody fname fbody fdecl.return_type);
+	*)
 	(* We add the class as the first parameter to the function for codegen *)
 	{
-		sfname 				= get_name fdecl;
-		sreturn_type 	= fdecl.return_type;
+		sfname 				= fdecl.fname;
+		sreturn_type 		= fdecl.return_type;
 		sformals 			= fdecl.formals;
 		slocals 			= fdecl.locals;
-		sbody 				= fbody;
+		sbody 				= fdecl.body;
 	}
 
 let add_reserved_functions =
 	let reserved_stub name return_type formals =
 		{
-			sreturn_type		= return_type;
+			sreturn_type			= return_type;
 			sfname 					= name;
 			sformals 				= formals;
 			slocals					= [];
@@ -240,14 +241,22 @@ let get_local_id = function
 
 (* Function Declaration Checking Functions *)
 
-let check_function global_st func =
-	ignore(List.iter check_not_void_formal func.formals);
-	ignore(List.iter check_not_void_local func.locals);
-	ignore(report_duplicate "function" ((List.map get_formal_id func.formals) @ (List.map get_local_id func.locals)));;
+let check_function global_st fdecl =
+	ignore(List.iter check_not_void_formal fdecl.formals);
+	ignore(List.iter check_not_void_local fdecl.locals);
+	ignore(report_duplicate "function" ((List.map get_formal_id fdecl.formals) @ (List.map get_local_id fdecl.locals)));;
+	(*ignore(check_fbody fdecl.fname fdecl.body fdecl.return_type);;*)
 
-let check_functions global_st funcs =
-	ignore(report_duplicate "function" (List.map (fun fd -> fd.fname) funcs));
-	List.iter (check_function global_st) funcs;
+let check_functions global_st globals fdecls =
+	let sast =
+		ignore(report_duplicate "function" (List.map (fun fd -> fd.fname) fdecls));
+		ignore(List.iter (check_function global_st) fdecls);
+		let sfdecls = List.map (convert_fdecl_to_sfdecl add_reserved_functions) fdecls in
+		{
+			var_dec = globals;
+			funcs = sfdecls;
+		}
+		in sast
 
 (*and check_assign env s e =
 	let se1, env = expr_to_sexpr env s in

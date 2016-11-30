@@ -44,48 +44,23 @@ let rec get_ID_type env s =
 		(function Formal(t, _) -> t ) formal
 	with | Not_found -> raise (Exceptions.UndefinedID s)
 
-(*and check_assign env s e =
-	let se1, env = expr_to_sexpr env s in
-	let se2, env = expr_to_sexpr env e in
-	let type1 = get_type_from_sexpr se1 in
-	let type2 = get_type_from_sexpr se2 in
-	if type1 = type2
-		then SAssign(se1, se2, type1)
-		else raise (Exceptions.AssignmentTypeMismatch(Utils.string_of_datatype type1, Utils.string_of_datatype type2))
-*)
 and check_unop env op e =
 	let check_num_unop t = function
-			Neg 	-> t
-		| 	_ 		-> raise(Exceptions.InvalidUnaryOperation)
+			Neg 		-> t
+		| _ 			-> raise(Exceptions.InvalidUnaryOperation)
 	in
 	let check_bool_unop = function
-			Not 	-> Datatype(Bool)
-		| 	_ 		-> raise(Exceptions.InvalidUnaryOperation)
+	Not 	-> Datatype(Bool)
+	| 	_ 		-> raise(Exceptions.InvalidUnaryOperation)
 	in
 	let se, env = expr_to_sexpr env e in
 	let t = get_type_from_sexpr se in
-	match t with
-		Datatype(Int)
-	|	Datatype(Float) 	-> SUnop(op, se, check_num_unop t op)
-	|  	Datatype(Bool) 	-> SUnop(op, se, check_bool_unop op)
-	| 	_ -> raise(Exceptions.InvalidUnaryOperation)
-(*
-and check_binop env e1 op e2 =
-	let se1, env = expr_to_sexpr env e1 in
-	let se2, env = expr_to_sexpr env e2 in
-	let type1 = get_type_from_sexpr se1 in
-	let type2 = get_type_from_sexpr se2 in
-	match op with
-	Equal | Neq -> get_equality_binop_type type1 type2 se1 se2 op
-	| And | Or -> get_logical_binop_type se1 se2 op (type1, type2)
-	| Less | Leq | Greater | Geq -> get_comparison_binop_type type1 type2 se1 se2 op
-	| Add | Mult | Sub | Div -> get_arithmetic_binop_type se1 se2 op (type1, type2)
-	| _ -> raise (Exceptions.InvalidBinopExpression ((Utils.string_of_op op) ^ " is not a supported binary op"))
+		match t with
+			Datatype(Int)
+		|	Datatype(Float) 	-> SUnop(op, se, check_num_unop t op)
+		| Datatype(Bool) 		-> SUnop(op, se, check_bool_unop op)
+		| _ 								-> raise(Exceptions.InvalidUnaryOperation)
 
-and num_lit x = function
-		Int_lit(x) -> SInt_lit(x)
-	| Float_lit(x) -> SFloat_lit(x)
-*)
 and expr_to_sexpr env = function
 	(*	Num_lit i           -> SNum_lit(i), env*)
 	|   Bool_lit b       		-> SBool_lit(b), env
@@ -206,10 +181,10 @@ let add_reserved_functions =
 	let reserved_stub name return_type formals =
 		{
 			sreturn_type		= return_type;
-			sfname 			= name;
-			sformals 		= formals;
-			slocals			= [];
-			sbody 			= [];
+			sfname 					= name;
+			sformals 				= formals;
+			slocals					= [];
+			sbody 					= [];
 		}
 	in
 	let void_t = Datatype(Void) in
@@ -220,6 +195,18 @@ let add_reserved_functions =
 	] in
 	reserved
 
+	let report_duplicate_func li =
+	let rec helper = function
+	n1 :: n2 :: _ when n1 = n2 -> raise(Exceptions.DuplicateFunc(n1))
+	| _ :: t -> helper t
+	| [] -> ()
+	in helper (List.sort compare li)
+
+	let check_not_void_func_vars var_decl =
+	match var_decl with
+	(Void, n) -> raise(Exceptions.VoidFunc(n))
+	| _ -> ()
+
 let report_duplicate_global li =
 	let rec helper = function
 		n1 :: n2 :: _ when n1 = n2 -> raise(Exceptions.DuplicateGlobal(n1))
@@ -229,24 +216,37 @@ let report_duplicate_global li =
 
 let check_not_void_global var_decl =
 	match var_decl with
-		  (Void, n) -> raise(Exceptions.VoidGlobal(n))
-		| _ -> ()
-
-let report_duplicate_func li =
-	let rec helper = function
-		n1 :: n2 :: _ when n1 = n2 -> raise(Exceptions.DuplicateFunc(n1))
-		| _ :: t -> helper t
-		| [] -> ()
-	in helper (List.sort compare li)
-
-let check_not_void_func_vars var_decl =
-	match var_decl with
-		  (Void, n) -> raise(Exceptions.VoidFunc(n))
+		  (Datatype(Void), n) -> raise(Exceptions.VoidGlobal(n))
 		| _ -> ()
 
 let check_var_decls globals =
-	List.iter check_not_void_global globals;
-	report_duplicate_global (List.map snd globals);
+	ignore(List.iter check_not_void_global globals);
+	ignore(report_duplicate_global (List.map snd globals));
+	ignore();
+
+(*and check_assign env s e =
+	let se1, env = expr_to_sexpr env s in
+	let se2, env = expr_to_sexpr env e in
+	let type1 = get_type_from_sexpr se1 in
+	let type2 = get_type_from_sexpr se2 in
+	if type1 = type2
+		then SAssign(se1, se2, type1)
+		else raise (Exceptions.AssignmentTypeMismatch(Utils.string_of_datatype type1, Utils.string_of_datatype type2))
+and check_binop env e1 op e2 =
+	let se1, env = expr_to_sexpr env e1 in
+	let se2, env = expr_to_sexpr env e2 in
+	let type1 = get_type_from_sexpr se1 in
+	let type2 = get_type_from_sexpr se2 in
+	match op with
+	Equal | Neq -> get_equality_binop_type type1 type2 se1 se2 op
+	| And | Or -> get_logical_binop_type se1 se2 op (type1, type2)
+	| Less | Leq | Greater | Geq -> get_comparison_binop_type type1 type2 se1 se2 op
+	| Add | Mult | Sub | Div -> get_arithmetic_binop_type se1 se2 op (type1, type2)
+	| _ -> raise (Exceptions.InvalidBinopExpression ((Utils.string_of_op op) ^ " is not a supported binary op"))
+
+and num_lit x = function
+		Int_lit(x) -> SInt_lit(x)
+	| Float_lit(x) -> SFloat_lit(x)
 
 let check_fdecl func =
 	List.iter check_not_void_func_vars func.formals;
@@ -255,11 +255,16 @@ let check_fdecl func =
 	report_duplicate_func (List.map snd func.locals);
 
 let built_in_decls = StringMap.add "print_line"
-	{ datatype = Void; fname = "print_line"; formals = [(Int, "x")];
-	  locals = []; body = [] } 
+	{
+		datatype 	= Void;
+		fname 		= "print_line";
+		formals 	= [(Int, "x")];
+	  locals 		= [];
+		body 			= []
+	}
 in
 
-let function_decls = 
+let function_decls =
 	List.fold_left (fun m fd -> StringMap.add fd.fname fd m) built_in_decls functions
 in
 
@@ -272,7 +277,5 @@ let check (globals, functions) =
 	let _ = function_decl "main" in
 	let reserved = add_reserved_functions in
 	check_var_decls globals;
-	List.iter check_fdecl functions
-
-
-	let sast = convert_fdecl_to_sfdecl reserved fname fdecl in sast
+	List.iter check_fdecl functions;
+	let sast = convert_fdecl_to_sfdecl reserved fname fdecl in sast*)

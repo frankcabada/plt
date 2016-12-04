@@ -48,10 +48,10 @@ type sstmt =
 (* Function Declarations *)
 type sfunc_decl = {
 	sreturn_type 	: datatype;
-	sfname 			: string;
-	sformals 		: formal list;
-	slocals  		: local list;
-	sbody 			: sstmt list;
+	sfname 		: string;
+	sformals 	: formal list;
+	slocals  	: local list;
+	sbody 		: sstmt list;
 }
 
 (* All method declarations | Main entry method *)

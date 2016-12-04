@@ -54,6 +54,7 @@ exception ArrayAccessExpressionNotArray of string
 exception CanOnlyAccessLengthOfArray
 exception CanOnlyDeleteObjectsOrArrays
 exception CannotAccessLengthOfCharArray
+exception AllVoidFunctionsMustNotReturn of string
 exception AllNonVoidFunctionsMustEndWithReturn of string
 exception CyclicalDependencyBetween of string * string
 exception CannotAccessPrivateFieldInNonProperScope of string * string * string

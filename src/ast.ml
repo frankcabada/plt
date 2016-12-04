@@ -52,10 +52,10 @@ type stmt =
 (* Function Declarations *)
 type func_decl = {
 	return_type 	: datatype;
-	fname 		: string;
-	formals 	: formal list;
-	locals  	: local list;
-	body 		: stmt list;
+	fname 				: string;
+	formals 			: formal list;
+	locals  			: local list;
+	body 					: stmt list;
 }
 
 (* Start Symbol *)

@@ -37,53 +37,36 @@ let update_call_stack env in_for in_while =
 	env_reserved   = env.env_reserved;
 }
 
-let rec get_ID_type env s =
-	try StringMap.find s env.env_locals
-	with | Not_found ->
-	try let formal = StringMap.find s env.env_parameters in
-		(function Formal(t, _) -> t ) formal
-	with | Not_found -> raise (Exceptions.UndefinedID s)
+let get_ID_type s func_st =
+	try StringMap.find s func_st
+	with Not_found -> raise(Exceptions.UndefinedID(s))
 
-and check_unop env op e =
-	let check_num_unop t = function
-			Neg 		-> t
-		| _ 			-> raise(Exceptions.InvalidUnaryOperation)
-	in
-	let check_bool_unop = function
-	Not 	-> Datatype(Bool)
-	| 	_ 		-> raise(Exceptions.InvalidUnaryOperation)
-	in
-	let se, env = expr_to_sexpr env e in
-	let t = get_type_from_sexpr se in
-		match t with
-			Datatype(Int)
-		|	Datatype(Float) 	-> SUnop(op, se, check_num_unop t op)
-		| Datatype(Bool) 		-> SUnop(op, se, check_bool_unop op)
-		| _ 								-> raise(Exceptions.InvalidUnaryOperation)
+let expr_to_sexpr func_st = function
+	| 	Num_lit(Int_lit(n)) 	-> SNum_lit(SInt_lit(n))
+	|   Num_lit(Float_lit(n))	-> SNum_lit(SFloat_lit(n))
+	|   Bool_lit(b)       		-> SBool_lit(b)
+	|   String_lit(s)       	-> SString_lit(s)
+	|   Id(s)                	-> SId(s, get_ID_type s func_st)
+	|   Null                	-> SNull
+	|   Noexpr              	-> SNoexpr
+	(*	Num_lit i           -> SNum_lit(i)
+	|   Call(s, el)         -> check_call_typ false env s el, env
+	|   Assign(s, e2)      	-> check_assign env s e2, env
+	|   Unop(op, e)         -> check_unop op e
+	|   Binop(e1, op, e2)   -> check_binop env e1 op e2, env *)
 
-and expr_to_sexpr env = function
-	(*	Num_lit i           -> SNum_lit(i), env*)
-	|   Bool_lit b       		-> SBool_lit(b), env
-	|   String_lit s        -> SString_lit(s), env
-	|   Id s                -> SId(s, get_ID_type env s), env
-	|   Null                -> SNull, env
-	|   Noexpr              -> SNoexpr, env
-	(*	|   Call(s, el)         -> check_call_type env false env s el, env *)
-	(*	|   Assign(s, e2)      	-> check_assign env s e2, env *)
-	|   Unop(op, e)         -> check_unop env op e, env
-	(*	|   Binop(e1, op, e2)   -> check_binop env e1 op e2, env *)
-
-and get_type_from_sexpr = function
-		SNum_lit(_)						-> Datatype(Int)
-	| 	SBool_lit(_)				-> Datatype(Bool)
-	| 	SString_lit(_) 			-> Datatype(String)
-	| 	SId(_, d) 					-> d
-	| 	SBinop(_, _, _, d) 	-> d
-	| 	SAssign(_, _, d) 		-> d
-	| 	SNoexpr 						-> Datatype(Void)
+let get_type_from_sexpr = function
+	SNum_lit(SInt_lit(_))				-> Datatype(Int)
+	|	SNum_lit(SFloat_lit(_))		-> Datatype(Float)
+	| SBool_lit(_)							-> Datatype(Bool)
+	| SString_lit(_) 						-> Datatype(String)
+	| SNoexpr 									-> Datatype(Void)
+	| SNull											-> Datatype(Void)
+	| SId(_, d) 								-> d
+	| SBinop(_, _, _, d) 				-> d
+	| SAssign(_, _, d) 					-> d
+	| SUnop(_, _, d) 						-> d
 	(*	| 	SCall(_, _, d, _)			-> d*)
-	|  	SUnop(_, _, d) 			-> d
-	| 	SNull								-> Datatype(Void)
 
 let get_arithmetic_binop_type se1 se2 op = function
 			(Datatype(Int), Datatype(Float))
@@ -94,89 +77,20 @@ let get_arithmetic_binop_type se1 se2 op = function
 
 		| _ -> raise (Exceptions.InvalidBinopExpression "Arithmetic operators don't support these types")
 
-let rec check_sblock sl env = match sl with
-		[] -> SBlock([SExpr(SNoexpr, Datatype(Void))]), env
-	| 	_  ->
-		let sl, _ = convert_stmt_list_to_sstmt_list env sl in
-		SBlock(sl), env
+let return_to_sreturn func_st e =
+	let se = expr_to_sexpr func_st e in
+		let t = get_type_from_sexpr se in SReturn(se, t)
 
-and check_expr_stmt e env =
-	let se, env = expr_to_sexpr env e in
-	let t = get_type_from_sexpr se in
-	SExpr(se, t), env
-
-and check_return e env =
-	let se, _ = expr_to_sexpr env e in
-	let t = get_type_from_sexpr se in
-	match t, env.env_returnType with
-		(*Datatype(Null), Datatype(Objecttype(_))
-	| 	Datatype(Null), Arraytype(_, _) -> SReturn(se, t), env*)
-	 	_ ->
-	if t = env.env_returnType
-		then SReturn(se, t), env
-		else raise (Exceptions.ReturnTypeMismatch(Utils.string_of_datatype t, Utils.string_of_datatype env.env_returnType))
-
-and parse_stmt env = function
+let stmt_to_sstmt func_st = function
+	Return(e)			-> return_to_sreturn func_st e
 	(*	Block sl 				-> check_sblock sl env
 	| 	Expr e 					-> check_expr_stmt e env
-	|*) Return e 				-> check_return e env
-	(*| 	If(e, s1, s2) 			-> check_if e s1 s2	env
+	| 	If(e, s1, s2) 			-> check_if e s1 s2	env
 	| 	For(e1, e2, e3, e4) 	-> check_for e1 e2 e3 e4 env
 	| 	While(e, s)				-> check_while e s env
 	|  	Break 					-> check_break env (* Need to check if in right context *)
 	|   Continue 				-> check_continue env (* Need to check if in right context *)
 	|   Local(d, s, e) 			-> local_handler d s e env*)
-
-(* Update this function to return an env object *)
-
-and convert_stmt_list_to_sstmt_list env stmt_list =
-	let env_ref = ref(env) in
-	let rec iter = function
-	  head::tail ->
-		let a_head, env = parse_stmt !env_ref head in
-		env_ref := env;
-		a_head::(iter tail)
-	| [] -> []
-	in
-	let sstmt_list = (iter stmt_list), !env_ref in
-	sstmt_list
-
-let check_fbody fname fbody returnType =
-	let len = List.length fbody in
-	if len = 0 then () else
-	let final_stmt = List.hd (List.rev fbody) in
-	match returnType, final_stmt with
-		Datatype(Void), _ 	-> ()
-	| 	_, Return(_)	 	-> ()
-	| 	_					-> raise(Exceptions.AllNonVoidFunctionsMustEndWithReturn(fname))
-
-let convert_fdecl_to_sfdecl reserved fdecl =
-	(*let env_param_helper m fname = match fname with
-			Formal(d, s) -> (StringMap.add s fname m)
-	in
-	let env_params = List.fold_left env_param_helper StringMap.empty (fdecl.formals) in
-	let env = {
-		env_name     	= fname;
-		env_locals    	= StringMap.empty;
-		env_parameters	= env_params;
-		env_returnType	= fdecl.return_type;
-		env_in_for 		= false;
-		env_in_while 	= false;
-		env_reserved 	= reserved;
-	}
-	in
-	let get_name fdecl = fdecl.fname in
-	let fbody = fst (convert_stmt_list_to_sstmt_list env fdecl.body) in
-	let fname = (get_name fdecl) in ignore(check_fbody fname fbody fdecl.return_type);
-	*)
-	(* We add the class as the first parameter to the function for codegen *)
-	{
-		sfname 				= fdecl.fname;
-		sreturn_type 		= fdecl.return_type;
-		sformals 			= fdecl.formals;
-		slocals 			= fdecl.locals;
-		sbody 				= fdecl.body;
-	}
 
 let add_reserved_functions =
 	let reserved_stub name return_type formals =
@@ -228,24 +142,62 @@ let add_to_global_symbol_table globs =
 	List.fold_left
 		(fun m (t,n) -> StringMap.add n t m) StringMap.empty globs
 
-let check_var_decls globals =
-	ignore(List.iter (check_not_void "global") globals);
-	ignore(report_duplicate "global" (List.map snd globals));
-	add_to_global_symbol_table globals;;
-
 let get_formal_id = function
 	| Formal(Datatype(p), n) -> n
 
 let get_local_id = function
 	| Local(Datatype(p), n) -> n
 
+let check_var_decls globals =
+	ignore(List.iter (check_not_void "global") globals);
+	ignore(report_duplicate "global" (List.map snd globals));
+	add_to_global_symbol_table globals;;
+
 (* Function Declaration Checking Functions *)
+
+let fdecl_to_func_st fdecl =
+	let func_st = StringMap.empty in
+		func_st
+
+let convert_stmt_list_to_sstmt_list fdecl stmt_list = List.map (stmt_to_sstmt (fdecl_to_func_st fdecl)) stmt_list
+
+let convert_fdecl_to_sfdecl reserved fdecl =
+	{
+		sfname 				= fdecl.fname;
+		sreturn_type 	= fdecl.return_type;
+		sformals 			= fdecl.formals;
+		slocals 			= fdecl.locals;
+		sbody 				= (convert_stmt_list_to_sstmt_list fdecl fdecl.body);
+	}
+
+let check_function_return fname fbody returnType =
+	let len = List.length fbody in
+		if len = 0 then () else
+		let final_stmt = List.hd (List.rev fbody) in
+			match returnType, final_stmt with
+				Datatype(Void), Return(_) -> raise(Exceptions.AllVoidFunctionsMustNotReturn(fname))
+				|	Datatype(Void), _ 			-> ()
+				| _, Return(_)	 					-> ()
+				| _, _										-> raise(Exceptions.AllNonVoidFunctionsMustEndWithReturn(fname))
+
+let check_return fdecl func_st e =
+	let se = expr_to_sexpr func_st e in
+	let t = get_type_from_sexpr se in
+		if (t=fdecl.return_type) then () else raise(Exceptions.ReturnTypeMismatch(Utils.string_of_datatype t, Utils.string_of_datatype fdecl.return_type))
+
+let check_stmt fdecl = function
+	Return(e) -> check_return fdecl (fdecl_to_func_st fdecl) e
+	| _ 				-> ()
+
+let check_fbody fdecl fbody =
+	ignore(List.iter (check_stmt fdecl) fbody);;
 
 let check_function global_st fdecl =
 	ignore(List.iter check_not_void_formal fdecl.formals);
 	ignore(List.iter check_not_void_local fdecl.locals);
-	ignore(report_duplicate "function" ((List.map get_formal_id fdecl.formals) @ (List.map get_local_id fdecl.locals)));;
-	(*ignore(check_fbody fdecl.fname fdecl.body fdecl.return_type);;*)
+	ignore(report_duplicate "function" ((List.map get_formal_id fdecl.formals) @ (List.map get_local_id fdecl.locals)));
+	ignore(check_function_return fdecl.fname fdecl.body fdecl.return_type);
+	ignore(check_fbody fdecl fdecl.body);;
 
 let check_functions global_st globals fdecls =
 	let sast =

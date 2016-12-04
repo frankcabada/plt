@@ -51,7 +51,7 @@ type sfunc_decl = {
 	sfname 			: string;
 	sformals 		: formal list;
 	slocals  		: local list;
-	sbody 			: stmt list;
+	sbody 			: sstmt list;
 }
 
 (* All method declarations | Main entry method *)

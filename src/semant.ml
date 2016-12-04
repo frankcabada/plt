@@ -4,7 +4,7 @@ open Exceptions
 open Utils
 
 module StringMap = Map.Make(String)
-
+(*
 type env = {
 	env_name      	: string;
 	env_locals    	: datatype StringMap.t;
@@ -36,54 +36,64 @@ let update_call_stack env in_for in_while =
 	env_in_while   = in_while;
 	env_reserved   = env.env_reserved;
 }
+*)
+let rec get_ID_type s func_st = (* ?? rec ?? *)
+	try StringMap.find s func_st
+	with | Not_found -> raise (Exceptions.UndefinedID(s))
 
-let rec get_ID_type env s =
-	try StringMap.find s env.env_locals
-	with | Not_found ->
-	try let formal = StringMap.find s env.env_parameters in
-		(function Formal(t, _) -> t ) formal
-	with | Not_found -> raise (Exceptions.UndefinedID s)
-
-and check_unop env op e =
+(* and check_assign s e = 
+	let lvaluet = get_ID_type s 
+	and rvaluet = expr_to_sexpr e 
+	in
+	if lvaluet == rvaluet then lvaluet 
+	else raise(Exceptions.AssignmentTypeMismatch(Utils.string_of_datatype lvaluet, Utils.string_of_datatype rvaluet))
+*)
+and check_unop func_st op e =
 	let check_num_unop t = function
 			Neg 		-> t
+		|   Not 		-> t
+		|   Inc         -> t
+		|   Dec         -> t
 		| _ 			-> raise(Exceptions.InvalidUnaryOperation)
 	in
-	let check_bool_unop = function
-	Not 	-> Datatype(Bool)
-	| 	_ 		-> raise(Exceptions.InvalidUnaryOperation)
+	let check_bool_unop x = match x with
+			Not 	-> Datatype(Bool)
+		| 	_ 		-> raise(Exceptions.InvalidUnaryOperation)
 	in
-	let se, env = expr_to_sexpr env e in
+	let se = expr_to_sexpr func_st e in
 	let t = get_type_from_sexpr se in
 		match t with
-			Datatype(Int)
-		|	Datatype(Float) 	-> SUnop(op, se, check_num_unop t op)
+		  Datatype(Int)		
+		| Datatype(Float) 		-> SUnop(op, se, check_num_unop t op)
 		| Datatype(Bool) 		-> SUnop(op, se, check_bool_unop op)
-		| _ 								-> raise(Exceptions.InvalidUnaryOperation)
+		| _ 					-> raise(Exceptions.InvalidUnaryOperation)
 
-and expr_to_sexpr env = function
-	(*	Num_lit i           -> SNum_lit(i), env*)
-	|   Bool_lit b       		-> SBool_lit(b), env
-	|   String_lit s        -> SString_lit(s), env
-	|   Id s                -> SId(s, get_ID_type env s), env
-	|   Null                -> SNull, env
-	|   Noexpr              -> SNoexpr, env
-	(*	|   Call(s, el)         -> check_call_type env false env s el, env *)
-	(*	|   Assign(s, e2)      	-> check_assign env s e2, env *)
-	|   Unop(op, e)         -> check_unop env op e, env
-	(*	|   Binop(e1, op, e2)   -> check_binop env e1 op e2, env *)
+and expr_to_sexpr func_st = function
+		Num_lit(Int_lit(n))     -> SNum_lit(SInt_lit(n))
+	|   Num_lit(Float_lit(n))   -> SNum_lit(SFloat_lit(n))
+	|   Bool_lit(b)       		-> SBool_lit(b)
+	|   String_lit(s)           -> SString_lit(s)
+	|   Id(s)                   -> SId(s, get_ID_type s func_st)
+	|   Null                    -> SNull
+	|   Noexpr                  -> SNoexpr
+	(*	|   Call(s, el)         -> check_call_type env false env s el *)
+(*	|   Assign(s, e)   		    -> check_assign s e
+ 	|   Assign(s, e) as ex      -> let lt = get_ID_type s and rt = expr_to_sexpr e in check_assign lt rt *)
+	|   Unop(op, e)             -> check_unop func_st op e
+(*	|   Binop(e1, op, e2)       -> check_binop e1 op e2*)
 
-and get_type_from_sexpr = function
-		SNum_lit(_)						-> Datatype(Int)
-	| 	SBool_lit(_)				-> Datatype(Bool)
+and get_type_from_sexpr sexpr = match sexpr with
+		SNum_lit(SInt_lit(_))	-> Datatype(Int)
+	|   SNum_lit(SFloat_lit(_))	-> Datatype(Float) 
+	| 	SBool_lit(_)			-> Datatype(Bool)
 	| 	SString_lit(_) 			-> Datatype(String)
-	| 	SId(_, d) 					-> d
-	| 	SBinop(_, _, _, d) 	-> d
+	| 	SId(_, d) 				-> d
+	| 	SBinop(_, _, _, d) 		-> d
 	| 	SAssign(_, _, d) 		-> d
-	| 	SNoexpr 						-> Datatype(Void)
-	(*	| 	SCall(_, _, d, _)			-> d*)
+	| 	SNoexpr 				-> Datatype(Void)
+	| 	SCall(_, _, d)			-> d
 	|  	SUnop(_, _, d) 			-> d
-	| 	SNull								-> Datatype(Void)
+	| 	SNull					-> Datatype(Void)
 
 let get_arithmetic_binop_type se1 se2 op = function
 			(Datatype(Int), Datatype(Float))
@@ -94,7 +104,7 @@ let get_arithmetic_binop_type se1 se2 op = function
 
 		| _ -> raise (Exceptions.InvalidBinopExpression "Arithmetic operators don't support these types")
 
-let rec check_sblock sl env = match sl with
+(*let rec check_sblock sl env = match sl with
 		[] -> SBlock([SExpr(SNoexpr, Datatype(Void))]), env
 	| 	_  ->
 		let sl, _ = convert_stmt_list_to_sstmt_list env sl in
@@ -149,7 +159,7 @@ let check_fbody fname fbody returnType =
 		Datatype(Void), _ 	-> ()
 	| 	_, Return(_)	 	-> ()
 	| 	_					-> raise(Exceptions.AllNonVoidFunctionsMustEndWithReturn(fname))
-
+*)
 let convert_fdecl_to_sfdecl reserved fdecl =
 	(*let env_param_helper m fname = match fname with
 			Formal(d, s) -> (StringMap.add s fname m)

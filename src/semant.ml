@@ -4,7 +4,7 @@ open Exceptions
 open Utils
 
 module StringMap = Map.Make(String)
-
+(*
 type env = {
 	env_name      	: string;
 	env_locals    	: datatype StringMap.t;
@@ -36,37 +36,64 @@ let update_call_stack env in_for in_while =
 	env_in_while   = in_while;
 	env_reserved   = env.env_reserved;
 }
-
-let get_ID_type s func_st =
+*)
+let rec get_ID_type s func_st = (* ?? rec ?? *)
 	try StringMap.find s func_st
-	with Not_found -> raise(Exceptions.UndefinedID(s))
+	with | Not_found -> raise (Exceptions.UndefinedID(s))
 
-let expr_to_sexpr func_st = function
-	| 	Num_lit(Int_lit(n)) 	-> SNum_lit(SInt_lit(n))
-	|   Num_lit(Float_lit(n))	-> SNum_lit(SFloat_lit(n))
+(* and check_assign s e =
+	let lvaluet = get_ID_type s
+	and rvaluet = expr_to_sexpr e
+	in
+	if lvaluet == rvaluet then lvaluet
+	else raise(Exceptions.AssignmentTypeMismatch(Utils.string_of_datatype lvaluet, Utils.string_of_datatype rvaluet))
+*)
+and check_unop func_st op e =
+	let check_num_unop t = function
+			Neg 		-> t
+		|   Not 		-> t
+		|   Inc         -> t
+		|   Dec         -> t
+		| _ 			-> raise(Exceptions.InvalidUnaryOperation)
+	in
+	let check_bool_unop x = match x with
+			Not 	-> Datatype(Bool)
+		| 	_ 		-> raise(Exceptions.InvalidUnaryOperation)
+	in
+	let se = expr_to_sexpr func_st e in
+	let t = get_type_from_sexpr se in
+		match t with
+		  Datatype(Int)
+		| Datatype(Float) 		-> SUnop(op, se, check_num_unop t op)
+		| Datatype(Bool) 		-> SUnop(op, se, check_bool_unop op)
+		| _ 					-> raise(Exceptions.InvalidUnaryOperation)
+
+and expr_to_sexpr func_st = function
+		Num_lit(Int_lit(n))     -> SNum_lit(SInt_lit(n))
+	|   Num_lit(Float_lit(n))   -> SNum_lit(SFloat_lit(n))
 	|   Bool_lit(b)       		-> SBool_lit(b)
-	|   String_lit(s)       	-> SString_lit(s)
-	|   Id(s)                	-> SId(s, get_ID_type s func_st)
-	|   Null                	-> SNull
-	|   Noexpr              	-> SNoexpr
-	(*	Num_lit i           -> SNum_lit(i)
-	|   Call(s, el)         -> check_call_typ false env s el, env
-	|   Assign(s, e2)      	-> check_assign env s e2, env
-	|   Unop(op, e)         -> check_unop op e
-	|   Binop(e1, op, e2)   -> check_binop env e1 op e2, env *)
+	|   String_lit(s)           -> SString_lit(s)
+	|   Id(s)                   -> SId(s, get_ID_type s func_st)
+	|   Null                    -> SNull
+	|   Noexpr                  -> SNoexpr
+	(*	|   Call(s, el)         -> check_call_type env false env s el *)
+(*	|   Assign(s, e)   		    -> check_assign s e
+ 	|   Assign(s, e) as ex      -> let lt = get_ID_type s and rt = expr_to_sexpr e in check_assign lt rt *)
+	|   Unop(op, e)             -> check_unop func_st op e
+(*	|   Binop(e1, op, e2)       -> check_binop e1 op e2*)
 
-let get_type_from_sexpr = function
-	SNum_lit(SInt_lit(_))				-> Datatype(Int)
-	|	SNum_lit(SFloat_lit(_))		-> Datatype(Float)
-	| SBool_lit(_)							-> Datatype(Bool)
-	| SString_lit(_) 						-> Datatype(String)
-	| SNoexpr 									-> Datatype(Void)
-	| SNull											-> Datatype(Void)
-	| SId(_, d) 								-> d
-	| SBinop(_, _, _, d) 				-> d
-	| SAssign(_, _, d) 					-> d
-	| SUnop(_, _, d) 						-> d
-	(*	| 	SCall(_, _, d, _)			-> d*)
+and get_type_from_sexpr sexpr = match sexpr with
+		SNum_lit(SInt_lit(_))	-> Datatype(Int)
+	|   SNum_lit(SFloat_lit(_))	-> Datatype(Float)
+	| 	SBool_lit(_)			-> Datatype(Bool)
+	| 	SString_lit(_) 			-> Datatype(String)
+	| 	SId(_, d) 				-> d
+	| 	SBinop(_, _, _, d) 		-> d
+	| 	SAssign(_, _, d) 		-> d
+	| 	SNoexpr 				-> Datatype(Void)
+	| 	SCall(_, _, d)			-> d
+	|  	SUnop(_, _, d) 			-> d
+	| 	SNull					-> Datatype(Void)
 
 let get_arithmetic_binop_type se1 se2 op = function
 			(Datatype(Int), Datatype(Float))

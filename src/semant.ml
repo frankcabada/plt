@@ -205,19 +205,15 @@ let fdecl_to_func_st fdecl =
 	let funcst = List.fold_left (fun m f -> StringMap.add (get_formal_id f) (get_formal_type f) m) StringMap.empty fdecl.formals in
 		List.fold_left (fun m l -> StringMap.add (get_local_id l) (get_local_type l) m) funcst fdecl.locals
 
-let return_to_sreturn func_st e =
-	let se = expr_to_sexpr func_st e in
-		let t = get_type_from_sexpr se in SReturn(se, t)
-
 let rec stmt_to_sstmt func_st = function
-	Return(e)							-> return_to_sreturn func_st e
-	| Break 							-> SBreak
-	|	Block(sl) 					-> SBlock(convert_stmt_list_to_sstmt_list func_st sl)
-	| Expr(e) 						-> SExpr(expr_to_sexpr func_st e)
-	| If(e, s1, s2) 			-> SIf((expr_to_sexpr func_st e), (stmt_to_sstmt func_st s1), (stmt_to_sstmt func_st s2))
-	| Else(s) 						-> SElse(stmt_to_sstmt func_st s)
+	Return(e)				-> SReturn(expr_to_sexpr func_st e)
+	| Break 				-> SBreak
+	| Block(sl) 			-> SBlock(convert_stmt_list_to_sstmt_list func_st sl)
+	| Expr(e) 				-> SExpr(expr_to_sexpr func_st e)
+	| If(e, s1, s2) 		-> SIf((expr_to_sexpr func_st e), (stmt_to_sstmt func_st s1), (stmt_to_sstmt func_st s2))
+	| Else(s) 				-> SElse(stmt_to_sstmt func_st s)
 	| For(e1, e2, e3, s) 	-> SFor((expr_to_sexpr func_st e1), (expr_to_sexpr func_st e2), (expr_to_sexpr func_st e3), (stmt_to_sstmt func_st s))
-	| While(e, s)					-> SWhile((expr_to_sexpr func_st e), (stmt_to_sstmt func_st s))
+	| While(e, s)			-> SWhile((expr_to_sexpr func_st e), (stmt_to_sstmt func_st s))
 
 and convert_stmt_list_to_sstmt_list func_st stmt_list = List.map (stmt_to_sstmt func_st) stmt_list
 

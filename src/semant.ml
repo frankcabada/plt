@@ -4,47 +4,8 @@ open Exceptions
 open Utils
 
 module StringMap = Map.Make(String)
-(*
-type env = {
-	env_name      	: string;
-	env_locals    	: datatype StringMap.t;
-	env_parameters	: Ast.formal StringMap.t;
-	env_returnType	: datatype;
-	env_in_for    	: bool;
-	env_in_while  	: bool;
-	env_reserved    : sfunc_decl list;
-}
 
-let update_env_name env env_name =
-{
-	env_name       = env_name;
-	env_locals     = env.env_locals;
-	env_parameters = env.env_parameters;
-	env_returnType = env.env_returnType;
-	env_in_for     = env.env_in_for;
-	env_in_while   = env.env_in_while;
-	env_reserved   = env.env_reserved;
-}
-
-let update_call_stack env in_for in_while =
-{
-	env_name       = env.env_name;
-	env_locals     = env.env_locals;
-	env_parameters = env.env_parameters;
-	env_returnType = env.env_returnType;
-	env_in_for     = in_for;
-	env_in_while   = in_while;
-	env_reserved   = env.env_reserved;
-}
-*)
-(* and check_assign s e =
-let lvaluet = get_ID_type s
-and rvaluet = expr_to_sexpr e
-in
-if lvaluet == rvaluet then lvaluet
-else raise(Exceptions.AssignmentTypeMismatch(Utils.string_of_datatype lvaluet, Utils.string_of_datatype rvaluet))
-*)
-let rec get_ID_type s func_st = (* ?? rec ?? *)
+let rec get_ID_type s func_st =
 	try StringMap.find s func_st
 	with | Not_found -> raise (Exceptions.UndefinedID(s))
 
@@ -64,19 +25,19 @@ and check_unop func_st op e =
 	let t = get_type_from_sexpr se in
 		match t with
 		  Datatype(Int)
-		| Datatype(Float) 		-> SUnop(op, se, check_num_unop t op)
-		| Datatype(Bool) 		-> SUnop(op, se, check_bool_unop op)
-		| _ 					-> raise(Exceptions.InvalidUnaryOperation)
+		| Datatype(Float) -> SUnop(op, se, check_num_unop t op)
+		| Datatype(Bool) 	-> SUnop(op, se, check_bool_unop op)
+		| _ 							-> raise(Exceptions.InvalidUnaryOperation)
 
 and expr_to_sexpr func_st = function
-		Num_lit(Int_lit(n))     	-> SNum_lit(SInt_lit(n))
-	|   Num_lit(Float_lit(n))   -> SNum_lit(SFloat_lit(n))
-	|   Bool_lit(b)       			-> SBool_lit(b)
-	|   String_lit(s)           -> SString_lit(s)
-	|   Id(s)                   -> SId(s, get_ID_type s func_st)
-	|   Null                    -> SNull
-	|   Noexpr                  -> SNoexpr
-	|   Unop(op, e)             -> check_unop func_st op e
+		Num_lit(Int_lit(n))     -> SNum_lit(SInt_lit(n))
+	| Num_lit(Float_lit(n))   -> SNum_lit(SFloat_lit(n))
+	| Bool_lit(b)       			-> SBool_lit(b)
+	| String_lit(s)           -> SString_lit(s)
+	| Id(s)                   -> SId(s, get_ID_type s func_st)
+	| Null                    -> SNull
+	| Noexpr                  -> SNoexpr
+	| Unop(op, e)             -> check_unop func_st op e
 (*
 	|   Call(s, el)         		-> check_call_type env false env s el
 	|   Assign(s, e)   		    	-> check_assign s e
@@ -85,23 +46,23 @@ and expr_to_sexpr func_st = function
 *)
 
 and get_type_from_sexpr sexpr = match sexpr with
-		SNum_lit(SInt_lit(_))	-> Datatype(Int)
-	|   SNum_lit(SFloat_lit(_))	-> Datatype(Float)
-	| 	SBool_lit(_)			-> Datatype(Bool)
-	| 	SString_lit(_) 			-> Datatype(String)
-	| 	SId(_, d) 				-> d
-	| 	SBinop(_, _, _, d) 		-> d
-	| 	SAssign(_, _, d) 		-> d
-	| 	SNoexpr 				-> Datatype(Void)
-	| 	SCall(_, _, d)			-> d
-	|  	SUnop(_, _, d) 			-> d
-	| 	SNull					-> Datatype(Void)
+		SNum_lit(SInt_lit(_))		-> Datatype(Int)
+	| SNum_lit(SFloat_lit(_))	-> Datatype(Float)
+	| SBool_lit(_)						-> Datatype(Bool)
+	| SString_lit(_) 					-> Datatype(String)
+	| SNoexpr 								-> Datatype(Void)
+	| SNull										-> Datatype(Void)
+	| SId(_, d) 							-> d
+	| SBinop(_, _, _, d) 			-> d
+	| SAssign(_, _, d) 				-> d
+	| SCall(_, _, d)					-> d
+	| SUnop(_, _, d) 					-> d
 
 let get_arithmetic_binop_type se1 se2 op = function
 			(Datatype(Int), Datatype(Float))
-		| 	(Datatype(Float), Datatype(Int))
-		| 	(Datatype(Float), Datatype(Float)) 	-> SBinop(se1, op, se2, Datatype(Float))
-		| 	(Datatype(Int), Datatype(Int)) 			-> SBinop(se1, op, se2, Datatype(Int))
+		| (Datatype(Float), Datatype(Int))
+		| (Datatype(Float), Datatype(Float)) 	-> SBinop(se1, op, se2, Datatype(Float))
+		| (Datatype(Int), Datatype(Int)) 			-> SBinop(se1, op, se2, Datatype(Int))
 		| _ -> raise (Exceptions.InvalidBinopExpression "Arithmetic operators don't support these types")
 
 let return_to_sreturn func_st e =
@@ -189,10 +150,8 @@ let check_var_decls globals =
 (* Function Declaration Checking Functions *)
 
 let fdecl_to_func_st fdecl =
-	let func_st = StringMap.empty in
-	ignore(List.fold_left (fun m f -> StringMap.add (get_formal_id f) (get_formal_type f) m) func_st fdecl.formals);
-	ignore(List.fold_left (fun m l -> StringMap.add (get_local_id l) (get_local_type l) m) func_st fdecl.locals);
-	func_st
+	let funcst = List.fold_left (fun m f -> StringMap.add (get_formal_id f) (get_formal_type f) m) StringMap.empty fdecl.formals in
+		List.fold_left (fun m l -> StringMap.add (get_local_id l) (get_local_type l) m) funcst fdecl.locals
 
 let convert_stmt_list_to_sstmt_list fdecl stmt_list = List.map (stmt_to_sstmt (fdecl_to_func_st fdecl)) stmt_list
 
@@ -220,12 +179,30 @@ let check_return fdecl func_st e =
 	let t = get_type_from_sexpr se in
 		if (t=fdecl.return_type) then () else raise(Exceptions.ReturnTypeMismatch(Utils.string_of_datatype t, Utils.string_of_datatype fdecl.return_type))
 
-let check_stmt fdecl = function
-	Return(e) 	-> check_return fdecl (fdecl_to_func_st fdecl) e
+let rec check_stmt fdecl = function
+	Return(e) 						-> check_return fdecl (fdecl_to_func_st fdecl) e
+	| Block(sl) 					-> check_fbody fdecl sl
+	| If(e, s1, s2) 			-> check_if fdecl s1 s2
+	| While(e, s)					-> check_while fdecl s
+	| For(e1, e2, e3, s) 	-> check_for fdecl s
+(*
+	| Break 					-> check_break env (* Need to check if in right context *)
+	| Continue 				-> check_continue env (* Need to check if in right context *)
+*)
 	| _ 				-> ()
 
-let check_fbody fdecl fbody =
-	ignore(List.iter (check_stmt fdecl) fbody);;
+and check_fbody fdecl fbody =
+	ignore(List.iter (check_stmt fdecl) fbody);
+
+and check_if fdecl s1 s2 =
+	ignore(check_stmt fdecl s1);
+	ignore(check_stmt fdecl s2);
+
+and check_while fdecl stmt =
+	ignore(check_stmt fdecl stmt);
+
+and check_for fdecl stmt =
+	ignore(check_stmt fdecl stmt);;
 
 let check_function global_st fdecl =
 	ignore(List.iter check_not_void_formal fdecl.formals);

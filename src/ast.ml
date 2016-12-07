@@ -25,7 +25,6 @@ type expr =
 	| String_lit of string
 	| Matrix_lit of expr list
 	| Id of string
-	(*| Const of primitives * expr (* ?? is this correct *)*)
 	| Noexpr
 	| Null
 	| Binop of expr * op * expr
@@ -36,18 +35,19 @@ type expr =
 	| Matrix_access of string * expr * expr
 	| Matrix_row of string * expr
 	| Matrix_col of string * expr
+	(*| Const of primitives * expr (* ?? is this correct *)*)
 
 (* Statements *)
 type stmt =
 	| Block of stmt list
 	| Expr of expr
 	| If of expr * stmt * stmt
-(*  	| Elseif of expr * stmt * stmt *)
 	| Else of stmt
 	| For of expr * expr * expr * stmt
 	| While of expr * stmt
 	| Return of expr
 	| Break
+	(*  	| Elseif of expr * stmt * stmt *)
 
 (* Function Declarations *)
 type func_decl = {

@@ -40,7 +40,7 @@ let get_arithmetic_binop_type se1 se2 op = function
 		| (Datatype(Float), Datatype(Int))
 		| (Datatype(Float), Datatype(Float)) 	  -> SBinop(se1, op, se2, Datatype(Float))
 		| (Datatype(Int), Datatype(String))
-		| (Datatype(String), Datatype(String))
+		| (Datatype(String), Datatype(Int))
 		| (Datatype(String), Datatype(String)) 	-> SBinop(se1, op, se2, Datatype(String))
 		| (Datatype(Int), Datatype(Int)) 				-> SBinop(se1, op, se2, Datatype(Int))
 		| _ -> raise (Exceptions.InvalidBinopExpression "Arithmetic operators onlu supprts Int, Float, and String")
@@ -54,9 +54,9 @@ and check_assign func_st s e =
 	let se = expr_to_sexpr func_st e in
 	let type2 = get_type_from_sexpr se in
 	match type1, type2 with
-			Datatype(String), Datatype(Int)
-		|   Datatype(Int), Datatype(String) -> SAssign(s, se, type1)
-		|   _ ->
+		Datatype(String), Datatype(Int)
+		| Datatype(Int), Datatype(String) -> SAssign(s, se, type1)
+		| _ ->
 	if type1 = type2
 		then SAssign(s, se, type1)
 	else raise(Exceptions.AssignmentTypeMismatch(Utils.string_of_datatype type1, Utils.string_of_datatype type2))
@@ -67,7 +67,6 @@ and check_unop func_st op e =
 		| Not 		-> t
 		| Inc     -> t
 		| Dec     -> t
-		| _ 			-> raise(Exceptions.InvalidUnaryOperation)
 	in
 	let check_bool_unop x = match x with
 			Not 	-> Datatype(Bool)
@@ -89,10 +88,10 @@ and check_binop func_st e1 op e2 =
 	match op with
 	Equal | Neq -> get_equality_binop_type type1 type2 se1 se2 op
 	| And | Or -> get_logical_binop_type se1 se2 op (type1, type2)
-(*	| Less | Leq | Greater | Geq -> get_comparison_binop_type type1 type2 se1 se2 op *)
 	| Less | Leq | Greater | Geq when type1 = Datatype(Int) && type2 = Datatype(Int) -> SBinop(se1, op, se2, Datatype(Bool))
 	| Add | Mult | Sub | Div -> get_arithmetic_binop_type se1 se2 op (type1, type2)
 	| _ -> raise (Exceptions.InvalidBinopExpression ((Utils.string_of_op op) ^ " is not a supported binary op"))
+	(*	| Less | Leq | Greater | Geq -> get_comparison_binop_type type1 type2 se1 se2 op *)
 
 and expr_to_sexpr func_st = function
 		Num_lit(Int_lit(n))     -> SNum_lit(SInt_lit(n))
@@ -103,11 +102,15 @@ and expr_to_sexpr func_st = function
 	| Null                    -> SNull
 	| Noexpr                  -> SNoexpr
 	| Unop(op, e)             -> check_unop func_st op e
+	| Assign(s, e)   		    	-> check_assign func_st s e
+	| Binop(e1, op, e2)       -> check_binop func_st e1 op e2
 (*
 	|   Call(s, el)         		-> check_call_type env false env s el
-	|   Assign(s, e)   		    	-> check_assign s e
- 	|   Assign(s, e) as ex      -> let lt = get_ID_type s and rt = expr_to_sexpr e in check_assign lt rt
-	|   Binop(e1, op, e2)       -> check_binop e1 op e2
+	|   Matrix_lit(el)          -> check_call_type env false env s el
+	|   Matrix_init(e1, e2, e3) -> check_call_type env false env s el
+	|   Matrix_access(s, el)    -> check_call_type env false env s el
+	|   Matrix_row(s, el)       -> check_call_type env false env s el
+	|   Matrix_col(s, el)       -> check_call_type env false env s el
 *)
 
 and get_type_from_sexpr sexpr = match sexpr with
@@ -122,21 +125,6 @@ and get_type_from_sexpr sexpr = match sexpr with
 	| SAssign(_, _, d) 				-> d
 	| SCall(_, _, d)					-> d
 	| SUnop(_, _, d) 					-> d
-
-let return_to_sreturn func_st e =
-	let se = expr_to_sexpr func_st e in
-		let t = get_type_from_sexpr se in SReturn(se, t)
-
-let stmt_to_sstmt func_st = function
-	Return(e)			-> return_to_sreturn func_st e
-	(*	Block sl 				-> check_sblock sl env
-	| 	Expr e 					-> check_expr_stmt e env
-	| 	If(e, s1, s2) 			-> check_if e s1 s2	env
-	| 	For(e1, e2, e3, e4) 	-> check_for e1 e2 e3 e4 env
-	| 	While(e, s)				-> check_while e s env
-	|  	Break 					-> check_break env (* Need to check if in right context *)
-	|   Continue 				-> check_continue env (* Need to check if in right context *)
-	|   Local(d, s, e) 			-> local_handler d s e env*)
 
 let add_reserved_functions =
 	let reserved_stub name return_type formals =
@@ -211,7 +199,21 @@ let fdecl_to_func_st fdecl =
 	let funcst = List.fold_left (fun m f -> StringMap.add (get_formal_id f) (get_formal_type f) m) StringMap.empty fdecl.formals in
 		List.fold_left (fun m l -> StringMap.add (get_local_id l) (get_local_type l) m) funcst fdecl.locals
 
-let convert_stmt_list_to_sstmt_list fdecl stmt_list = List.map (stmt_to_sstmt (fdecl_to_func_st fdecl)) stmt_list
+let return_to_sreturn func_st e =
+	let se = expr_to_sexpr func_st e in
+		let t = get_type_from_sexpr se in SReturn(se, t)
+
+let rec stmt_to_sstmt func_st = function
+	Return(e)							-> return_to_sreturn func_st e
+	| Break 							-> SBreak
+	|	Block(sl) 					-> SBlock(convert_stmt_list_to_sstmt_list func_st sl)
+	| Expr(e) 						-> SExpr(expr_to_sexpr func_st e)
+	| If(e, s1, s2) 			-> SIf((expr_to_sexpr func_st e), (stmt_to_sstmt func_st s1), (stmt_to_sstmt func_st s2))
+	| Else(s) 						-> SElse(stmt_to_sstmt func_st s)
+	| For(e1, e2, e3, s) 	-> SFor((expr_to_sexpr func_st e1), (expr_to_sexpr func_st e2), (expr_to_sexpr func_st e3), (stmt_to_sstmt func_st s))
+	| While(e, s)					-> SWhile((expr_to_sexpr func_st e), (stmt_to_sstmt func_st s))
+
+and convert_stmt_list_to_sstmt_list func_st stmt_list = List.map (stmt_to_sstmt func_st) stmt_list
 
 let convert_fdecl_to_sfdecl reserved fdecl =
 	{
@@ -219,7 +221,7 @@ let convert_fdecl_to_sfdecl reserved fdecl =
 		sreturn_type 	= fdecl.return_type;
 		sformals 			= fdecl.formals;
 		slocals 			= fdecl.locals;
-		sbody 				= (convert_stmt_list_to_sstmt_list fdecl fdecl.body);
+		sbody 				= (convert_stmt_list_to_sstmt_list (fdecl_to_func_st fdecl) fdecl.body);
 	}
 
 let check_function_return fname fbody returnType =
@@ -243,11 +245,12 @@ let rec check_stmt fdecl = function
 	| If(e, s1, s2) 			-> check_if fdecl s1 s2
 	| While(e, s)					-> check_while fdecl s
 	| For(e1, e2, e3, s) 	-> check_for fdecl s
+	| Else(s)							-> check_else fdecl s
+	| Expr(e)							-> ()
 (*
 	| Break 					-> check_break env (* Need to check if in right context *)
-	| Continue 				-> check_continue env (* Need to check if in right context *)
-*)
 	| _ 				-> ()
+*)
 
 and check_fbody fdecl fbody =
 	ignore(List.iter (check_stmt fdecl) fbody);
@@ -260,6 +263,9 @@ and check_while fdecl stmt =
 	ignore(check_stmt fdecl stmt);
 
 and check_for fdecl stmt =
+	ignore(check_stmt fdecl stmt);
+
+and check_else fdecl stmt =
 	ignore(check_stmt fdecl stmt);;
 
 let check_function global_st fdecl =

@@ -31,7 +31,7 @@ type expr =
 	| Unop of uop * expr
 	| Assign of string * expr
 	| Call of string * expr list
-	| Mat_init of expr * expr * expr
+	| Matrix_init of expr * expr * expr
 	| Matrix_access of string * expr * expr
 	| Matrix_row of string * expr
 	| Matrix_col of string * expr

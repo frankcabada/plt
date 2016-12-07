@@ -22,7 +22,7 @@ let action = if Array.length Sys.argv > 1 then
 
     match action with
         Ast -> print_string(Utils.string_of_program ast)
-      | LLVM_IR -> print_string(Llvm.string_of_llmodule(Codegen.translate ast))
-      | Compile -> let m = Codegen.translate ast in
+      | LLVM_IR -> print_string(Llvm.string_of_llmodule(Codegen.translate sast))
+      | Compile -> let m = Codegen.translate sast in
           Llvm_analysis.assert_valid_module m; (* Useful built-in check *)
           print_module ("hello_world.ll") (m);

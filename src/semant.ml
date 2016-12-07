@@ -106,7 +106,7 @@ let get_arithmetic_binop_type se1 se2 op = function
 
 let return_to_sreturn func_st e =
 	let se = expr_to_sexpr func_st e in
-		let t = get_type_from_sexpr se in SReturn(se, t)
+		let t = get_type_from_sexpr se in SReturn(se)
 
 let stmt_to_sstmt func_st = function
 	Return(e)			-> return_to_sreturn func_st e

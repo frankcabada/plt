@@ -36,12 +36,12 @@ type sexpr =
 (* Statements *)
 type sstmt =
 	  SBlock of sstmt list
-	| SExpr of sexpr * datatype
+	| SExpr of sexpr
 	| SIf of sexpr * sstmt * sstmt
 	| SElse of sstmt
 	| SFor of sexpr * sexpr * sexpr * sstmt
 	| SWhile of sexpr * sstmt
-	| SReturn of sexpr * datatype
+	| SReturn of sexpr
 	| SBreak
 	(* | Elseif of expr * stmt * stmt *)
 

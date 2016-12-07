@@ -14,6 +14,7 @@ let translate(globals, functions) =
   and i32_t   = L.i32_type context
   and i1_t    = L.i1_type context
   and i8_t    = L.i8_type context
+  and float_t = L.float_type context
   and void_t  = L.void_type context in
 
   let ltype_of_typ = function
@@ -71,7 +72,9 @@ let translate(globals, functions) =
                    with Not_found -> StringMap.find n global_vars
     in
     let rec expr builder = function
-        S.SBool_lit b    -> L.const_int i1_t (if b then 1 else 0)
+        S.SNum_lit(SInt_lit(n)) -> L.const_int i32_t n
+      | S.SNum_lit(SFloat_lit(f)) -> L.const_float float_t f 
+      | S.SBool_lit b    -> L.const_int i1_t (if b then 1 else 0)
       | S.SString_lit s  -> L.build_global_stringptr s "tmp" builder
       | S.SNoexpr        -> L.const_int i32_t 0
       | S.SId (s, d)     -> L.build_load (lookup s) s builder
@@ -115,8 +118,8 @@ let translate(globals, functions) =
       | None -> ignore (f builder) in
     let rec stmt builder = function
         S.SBlock sl -> List.fold_left stmt builder sl
-      | S.SExpr (e, d) -> ignore (expr builder e); builder
-      | S.SReturn (e, d) -> ignore (match fdecl.S.sreturn_type with
+      | S.SExpr e -> ignore (expr builder e); builder
+      | S.SReturn e -> ignore (match fdecl.S.sreturn_type with
           A.Datatype(A.Void) -> L.build_ret_void builder
         | _ -> L.build_ret (expr builder e) builder); builder
       | S.SIf (predicate, then_stmt, else_stmt) ->
@@ -158,7 +161,10 @@ let translate(globals, functions) =
       	 ignore (L.build_cond_br bool_val
       	 		body_bb merge_bb pred_builder);
       	 L.builder_at_end context merge_bb
-      (*Need For statements *)
+      | S.SFor (e1, e2, e3, body) -> stmt builder
+          (S.SBlock [S.SExpr e1 ;
+              S.SWhile (e2, S.SBlock [body ;
+                  S.SExpr e3]) ])
   	in
 
     (* Build the code for each statement in the function *)

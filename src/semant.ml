@@ -5,10 +5,69 @@ open Utils
 
 module StringMap = Map.Make(String)
 
+<<<<<<< HEAD
 let rec get_ID_type s func_st =
 	try StringMap.find s func_st
 	with | Not_found -> raise (Exceptions.UndefinedID(s))
 
+=======
+(* Keep this here please
+module SS = Set.Make(
+	struct
+		let compare = Pervasives.compare
+		type t = datatype
+	end )
+*)
+
+let get_equality_binop_type type1 type2 se1 se2 op =
+	if (type1 = Datatype(Float) || type2 = Datatype(Float)) then raise(Exceptions.InvalidBinopExpression "Cannot use equality for floats")
+	else
+	match type1, type2 with
+		Datatype(String), Datatype(Int)
+	|   Datatype(Int), Datatype(String) -> SBinop(se1, op, se2, Datatype(Bool))
+	|   _ ->  
+		if type1 = type2 then SBinop(se1, op, se2, Datatype(Bool))
+		else raise (Exceptions.InvalidBinopExpression "Can only use equality with Int and Strings unless same types") 
+
+let get_logical_binop_type se1 se2 op = function
+	  (Datatype(Bool), Datatype(Bool)) -> SBinop(se1, op, se2, Datatype(Bool))
+	| _ -> raise (Exceptions.InvalidBinopExpression "Can only use Bools for logical operators") 
+
+(* Keep this here for now please
+let get_comparison_binop_type type1 type2 se1 se2 op =
+	let numberics = SS.of_list [Datatype(Int); Datatype(String); Datatype(Float)]
+	in
+		if SS.mem type1 numberics && SS.mem type2 numberics
+			then SBinop(se1, op, se2, Datatype(Bool))
+		else raise (Exceptions.InvalidBinopExpression "Can only use comparison types on Int")
+*)
+let get_arithmetic_binop_type se1 se2 op = function
+			(Datatype(Int), Datatype(Float))
+		| 	(Datatype(Float), Datatype(Int))
+		| 	(Datatype(Float), Datatype(Float)) 	    -> SBinop(se1, op, se2, Datatype(Float))
+		|   (Datatype(Int), Datatype(String))
+		|   (Datatype(String), Datatype(String))
+		|   (Datatype(String), Datatype(String))    -> SBinop(se1, op, se2, Datatype(String))
+		| 	(Datatype(Int), Datatype(Int)) 			-> SBinop(se1, op, se2, Datatype(Int))
+		| _ -> raise (Exceptions.InvalidBinopExpression "Arithmetic operators onlu supprts Int, Float, and String")
+
+let rec get_ID_type s func_st = (* ?? rec ?? *)
+	try StringMap.find s func_st
+	with | Not_found -> raise (Exceptions.UndefinedID(s))
+
+and check_assign func_st s e = 
+	let type1 = get_ID_type s func_st in
+	let se = expr_to_sexpr func_st e in
+	let type2 = get_type_from_sexpr se in  
+	match type1, type2 with
+			Datatype(String), Datatype(Int)
+		|   Datatype(Int), Datatype(String) -> SAssign(s, se, type1)
+		|   _ -> 
+	if type1 = type2
+		then SAssign(s, se, type1)
+	else raise(Exceptions.AssignmentTypeMismatch(Utils.string_of_datatype type1, Utils.string_of_datatype type2))
+
+>>>>>>> 6c97861ed9fb40789aa814799180bf35c105b239
 and check_unop func_st op e =
 	let check_num_unop t = function
 			Neg 		-> t
@@ -29,8 +88,22 @@ and check_unop func_st op e =
 		| Datatype(Bool) 	-> SUnop(op, se, check_bool_unop op)
 		| _ 							-> raise(Exceptions.InvalidUnaryOperation)
 
+and check_binop func_st e1 op e2 =
+	let se1 = expr_to_sexpr func_st e1 in
+	let se2 = expr_to_sexpr func_st e2 in
+	let type1 = get_type_from_sexpr se1 in
+	let type2 = get_type_from_sexpr se2 in
+	match op with
+	Equal | Neq -> get_equality_binop_type type1 type2 se1 se2 op
+	| And | Or -> get_logical_binop_type se1 se2 op (type1, type2)
+(*	| Less | Leq | Greater | Geq -> get_comparison_binop_type type1 type2 se1 se2 op *)
+	| Less | Leq | Greater | Geq when type1 = Datatype(Int) && type2 = Datatype(Int) -> SBinop(se1, op, se2, Datatype(Bool))
+	| Add | Mult | Sub | Div -> get_arithmetic_binop_type se1 se2 op (type1, type2)
+	| _ -> raise (Exceptions.InvalidBinopExpression ((Utils.string_of_op op) ^ " is not a supported binary op"))
+
 and expr_to_sexpr func_st = function
 		Num_lit(Int_lit(n))     -> SNum_lit(SInt_lit(n))
+<<<<<<< HEAD
 	| Num_lit(Float_lit(n))   -> SNum_lit(SFloat_lit(n))
 	| Bool_lit(b)       			-> SBool_lit(b)
 	| String_lit(s)           -> SString_lit(s)
@@ -44,6 +117,18 @@ and expr_to_sexpr func_st = function
  	|   Assign(s, e) as ex      -> let lt = get_ID_type s and rt = expr_to_sexpr e in check_assign lt rt
 	|   Binop(e1, op, e2)       -> check_binop e1 op e2
 *)
+=======
+	|   Num_lit(Float_lit(n))   -> SNum_lit(SFloat_lit(n))
+	|   Bool_lit(b)       		-> SBool_lit(b)
+	|   String_lit(s)           -> SString_lit(s)
+	|   Id(s)                   -> SId(s, get_ID_type s func_st)
+	|   Null                    -> SNull
+	|   Noexpr                  -> SNoexpr
+	(*	|   Call(s, el)         -> check_call_type env false env s el *)
+	|   Assign(s, e)   		    -> check_assign func_st s e 
+	|   Unop(op, e)             -> check_unop func_st op e
+	|   Binop(e1, op, e2)       -> check_binop func_st e1 op e2
+>>>>>>> 6c97861ed9fb40789aa814799180bf35c105b239
 
 and get_type_from_sexpr sexpr = match sexpr with
 		SNum_lit(SInt_lit(_))		-> Datatype(Int)
@@ -58,6 +143,7 @@ and get_type_from_sexpr sexpr = match sexpr with
 	| SCall(_, _, d)					-> d
 	| SUnop(_, _, d) 					-> d
 
+<<<<<<< HEAD
 let get_arithmetic_binop_type se1 se2 op = function
 			(Datatype(Int), Datatype(Float))
 		| (Datatype(Float), Datatype(Int))
@@ -65,6 +151,8 @@ let get_arithmetic_binop_type se1 se2 op = function
 		| (Datatype(Int), Datatype(Int)) 			-> SBinop(se1, op, se2, Datatype(Int))
 		| _ -> raise (Exceptions.InvalidBinopExpression "Arithmetic operators don't support these types")
 
+=======
+>>>>>>> 6c97861ed9fb40789aa814799180bf35c105b239
 let return_to_sreturn func_st e =
 	let se = expr_to_sexpr func_st e in
 		let t = get_type_from_sexpr se in SReturn(se, t)
@@ -219,6 +307,7 @@ let check_functions global_st globals fdecls =
 		(globals, sfdecls)
 		in sast
 
+<<<<<<< HEAD
 (*and check_assign env s e =
 	let se1, env = expr_to_sexpr env s in
 	let se2, env = expr_to_sexpr env e in
@@ -238,6 +327,13 @@ and check_binop env e1 op e2 =
 	| Less | Leq | Greater | Geq -> get_comparison_binop_type type1 type2 se1 se2 op
 	| Add | Mult | Sub | Div -> get_arithmetic_binop_type se1 se2 op (type1, type2)
 	| _ -> raise (Exceptions.InvalidBinopExpression ((Utils.string_of_op op) ^ " is not a supported binary op"))
+=======
+(*let check_fdecl func =
+	List.iter check_not_void_func_vars func.formals;
+	report_duplicate_func (List.map snd func.formals);
+	List.iter check_not_void_func_vars func.locals;
+	report_duplicate_func (List.map snd func.locals);
+>>>>>>> 6c97861ed9fb40789aa814799180bf35c105b239
 
 let built_in_decls = StringMap.add "print_line"
 	{

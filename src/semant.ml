@@ -37,23 +37,23 @@ let update_call_stack env in_for in_while =
 	env_reserved   = env.env_reserved;
 }
 *)
+(* and check_assign s e =
+let lvaluet = get_ID_type s
+and rvaluet = expr_to_sexpr e
+in
+if lvaluet == rvaluet then lvaluet
+else raise(Exceptions.AssignmentTypeMismatch(Utils.string_of_datatype lvaluet, Utils.string_of_datatype rvaluet))
+*)
 let rec get_ID_type s func_st = (* ?? rec ?? *)
 	try StringMap.find s func_st
 	with | Not_found -> raise (Exceptions.UndefinedID(s))
 
-(* and check_assign s e =
-	let lvaluet = get_ID_type s
-	and rvaluet = expr_to_sexpr e
-	in
-	if lvaluet == rvaluet then lvaluet
-	else raise(Exceptions.AssignmentTypeMismatch(Utils.string_of_datatype lvaluet, Utils.string_of_datatype rvaluet))
-*)
 and check_unop func_st op e =
 	let check_num_unop t = function
 			Neg 		-> t
-		|   Not 		-> t
-		|   Inc         -> t
-		|   Dec         -> t
+		| Not 		-> t
+		| Inc     -> t
+		| Dec     -> t
 		| _ 			-> raise(Exceptions.InvalidUnaryOperation)
 	in
 	let check_bool_unop x = match x with
@@ -69,18 +69,20 @@ and check_unop func_st op e =
 		| _ 					-> raise(Exceptions.InvalidUnaryOperation)
 
 and expr_to_sexpr func_st = function
-		Num_lit(Int_lit(n))     -> SNum_lit(SInt_lit(n))
+		Num_lit(Int_lit(n))     	-> SNum_lit(SInt_lit(n))
 	|   Num_lit(Float_lit(n))   -> SNum_lit(SFloat_lit(n))
-	|   Bool_lit(b)       		-> SBool_lit(b)
+	|   Bool_lit(b)       			-> SBool_lit(b)
 	|   String_lit(s)           -> SString_lit(s)
 	|   Id(s)                   -> SId(s, get_ID_type s func_st)
 	|   Null                    -> SNull
 	|   Noexpr                  -> SNoexpr
-	(*	|   Call(s, el)         -> check_call_type env false env s el *)
-(*	|   Assign(s, e)   		    -> check_assign s e
- 	|   Assign(s, e) as ex      -> let lt = get_ID_type s and rt = expr_to_sexpr e in check_assign lt rt *)
 	|   Unop(op, e)             -> check_unop func_st op e
-(*	|   Binop(e1, op, e2)       -> check_binop e1 op e2*)
+(*
+	|   Call(s, el)         		-> check_call_type env false env s el
+	|   Assign(s, e)   		    	-> check_assign s e
+ 	|   Assign(s, e) as ex      -> let lt = get_ID_type s and rt = expr_to_sexpr e in check_assign lt rt
+	|   Binop(e1, op, e2)       -> check_binop e1 op e2
+*)
 
 and get_type_from_sexpr sexpr = match sexpr with
 		SNum_lit(SInt_lit(_))	-> Datatype(Int)
@@ -99,9 +101,7 @@ let get_arithmetic_binop_type se1 se2 op = function
 			(Datatype(Int), Datatype(Float))
 		| 	(Datatype(Float), Datatype(Int))
 		| 	(Datatype(Float), Datatype(Float)) 	-> SBinop(se1, op, se2, Datatype(Float))
-
 		| 	(Datatype(Int), Datatype(Int)) 			-> SBinop(se1, op, se2, Datatype(Int))
-
 		| _ -> raise (Exceptions.InvalidBinopExpression "Arithmetic operators don't support these types")
 
 let return_to_sreturn func_st e =
@@ -172,8 +172,14 @@ let add_to_global_symbol_table globs =
 let get_formal_id = function
 	| Formal(Datatype(p), n) -> n
 
+let get_formal_type = function
+	| Formal(Datatype(p), n) -> Datatype(p)
+
 let get_local_id = function
 	| Local(Datatype(p), n) -> n
+
+let get_local_type = function
+	| Local(Datatype(p), n) -> Datatype(p)
 
 let check_var_decls globals =
 	ignore(List.iter (check_not_void "global") globals);
@@ -184,7 +190,9 @@ let check_var_decls globals =
 
 let fdecl_to_func_st fdecl =
 	let func_st = StringMap.empty in
-		func_st
+	ignore(List.fold_left (fun m f -> StringMap.add (get_formal_id f) (get_formal_type f) m) func_st fdecl.formals);
+	ignore(List.fold_left (fun m l -> StringMap.add (get_local_id l) (get_local_type l) m) func_st fdecl.locals);
+	func_st
 
 let convert_stmt_list_to_sstmt_list fdecl stmt_list = List.map (stmt_to_sstmt (fdecl_to_func_st fdecl)) stmt_list
 
@@ -213,7 +221,7 @@ let check_return fdecl func_st e =
 		if (t=fdecl.return_type) then () else raise(Exceptions.ReturnTypeMismatch(Utils.string_of_datatype t, Utils.string_of_datatype fdecl.return_type))
 
 let check_stmt fdecl = function
-	Return(e) -> check_return fdecl (fdecl_to_func_st fdecl) e
+	Return(e) 	-> check_return fdecl (fdecl_to_func_st fdecl) e
 	| _ 				-> ()
 
 let check_fbody fdecl fbody =
@@ -231,10 +239,7 @@ let check_functions global_st globals fdecls =
 		ignore(report_duplicate "function" (List.map (fun fd -> fd.fname) fdecls));
 		ignore(List.iter (check_function global_st) fdecls);
 		let sfdecls = List.map (convert_fdecl_to_sfdecl add_reserved_functions) fdecls in
-		{
-			var_dec = globals;
-			funcs = sfdecls;
-		}
+		(globals, sfdecls)
 		in sast
 
 (*and check_assign env s e =
@@ -256,16 +261,6 @@ and check_binop env e1 op e2 =
 	| Less | Leq | Greater | Geq -> get_comparison_binop_type type1 type2 se1 se2 op
 	| Add | Mult | Sub | Div -> get_arithmetic_binop_type se1 se2 op (type1, type2)
 	| _ -> raise (Exceptions.InvalidBinopExpression ((Utils.string_of_op op) ^ " is not a supported binary op"))
-
-and num_lit x = function
-		Int_lit(x) -> SInt_lit(x)
-	| Float_lit(x) -> SFloat_lit(x)
-
-let check_fdecl func =
-	List.iter check_not_void_func_vars func.formals;
-	report_duplicate_func (List.map snd func.formals);
-	List.iter check_not_void_func_vars func.locals;
-	report_duplicate_func (List.map snd func.locals);
 
 let built_in_decls = StringMap.add "print_line"
 	{

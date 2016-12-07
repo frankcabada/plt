@@ -21,7 +21,6 @@ type sexpr =
 	| SString_lit of string
 	| SMatrix_lit of sexpr list
 	| SId of string * datatype
-	(*| Const of primitives * expr (* ?? is this correct *)*)
 	| SNoexpr
 	| SNull
 	| SBinop of sexpr * op * sexpr * datatype
@@ -32,18 +31,19 @@ type sexpr =
 	| SMatrix_access of string * sexpr * sexpr
 	| SMatrix_row of string * sexpr
 	| SMatrix_col of string * sexpr
+	(*| Const of primitives * expr (* ?? is this correct *)*)
 
 (* Statements *)
 type sstmt =
 	  SBlock of sstmt list
 	| SExpr of sexpr * datatype
 	| SIf of sexpr * sstmt * sstmt
-(*  	| Elseif of expr * stmt * stmt *)
 	| SElse of sstmt
 	| SFor of sexpr * sexpr * sexpr * sstmt
 	| SWhile of sexpr * sstmt
 	| SReturn of sexpr * datatype
 	| SBreak
+	(* | Elseif of expr * stmt * stmt *)
 
 (* Function Declarations *)
 type sfunc_decl = {
@@ -55,7 +55,8 @@ type sfunc_decl = {
 }
 
 (* All method declarations | Main entry method *)
-type sprogram =  {
+type sprogram = var_dec list * func_decl list
+(*{
 	var_dec : var_dec list;
 	funcs : sfunc_decl list;
-}
+}*)

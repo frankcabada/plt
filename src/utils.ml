@@ -149,13 +149,13 @@ let rec string_of_sstmt indent =
 					String.concat "" (List.map (string_of_sstmt (indent+1)) stmts) ^
 				indent_string ^ "}\n"
 
-		| 	SExpr(expr, _) 				->
+		| 	SExpr(expr) 				->
 				indent_string ^ string_of_sexpr expr ^ ";\n";
 
-		| 	SReturn(expr, _) 			->
+		| 	SReturn(expr) 			->
 				indent_string ^ "return " ^ string_of_sexpr expr ^ ";\n";
 
-		| 	SIf(e, s, SBlock([SExpr(SNoexpr, _)])) 	->
+		| 	SIf(e, s, SBlock([SExpr(SNoexpr)])) 	->
 				indent_string ^ "if (" ^ string_of_sexpr e ^ ")\n" ^
 					(string_of_sstmt (indent+1) s)
 

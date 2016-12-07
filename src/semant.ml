@@ -36,13 +36,13 @@ let get_comparison_binop_type type1 type2 se1 se2 op =
 		else raise (Exceptions.InvalidBinopExpression "Can only use comparison types on Int")
 *)
 let get_arithmetic_binop_type se1 se2 op = function
-			(Datatype(Int), Datatype(Float))
+		  (Datatype(Int), Datatype(Float))
 		| (Datatype(Float), Datatype(Int))
-		| (Datatype(Float), Datatype(Float)) 	  -> SBinop(se1, op, se2, Datatype(Float))
+		| (Datatype(Float), Datatype(Float)) 	-> SBinop(se1, op, se2, Datatype(Float))
 		| (Datatype(Int), Datatype(String))
 		| (Datatype(String), Datatype(Int))
 		| (Datatype(String), Datatype(String)) 	-> SBinop(se1, op, se2, Datatype(String))
-		| (Datatype(Int), Datatype(Int)) 				-> SBinop(se1, op, se2, Datatype(Int))
+		| (Datatype(Int), Datatype(Int)) 		-> SBinop(se1, op, se2, Datatype(Int))
 		| _ -> raise (Exceptions.InvalidBinopExpression "Arithmetic operators onlu supprts Int, Float, and String")
 
 let rec get_ID_type s func_st =
@@ -63,7 +63,7 @@ and check_assign func_st s e =
 
 and check_unop func_st op e =
 	let check_num_unop t = function
-			Neg 		-> t
+		  Neg 		-> t
 		| Not 		-> t
 		| Inc     -> t
 		| Dec     -> t
@@ -77,8 +77,8 @@ and check_unop func_st op e =
 		match t with
 		  Datatype(Int)
 		| Datatype(Float) -> SUnop(op, se, check_num_unop t op)
-		| Datatype(Bool) 	-> SUnop(op, se, check_bool_unop op)
-		| _ 							-> raise(Exceptions.InvalidUnaryOperation)
+		| Datatype(Bool)  -> SUnop(op, se, check_bool_unop op)
+		| _ 			  -> raise(Exceptions.InvalidUnaryOperation)
 
 and check_binop func_st e1 op e2 =
 	let se1 = expr_to_sexpr func_st e1 in
@@ -93,19 +93,25 @@ and check_binop func_st e1 op e2 =
 	| _ -> raise (Exceptions.InvalidBinopExpression ((Utils.string_of_op op) ^ " is not a supported binary op"))
 	(*	| Less | Leq | Greater | Geq -> get_comparison_binop_type type1 type2 se1 se2 op *)
 
+and function_decl s fname_map =
+	try StringMap.find s fname_map
+	with Not_found -> raise (Exceptions.FunctionNotFound(s))
+
 and expr_to_sexpr func_st = function
-		Num_lit(Int_lit(n))     -> SNum_lit(SInt_lit(n))
+	  Num_lit(Int_lit(n))     -> SNum_lit(SInt_lit(n))
 	| Num_lit(Float_lit(n))   -> SNum_lit(SFloat_lit(n))
-	| Bool_lit(b)       			-> SBool_lit(b)
+	| Bool_lit(b)       	  -> SBool_lit(b)
 	| String_lit(s)           -> SString_lit(s)
 	| Id(s)                   -> SId(s, get_ID_type s func_st)
 	| Null                    -> SNull
 	| Noexpr                  -> SNoexpr
 	| Unop(op, e)             -> check_unop func_st op e
-	| Assign(s, e)   		    	-> check_assign func_st s e
+	| Assign(s, e)   		  -> check_assign func_st s e
 	| Binop(e1, op, e2)       -> check_binop func_st e1 op e2
 (*
-	|   Call(s, el)         		-> check_call_type env false env s el
+	| Call(s, el) as call -> let fd = function_decl s in
+		if List.length el != List.length fd.formals then
+			raise (Exceptions.IncorrectNumberOfArguments(fd.fname, List.length el, List.length fd.formals))
 	|   Matrix_lit(el)          -> check_call_type env false env s el
 	|   Matrix_init(e1, e2, e3) -> check_call_type env false env s el
 	|   Matrix_access(s, el)    -> check_call_type env false env s el
@@ -114,17 +120,17 @@ and expr_to_sexpr func_st = function
 *)
 
 and get_type_from_sexpr sexpr = match sexpr with
-		SNum_lit(SInt_lit(_))		-> Datatype(Int)
+	  SNum_lit(SInt_lit(_))		-> Datatype(Int)
 	| SNum_lit(SFloat_lit(_))	-> Datatype(Float)
-	| SBool_lit(_)						-> Datatype(Bool)
-	| SString_lit(_) 					-> Datatype(String)
-	| SNoexpr 								-> Datatype(Void)
-	| SNull										-> Datatype(Void)
-	| SId(_, d) 							-> d
-	| SBinop(_, _, _, d) 			-> d
-	| SAssign(_, _, d) 				-> d
-	| SCall(_, _, d)					-> d
-	| SUnop(_, _, d) 					-> d
+	| SBool_lit(_)				-> Datatype(Bool)
+	| SString_lit(_) 			-> Datatype(String)
+	| SNoexpr 					-> Datatype(Void)
+	| SNull						-> Datatype(Void)
+	| SId(_, d) 				-> d
+	| SBinop(_, _, _, d) 		-> d
+	| SAssign(_, _, d) 			-> d
+	| SCall(_, _, d)			-> d
+	| SUnop(_, _, d) 			-> d
 
 let add_reserved_functions =
 	let reserved_stub name return_type formals =
@@ -215,6 +221,10 @@ let rec stmt_to_sstmt func_st = function
 
 and convert_stmt_list_to_sstmt_list func_st stmt_list = List.map (stmt_to_sstmt func_st) stmt_list
 
+let function_to_fname_map fdecls =
+	List.fold_left
+		(fun m fd -> StringMap.add fd.fname fd m) StringMap.empty fdecls
+
 let convert_fdecl_to_sfdecl reserved fdecl =
 	{
 		sfname 				= fdecl.fname;
@@ -230,9 +240,9 @@ let check_function_return fname fbody returnType =
 		let final_stmt = List.hd (List.rev fbody) in
 			match returnType, final_stmt with
 				Datatype(Void), Return(_) -> raise(Exceptions.AllVoidFunctionsMustNotReturn(fname))
-				|	Datatype(Void), _ 			-> ()
-				| _, Return(_)	 					-> ()
-				| _, _										-> raise(Exceptions.AllNonVoidFunctionsMustEndWithReturn(fname))
+				|	Datatype(Void), _ 	  -> ()
+				| _, Return(_)	 	      -> ()
+				| _, _					  -> raise(Exceptions.AllNonVoidFunctionsMustEndWithReturn(fname))
 
 let check_return fdecl func_st e =
 	let se = expr_to_sexpr func_st e in
@@ -240,13 +250,13 @@ let check_return fdecl func_st e =
 		if (t=fdecl.return_type) then () else raise(Exceptions.ReturnTypeMismatch(Utils.string_of_datatype t, Utils.string_of_datatype fdecl.return_type))
 
 let rec check_stmt fdecl = function
-	Return(e) 						-> check_return fdecl (fdecl_to_func_st fdecl) e
-	| Block(sl) 					-> check_fbody fdecl sl
-	| If(e, s1, s2) 			-> check_if fdecl s1 s2
-	| While(e, s)					-> check_while fdecl s
+	Return(e) 				-> check_return fdecl (fdecl_to_func_st fdecl) e
+	| Block(sl) 			-> check_fbody fdecl sl
+	| If(e, s1, s2) 		-> check_if fdecl s1 s2
+	| While(e, s)			-> check_while fdecl s
 	| For(e1, e2, e3, s) 	-> check_for fdecl s
-	| Else(s)							-> check_else fdecl s
-	| Expr(e)							-> ()
+	| Else(s)				-> check_else fdecl s
+	| Expr(e)				-> ()
 (*
 	| Break 					-> check_break env (* Need to check if in right context *)
 	| _ 				-> ()

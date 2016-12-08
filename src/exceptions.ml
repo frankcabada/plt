@@ -36,6 +36,7 @@ exception MainNotDefined
 exception MatrixRowOnNonMatrix of string
 exception MatrixColOnNonMatrix of string
 exception MatrixAccOnNonMatrix of string
+exception MatrixLitMustBeOneType
 exception MultipleMainsDefined
 exception InvalidWhileStatementType
 exception LocalAssignTypeMismatch of string * string

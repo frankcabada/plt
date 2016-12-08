@@ -81,7 +81,7 @@ and check_matrix_init fname_map func_st e1 e2 e3 =
 	ignore(check_expr_is_int_lit e1);
 	ignore(check_expr_is_int_lit e2);
 	ignore(check_expr_is_int_lit e3);
-	SMatrix_init(expr_to_sexpr fname_map func_st e1, expr_to_sexpr fname_map func_st e2, expr_to_sexpr fname_map func_st e3)
+	SMatrix_init(expr_to_sexpr fname_map func_st e1, expr_to_sexpr fname_map func_st e2, expr_to_sexpr fname_map func_st e3, Datatype(Int))
 
 and check_expr_is_int_lit e = match e with
 	Num_lit(Int_lit(_)) -> ()
@@ -91,14 +91,14 @@ and check_matrix_row fname_map func_st s e =
 	ignore(check_expr_is_int_lit e);
 	let t = get_ID_type s func_st	in
 		match t with
-			Datatype(Matrix(_,_,_)) -> SMatrix_row(s, expr_to_sexpr fname_map func_st e)
+			Datatype(Matrix(d,_,_)) -> SMatrix_row(s, expr_to_sexpr fname_map func_st e, Datatype(d))
 			| _ -> raise(Exceptions.MatrixRowOnNonMatrix(s))
 
 and check_matrix_col fname_map func_st s e =
 	ignore(check_expr_is_int_lit e);
 	let t = get_ID_type s func_st	in
 		match t with
-			Datatype(Matrix(_,_,_)) -> SMatrix_col(s, expr_to_sexpr fname_map func_st e)
+			Datatype(Matrix(d,_,_)) -> SMatrix_col(s, expr_to_sexpr fname_map func_st e, Datatype(d))
 			| _ -> raise(Exceptions.MatrixColOnNonMatrix(s))
 
 and check_matrix_access fname_map func_st s e1 e2 =
@@ -106,12 +106,21 @@ and check_matrix_access fname_map func_st s e1 e2 =
 	ignore(check_expr_is_int_lit e2);
 	let t = get_ID_type s func_st	in
 		match t with
-			Datatype(Matrix(_,_,_)) -> SMatrix_access(s, expr_to_sexpr fname_map func_st e1, expr_to_sexpr fname_map func_st e2)
+			Datatype(Matrix(d,_,_)) -> SMatrix_access(s, expr_to_sexpr fname_map func_st e1, expr_to_sexpr fname_map func_st e2, Datatype(d))
 			| _ -> raise(Exceptions.MatrixAccOnNonMatrix(s))
+
+and check_matrix_lit fname_map func_st el =
+	let sl = List.map (expr_to_sexpr fname_map func_st) el in
+	  	let t = get_type_from_sexpr (List.hd sl) in
+			ignore(List.iter (fun sexpr ->
+						if t = get_type_from_sexpr sexpr then ()
+						else raise(Exceptions.MatrixLitMustBeOneType)) sl);
+			SMatrix_lit(sl, t)
 
 and function_decl s fname_map =
 	try StringMap.find s fname_map
 	with Not_found -> raise (Exceptions.FunctionNotFound(s))
+
 
 and expr_to_sexpr fname_map func_st = function
 	  Num_lit(Int_lit(n))  	-> SNum_lit(SInt_lit(n))
@@ -133,6 +142,7 @@ and expr_to_sexpr fname_map func_st = function
 	| Matrix_row(s, e)       	-> check_matrix_row fname_map func_st s e
 	| Matrix_col(s, e)       	-> check_matrix_col fname_map func_st s e
 	| Matrix_access(s, e1, e2)	-> check_matrix_access fname_map func_st s e1 e2
+	| Matrix_lit(el)			-> check_matrix_lit fname_map func_st el
 
 and get_type_from_sexpr sexpr = match sexpr with
 	  SNum_lit(SInt_lit(_))		-> Datatype(Int)
@@ -146,6 +156,11 @@ and get_type_from_sexpr sexpr = match sexpr with
 	| SAssign(_, _, d) 			-> d
 	| SCall(_, _, d)			-> d
 	| SUnop(_, _, d) 			-> d
+	| SMatrix_init(_, _, _, d)	-> d
+	| SMatrix_access(_, _, _, d)-> d
+	| SMatrix_row(_, _, d)		-> d
+	| SMatrix_col(_, _, d)		-> d
+	| SMatrix_lit(_, d)			-> d
 
 let add_reserved_functions =
 	let reserved_stub name return_type formals =

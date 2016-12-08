@@ -19,7 +19,7 @@ type sexpr =
 	  SNum_lit of snum
 	| SBool_lit of bool
 	| SString_lit of string
-	| SMatrix_lit of sexpr list
+	| SMatrix_lit of sexpr list * datatype
 	| SId of string * datatype
 	| SNoexpr
 	| SNull
@@ -27,10 +27,10 @@ type sexpr =
 	| SUnop of uop * sexpr * datatype
 	| SAssign of string * sexpr * datatype
 	| SCall of string * sexpr list * datatype
-	| SMatrix_init of sexpr * sexpr * sexpr
-	| SMatrix_access of string * sexpr * sexpr
-	| SMatrix_row of string * sexpr
-	| SMatrix_col of string * sexpr
+	| SMatrix_init of sexpr * sexpr * sexpr * datatype
+	| SMatrix_access of string * sexpr * sexpr * datatype
+	| SMatrix_row of string * sexpr * datatype
+	| SMatrix_col of string * sexpr * datatype
 	(*| Const of primitives * expr (* ?? is this correct *)*)
 
 (* Statements *)

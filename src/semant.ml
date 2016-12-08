@@ -139,7 +139,7 @@ and expr_to_sexpr fname_map func_st = function
 	| Unop(op, e)          	-> check_unop fname_map func_st op e
 	| Assign(s, e)   				-> check_assign fname_map func_st s e
 	| Binop(e1, op, e2)    	-> check_binop fname_map func_st e1 op e2
-	| Call(s, el)			-> let fd = function_decl s fname_map in
+	| Call(s, el)						-> let fd = function_decl s fname_map in
 		if List.length el != List.length fd.formals then
 			raise (Exceptions.IncorrectNumberOfArguments(fd.fname, List.length el, List.length fd.formals))
 		else
@@ -173,11 +173,11 @@ and get_type_from_sexpr sexpr = match sexpr with
 let add_reserved_functions =
 	let reserved_stub name return_type formals =
 		{
-			sreturn_type			= return_type;
-			sfname 					= name;
-			sformals 				= formals;
-			slocals					= [];
-			sbody 					= [];
+			return_type			= return_type;
+			fname 					= name;
+			formals 				= formals;
+			locals					= [];
+			body 						= [];
 		}
 	in
 	let void_t = Datatype(Void) in
@@ -254,14 +254,14 @@ let rec stmt_to_sstmt fname_map func_st = function
 
 and convert_stmt_list_to_sstmt_list fname_map func_st stmt_list = List.map (stmt_to_sstmt fname_map func_st) stmt_list
 
-let function_to_fname_map fdecls =
+let fdecls_to_fname_map fdecls =
 	List.fold_left
-		(fun m fd -> StringMap.add fd.fname fd m) StringMap.empty fdecls
+		(fun m fd -> StringMap.add fd.fname fd m) StringMap.empty (fdecls @ add_reserved_functions)
 
-let convert_fdecl_to_sfdecl fname_map reserved fdecl =
+let convert_fdecl_to_sfdecl fname_map fdecl =
 	{
 		sfname 				= fdecl.fname;
-		sreturn_type 	    = fdecl.return_type;
+		sreturn_type 	= fdecl.return_type;
 		sformals 			= fdecl.formals;
 		slocals 			= fdecl.locals;
 		sbody 				= (convert_stmt_list_to_sstmt_list fname_map (fdecl_to_func_st fdecl) fdecl.body);
@@ -283,13 +283,13 @@ let check_return fname_map fdecl func_st e =
 		if (t=fdecl.return_type) then () else raise(Exceptions.ReturnTypeMismatch(Utils.string_of_datatype t, Utils.string_of_datatype fdecl.return_type))
 
 let rec check_stmt fname_map fdecl = function
-	Return(e) 				-> check_return fname_map fdecl (fdecl_to_func_st fdecl) e
-	| Block(sl) 			-> check_fbody fname_map fdecl sl
+	Return(e) 					-> check_return fname_map fdecl (fdecl_to_func_st fdecl) e
+	| Block(sl) 				-> check_fbody fname_map fdecl sl
 	| If(e, s1, s2) 		-> check_if fname_map fdecl s1 s2
-	| While(e, s)			-> check_while fname_map fdecl s
-	| For(e1, e2, e3, s) 	-> check_for fname_map fdecl s
-	| Else(s)				-> check_else fname_map fdecl s
-	| Expr(e)				-> ()
+	| While(e, s)				-> check_while fname_map fdecl s
+	| For(e1, e2, e3, s)-> check_for fname_map fdecl s
+	| Else(s)						-> check_else fname_map fdecl s
+	| Expr(e)						-> ()
 
 and check_fbody fname_map fdecl fbody =
 	ignore(List.iter (check_stmt fname_map fdecl) fbody);
@@ -316,9 +316,9 @@ let check_function fname_map global_st fdecl =
 
 let check_functions global_st globals fdecls =
 	let sast =
-		let fname_map = function_to_fname_map fdecls in
+		let fname_map = fdecls_to_fname_map fdecls in
 		ignore(report_duplicate "function" (List.map (fun fd -> fd.fname) fdecls));
 		ignore(List.iter (check_function fname_map global_st) fdecls);
-		let sfdecls = List.map (convert_fdecl_to_sfdecl fname_map add_reserved_functions) fdecls in
+		let sfdecls = List.map (convert_fdecl_to_sfdecl fname_map) fdecls in
 		(globals, sfdecls)
 		in sast

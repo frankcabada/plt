@@ -166,13 +166,18 @@ let translate(globals, functions) =
               S.SWhile (e2, S.SBlock [body ;
                   S.SExpr e3]) ])
   	in
-
+    let free_var var = 
+      ignore(L.build_free (lookup var) builder);
+    in
+    let free_locals fdecl = 
+      List.iter free_var (List.Map (fun (d, s) -> s) fdecl.S.slocals)
+    in
     (* Build the code for each statement in the function *)
     let builder = stmt builder (S.SBlock fdecl.S.sbody) in
 
     (* Add a return if the last block falls off the end *)
     add_terminal builder (match fdecl.S.sreturn_type with
-        A.Datatype(A.Void) -> L.build_ret_void
+        A.Datatype(A.Void) -> ignore (free_locals fdecl); L.build_ret_void
         | t -> L.build_ret (L.const_int (ltype_of_datatype t) 0))
     in
     List.iter build_function_body functions;

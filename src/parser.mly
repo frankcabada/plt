@@ -13,7 +13,7 @@
 %token PLUS MINUS TIMES DIVIDE ASSIGN INC DEC
 
 /* Types */
-%token INT BOOL VOID STRING FLOAT TRUE FALSE MATRIX
+%token INT BOOL VOID STRING FLOAT TRUE FALSE MATRIX VECTOR
 
 /* Misc */
 %token SEMI COMMA COLON
@@ -73,7 +73,7 @@ primitives:
   | VOID                                                        { Void }
   | FLOAT                                                       { Float }
   | STRING                                                      { String }
-  | MATRIX primitives LBRACKET NUM_LIT RBRACKET                 { Vector($2, $4) }
+  | VECTOR primitives LBRACKET NUM_LIT RBRACKET                 { Vector($2, $4) }
   | MATRIX primitives LBRACKET NUM_LIT COMMA NUM_LIT RBRACKET   { Matrix($2, $4, $6) }
 
 vdecl_list:
@@ -129,6 +129,7 @@ expr:
   | ID LPAREN actuals_opt RPAREN                             { Call($1, $3) }
   | LBRACKET expr COLON expr COLON expr RBRACKET             { Matrix_init($2, $4, $6) }
   | LBRACKET actuals_opt RBRACKET                            { Matrix_lit($2) }
+  | ID LBRACKET expr RBRACKET                                { Vector_access($1, $3) }
   | ID LBRACKET expr COMMA expr RBRACKET                     { Matrix_access($1, $3, $5) }
   | ID LBRACKET expr COMMA COLON RBRACKET                    { Matrix_row($1, $3) } /* ?? that's all */
   | ID LBRACKET COLON COMMA expr RBRACKET                    { Matrix_col($1, $5) } /* ?? that's all */

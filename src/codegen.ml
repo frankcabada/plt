@@ -170,7 +170,7 @@ let translate(globals, functions) =
       ignore(L.build_free (lookup var) builder);
     in
     let free_locals fdecl = 
-      List.iter free_var (List.Map (fun (d, s) -> s) fdecl.S.slocals)
+      List.iter (function A.Local(d, s) -> free_var s) fdecl.S.slocals
     in
     (* Build the code for each statement in the function *)
     let builder = stmt builder (S.SBlock fdecl.S.sbody) in

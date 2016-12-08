@@ -43,7 +43,7 @@ let stringify = function
 
   | SEMI -> "SEMI" | LBRACKET -> "LBRACKET" | RBRACKET -> "RBRACKET"
   | LT -> "LT" | GT -> "GT" | INC -> "INC" | DEC -> "DEC"
-  | COLON -> "COLON" | FOR -> "FOR" | WHILE -> "WHILE" | BREAK -> "BREAK"
+  | COLON -> "COLON" | FOR -> "FOR" | WHILE -> "WHILE"
   | RETURN -> "RETURN"
   | TRUE -> "TRUE" | FALSE -> "FALSE"
   | INT -> "INT" | BOOL -> "BOOL" | VOID -> "VOID" | FLOAT -> "FLOAT"

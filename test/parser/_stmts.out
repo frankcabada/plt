@@ -12,10 +12,7 @@ ACCEPT
       [vdecl_list:]
       [stmt_list:
         [stmt_list:
-          [stmt_list:
-            [stmt_list: [stmt_list:] [stmt: [expr: NUM_LIT] SEMI]]
-            [stmt: BREAK SEMI]
-          ]
+          [stmt_list: [stmt_list:] [stmt: [expr: NUM_LIT] SEMI]]
           [stmt:
             IF
             LPAREN

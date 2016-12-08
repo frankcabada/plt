@@ -4,7 +4,7 @@
 %token LPAREN RPAREN LBRACE RBRACE LBRACKET RBRACKET
 
 /* Control Flow */
-%token IF /*ELSEIF*/ ELSE WHILE FOR RETURN BREAK
+%token IF /*ELSEIF*/ ELSE WHILE FOR RETURN
 
 /* Conditionals */
 %token EQ NEQ LT GT LEQ GEQ AND OR NOT
@@ -93,7 +93,6 @@ stmt_list:
 stmt:
     expr SEMI                                               { Expr $1 }
   | RETURN SEMI                                             { Return Noexpr }
-  | BREAK SEMI                                              { Break }
   | RETURN expr SEMI                                        { Return $2 }
   | LBRACE stmt_list RBRACE                                 { Block(List.rev $2) }
   | IF LPAREN expr RPAREN stmt %prec NOELSE                 { If($3, $5, Block([])) }

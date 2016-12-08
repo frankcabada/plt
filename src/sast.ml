@@ -42,7 +42,6 @@ type sstmt =
 	| SFor of sexpr * sexpr * sexpr * sstmt
 	| SWhile of sexpr * sstmt
 	| SReturn of sexpr
-	| SBreak
 	(* | Elseif of expr * stmt * stmt *)
 
 (* Function Declarations *)

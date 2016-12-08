@@ -207,7 +207,6 @@ let fdecl_to_func_st fdecl =
 
 let rec stmt_to_sstmt func_st = function
 	Return(e)				-> SReturn(expr_to_sexpr func_st e)
-	| Break 				-> SBreak
 	| Block(sl) 			-> SBlock(convert_stmt_list_to_sstmt_list func_st sl)
 	| Expr(e) 				-> SExpr(expr_to_sexpr func_st e)
 	| If(e, s1, s2) 		-> SIf((expr_to_sexpr func_st e), (stmt_to_sstmt func_st s1), (stmt_to_sstmt func_st s2))

@@ -46,16 +46,15 @@ type stmt =
 	| For of expr * expr * expr * stmt
 	| While of expr * stmt
 	| Return of expr
-	| Break
 	(*  	| Elseif of expr * stmt * stmt *)
 
 (* Function Declarations *)
 type func_decl = {
-	return_type 	: datatype;
-	fname 				: string;
-	formals 			: formal list;
-	locals  			: local list;
-	body 					: stmt list;
+	return_type : datatype;
+	fname 		: string;
+	formals 	: formal list;
+	locals  	: local list;
+	body 		: stmt list;
 }
 
 (* Start Symbol *)

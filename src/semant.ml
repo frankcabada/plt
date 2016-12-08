@@ -93,6 +93,38 @@ and check_binop func_st e1 op e2 =
 	| _ -> raise (Exceptions.InvalidBinopExpression ((Utils.string_of_op op) ^ " is not a supported binary op"))
 	(*	| Less | Leq | Greater | Geq -> get_comparison_binop_type type1 type2 se1 se2 op *)
 
+and check_matrix_init func_st e1 e2 e3 =
+	ignore(check_expr_is_int_lit e1);
+	ignore(check_expr_is_int_lit e2);
+	ignore(check_expr_is_int_lit e3);
+	SMatrix_init(expr_to_sexpr func_st e1, expr_to_sexpr func_st e2, expr_to_sexpr func_st e3)
+
+and check_expr_is_int_lit e = match e with
+	Num_lit(Int_lit(_)) -> ()
+	| _ -> raise(Exceptions.InvalidMatrixInit)
+
+and check_matrix_row func_st s e =
+	ignore(check_expr_is_int_lit e);
+	let t = get_ID_type s func_st	in
+		match t with
+			Datatype(Matrix(_,_,_)) -> SMatrix_row(s, expr_to_sexpr func_st e)
+			| _ -> raise(Exceptions.MatrixRowOnNonMatrix(s))
+
+and check_matrix_col func_st s e =
+	ignore(check_expr_is_int_lit e);
+	let t = get_ID_type s func_st	in
+		match t with
+			Datatype(Matrix(_,_,_)) -> SMatrix_col(s, expr_to_sexpr func_st e)
+			| _ -> raise(Exceptions.MatrixColOnNonMatrix(s))
+
+and check_matrix_access func_st s e1 e2 =
+	ignore(check_expr_is_int_lit e1);
+	ignore(check_expr_is_int_lit e2);
+	let t = get_ID_type s func_st	in
+		match t with
+			Datatype(Matrix(_,_,_)) -> SMatrix_access(s, expr_to_sexpr func_st e1, expr_to_sexpr func_st e2)
+			| _ -> raise(Exceptions.MatrixAccOnNonMatrix(s))
+
 and function_decl s fname_map =
 	try StringMap.find s fname_map
 	with Not_found -> raise (Exceptions.FunctionNotFound(s))
@@ -100,37 +132,37 @@ and function_decl s fname_map =
 and expr_to_sexpr func_st = function
 	  Num_lit(Int_lit(n))     -> SNum_lit(SInt_lit(n))
 	| Num_lit(Float_lit(n))   -> SNum_lit(SFloat_lit(n))
-	| Bool_lit(b)       	  -> SBool_lit(b)
+	| Bool_lit(b)       	  	-> SBool_lit(b)
 	| String_lit(s)           -> SString_lit(s)
 	| Id(s)                   -> SId(s, get_ID_type s func_st)
 	| Null                    -> SNull
 	| Noexpr                  -> SNoexpr
 	| Unop(op, e)             -> check_unop func_st op e
-	| Assign(s, e)   		  -> check_assign func_st s e
+	| Assign(s, e)   		  		-> check_assign func_st s e
 	| Binop(e1, op, e2)       -> check_binop func_st e1 op e2
+	| Matrix_init(e1, e2, e3) -> check_matrix_init func_st e1 e2 e3
+	| Matrix_row(s, e)       	-> check_matrix_row func_st s e
+	| Matrix_col(s, e)       	-> check_matrix_col func_st s e
+	| Matrix_access(s, e1, e2)-> check_matrix_access func_st s e1 e2
 (*
 	| Call(s, el) as call -> let fd = function_decl s in
 		if List.length el != List.length fd.formals then
 			raise (Exceptions.IncorrectNumberOfArguments(fd.fname, List.length el, List.length fd.formals))
-	|   Matrix_lit(el)          -> check_call_type env false env s el
-	|   Matrix_init(e1, e2, e3) -> check_call_type env false env s el
-	|   Matrix_access(s, el)    -> check_call_type env false env s el
-	|   Matrix_row(s, el)       -> check_call_type env false env s el
-	|   Matrix_col(s, el)       -> check_call_type env false env s el
+	| Matrix_lit(el)          -> check_matrix_lit el
 *)
 
 and get_type_from_sexpr sexpr = match sexpr with
 	  SNum_lit(SInt_lit(_))		-> Datatype(Int)
 	| SNum_lit(SFloat_lit(_))	-> Datatype(Float)
-	| SBool_lit(_)				-> Datatype(Bool)
-	| SString_lit(_) 			-> Datatype(String)
-	| SNoexpr 					-> Datatype(Void)
-	| SNull						-> Datatype(Void)
-	| SId(_, d) 				-> d
-	| SBinop(_, _, _, d) 		-> d
-	| SAssign(_, _, d) 			-> d
-	| SCall(_, _, d)			-> d
-	| SUnop(_, _, d) 			-> d
+	| SBool_lit(_)						-> Datatype(Bool)
+	| SString_lit(_) 					-> Datatype(String)
+	| SNoexpr 								-> Datatype(Void)
+	| SNull										-> Datatype(Void)
+	| SId(_, d) 							-> d
+	| SBinop(_, _, _, d) 			-> d
+	| SAssign(_, _, d) 				-> d
+	| SCall(_, _, d)					-> d
+	| SUnop(_, _, d) 					-> d
 
 let add_reserved_functions =
 	let reserved_stub name return_type formals =
@@ -252,10 +284,6 @@ let rec check_stmt fdecl = function
 	| For(e1, e2, e3, s) 	-> check_for fdecl s
 	| Else(s)				-> check_else fdecl s
 	| Expr(e)				-> ()
-(*
-	| Break 					-> check_break env (* Need to check if in right context *)
-	| _ 				-> ()
-*)
 
 and check_fbody fdecl fbody =
 	ignore(List.iter (check_stmt fdecl) fbody);

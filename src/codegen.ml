@@ -19,6 +19,7 @@ let translate(globals, functions) =
 
   let ltype_of_typ = function
       A.Int  -> i32_t
+    | A.Float -> float_t
     | A.Bool -> i1_t
     | A.Void -> void_t in
 
@@ -54,11 +55,11 @@ let translate(globals, functions) =
     let builder = (* Create an instruction builder *)
       L.builder_at_end context (L.entry_block the_function) in
 
-  let local_vars =
-    let add_formal m (t, n) p = L.set_value_name n p;
-      let local = L.build_alloca (ltype_of_datatype t) n builder in
-      ignore (L.build_store p local builder);
-      StringMap.add n local m in
+    let local_vars =
+      let add_formal m (t, n) p = L.set_value_name n p;
+        let local = L.build_alloca (ltype_of_datatype t) n builder in
+        ignore (L.build_store p local builder);
+        StringMap.add n local m in
 
     let add_local m (t, n) =
       let local_var = L.build_alloca (ltype_of_datatype t) n builder

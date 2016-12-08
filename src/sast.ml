@@ -28,6 +28,7 @@ type sexpr =
 	| SAssign of string * sexpr * datatype
 	| SCall of string * sexpr list * datatype
 	| SMatrix_init of sexpr * sexpr * sexpr * datatype
+	| SVector_access of string * sexpr * datatype
 	| SMatrix_access of string * sexpr * sexpr * datatype
 	| SMatrix_row of string * sexpr * datatype
 	| SMatrix_col of string * sexpr * datatype

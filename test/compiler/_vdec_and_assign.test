@@ -7,6 +7,7 @@ int main() {
 int foo() {
     int i;
     matrix int [10, 10] a;
+    matrixfloat [5,5] bl;
     a[:,1];
     a[1,:];
     a[1,1];

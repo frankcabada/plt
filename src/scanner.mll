@@ -26,7 +26,8 @@ rule token = parse
 
 (* Types *)
 | "int" { INT } | "float" { FLOAT } | "bool" { BOOL } | "void" { VOID }
-| "String" { STRING } | "true" { TRUE } | "false" { FALSE } | "matrix" { MATRIX }
+| "String" { STRING } | "true" { TRUE } | "false" { FALSE }
+| "matrix" { MATRIX } | "vector" { VECTOR }
 
 (* Misc. *)
 | ';' { SEMI } | ',' { COMMA } | ':' { COLON }

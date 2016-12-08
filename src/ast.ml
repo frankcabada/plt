@@ -32,6 +32,7 @@ type expr =
 	| Assign of string * expr
 	| Call of string * expr list
 	| Matrix_init of expr * expr * expr
+	| Vector_access of string * expr
 	| Matrix_access of string * expr * expr
 	| Matrix_row of string * expr
 	| Matrix_col of string * expr
@@ -51,10 +52,10 @@ type stmt =
 (* Function Declarations *)
 type func_decl = {
 	return_type : datatype;
-	fname 		: string;
-	formals 	: formal list;
-	locals  	: local list;
-	body 		: stmt list;
+	fname 			: string;
+	formals 		: formal list;
+	locals  		: local list;
+	body 				: stmt list;
 }
 
 (* Start Symbol *)

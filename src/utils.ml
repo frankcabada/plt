@@ -10,13 +10,13 @@ let save file string =
 
 (* Print data types *)
 let string_of_primitive = function
-			Int							-> "int"
-	| 	Float						-> "float"
-	| 	Void						-> "void"
-	| 	Bool						-> "bool"
-	| 	String					-> "String"
-	| 	Vector(p,i) 		-> "vector"
-	| 	Matrix(p,i,j) 	-> "matrix"
+	Int				-> "int"
+	| Float			-> "float"
+	| Void			-> "void"
+	| Bool			-> "bool"
+	| String		-> "String"
+	| Vector(p,i) 	-> "vector"
+	| Matrix(p,i,j) -> "matrix"
 
 let rec print_brackets = function
 			1 	-> "[]"
@@ -27,7 +27,7 @@ let string_of_datatype = function
 
 (* Print expressions *)
 let string_of_op = function
-			Add			-> "+"
+	Add				-> "+"
 	 | 	Sub			-> "-"
 	 | 	Mult		-> "*"
 	 | 	Div			-> "/"
@@ -35,7 +35,7 @@ let string_of_op = function
 	 | 	Neq			-> "!="
 	 | 	Less		-> "<"
 	 | 	Leq			-> "<="
-	 | 	Greater	-> ">"
+	 | 	Greater		-> ">"
 	 | 	Geq			-> ">="
 	 | 	And			-> "and"
 	 | 	Or			-> "or"
@@ -51,20 +51,20 @@ let string_of_num = function
 	| Float_lit(x) -> string_of_float x
 
 let rec string_of_bracket_expr = function
-			[] 						-> ""
+	[] 					-> ""
 	| 	head :: tail 	-> "[" ^ (string_of_expr head) ^ "]" ^ (string_of_bracket_expr tail)
 
 and string_of_expr = function
-		Num_lit(i)				-> string_of_num i
-	|	Bool_lit(b)				-> if b then "true" else "false"
-	|	String_lit(s)			-> "\"" ^ (String.escaped s) ^ "\""
-	|	Id(s)							-> s
-	|	Binop(e1, o, e2)	-> (string_of_expr e1) ^ " " ^ (string_of_op o) ^ " " ^ (string_of_expr e2)
-	|	Assign(s, e)			-> (s) ^ " = " ^ (string_of_expr e)
-	|	Noexpr						-> ""
-	|	Call(f, el)				-> f ^ "(" ^ String.concat ", " (List.map string_of_expr el) ^ ")"
-	| Unop(uop, e)				-> (string_of_uop uop) ^ "(" ^ string_of_expr e ^ ")"
-	|	Null							-> "null"
+	Num_lit(i)			-> string_of_num i
+	| Bool_lit(b)		-> if b then "true" else "false"
+	| String_lit(s)		-> "\"" ^ (String.escaped s) ^ "\""
+	| Id(s)				-> s
+	| Binop(e1, o, e2)	-> (string_of_expr e1) ^ " " ^ (string_of_op o) ^ " " ^ (string_of_expr e2)
+	| Assign(s, e)		-> (s) ^ " = " ^ (string_of_expr e)
+	| Noexpr			-> ""
+	| Call(f, el)		-> f ^ "(" ^ String.concat ", " (List.map string_of_expr el) ^ ")"
+	| Unop(uop, e)		-> (string_of_uop uop) ^ "(" ^ string_of_expr e ^ ")"
+	| Null				-> "null"
 ;;
 
 let string_of_snum = function
@@ -81,16 +81,16 @@ and string_of_sarray_primitive = function
 	| 	head :: tail 	-> (string_of_sexpr head) ^ ", " ^ (string_of_sarray_primitive tail)
 
 and string_of_sexpr = function
-		SNum_lit(i)							-> string_of_snum i
-	|	SBool_lit(b)						-> if b then "true" else "false"
-	|	SString_lit(s)					-> "\"" ^ (String.escaped s) ^ "\""
-	|	SId(s, _)								-> s
-	|	SBinop(e1, o, e2, _)		-> (string_of_sexpr e1) ^ " " ^ (string_of_op o) ^ " " ^ (string_of_sexpr e2)
-	|	SAssign(s, e, _)				-> (s) ^ " = " ^ (string_of_sexpr e)
-	|	SNoexpr									-> ""
-	|	SCall(f, el, _)					-> f ^ "(" ^ String.concat ", " (List.map string_of_sexpr el) ^ ")"
-	| SUnop(uop, e, _)				-> (string_of_uop uop) ^ "(" ^ string_of_sexpr e ^ ")"
-	|	SNull										-> "null"
+	SNum_lit(i)				-> string_of_snum i
+	| SBool_lit(b)			-> if b then "true" else "false"
+	| SString_lit(s)		-> "\"" ^ (String.escaped s) ^ "\""
+	| SId(s, _)				-> s
+	| SBinop(e1, o, e2, _)	-> (string_of_sexpr e1) ^ " " ^ (string_of_op o) ^ " " ^ (string_of_sexpr e2)
+	| SAssign(s, e, _)		-> (s) ^ " = " ^ (string_of_sexpr e)
+	| SNoexpr				-> ""
+	| SCall(f, el, _)		-> f ^ "(" ^ String.concat ", " (List.map string_of_sexpr el) ^ ")"
+	| SUnop(uop, e, _)		-> (string_of_uop uop) ^ "(" ^ string_of_sexpr e ^ ")"
+	| SNull					-> "null"
 ;;
 
 let string_of_local_expr = function
@@ -133,7 +133,6 @@ let rec string_of_stmt indent =
 				indent_string ^ "while (" ^ string_of_expr e ^ ")\n" ^
 					string_of_stmt (indent) s
 
-		|  	Break					-> indent_string ^ "break;\n"
 	in get_stmt_string
 
 let string_of_local_sexpr = function
@@ -173,16 +172,15 @@ let rec string_of_sstmt indent =
 				indent_string ^ "while (" ^ string_of_sexpr e ^ ")\n" ^
 					string_of_sstmt (indent) s
 
-		|  	SBreak					-> indent_string ^ "break;\n"
 	in get_stmt_string
 
 (* Print Function *)
 
 let string_of_formal = function
-		Formal(d, s) -> (string_of_datatype d) ^ " " ^ s
+	Formal(d, s) -> (string_of_datatype d) ^ " " ^ s
 
 let string_of_formal_name = function
-		Formal(_, s) -> s
+	Formal(_, s) -> s
 
 let string_of_local = function
 	Local(d, s) -> (string_of_datatype d) ^ " " ^ s

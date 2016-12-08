@@ -31,7 +31,7 @@ type expr =
 	| Unop of uop * expr
 	| Assign of string * expr
 	| Call of string * expr list
-	| Mat_init of expr * expr * expr
+	| Matrix_init of expr * expr * expr
 	| Matrix_access of string * expr * expr
 	| Matrix_row of string * expr
 	| Matrix_col of string * expr
@@ -46,16 +46,15 @@ type stmt =
 	| For of expr * expr * expr * stmt
 	| While of expr * stmt
 	| Return of expr
-	| Break
 	(*  	| Elseif of expr * stmt * stmt *)
 
 (* Function Declarations *)
 type func_decl = {
-	return_type 	: datatype;
-	fname 				: string;
-	formals 			: formal list;
-	locals  			: local list;
-	body 					: stmt list;
+	return_type : datatype;
+	fname 		: string;
+	formals 	: formal list;
+	locals  	: local list;
+	body 		: stmt list;
 }
 
 (* Start Symbol *)

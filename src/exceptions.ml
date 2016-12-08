@@ -37,7 +37,7 @@ exception InvalidWhileStatementType
 exception LocalAssignTypeMismatch of string * string
 exception InvalidUnaryOperation
 exception AssignmentTypeMismatch of string * string
-exception FunctionNotFound of string * string
+exception FunctionNotFound of string
 exception UndefinedID of string
 exception InvalidAccessLHS of string
 exception LHSofRootAccessMustBeIDorFunc of string

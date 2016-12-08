@@ -13,8 +13,8 @@ rule token = parse
 | '[' { LBRACKET } | ']' { RBRACKET }
 
 (* Control Flow *)
-| "if" { IF } (* | "elseif" { ELSEIF } *) | "else" { ELSE } | "while" { WHILE } 
-| "for" { FOR } | "return" { RETURN } | "break" { BREAK }
+| "if" { IF } (* | "elseif" { ELSEIF } *) | "else" { ELSE } | "while" { WHILE }
+| "for" { FOR } | "return" { RETURN }
 
 (* Conditionals *)
 | "==" { EQ } | "!=" { NEQ } | '<' { LT } | ">" { GT }
@@ -48,7 +48,7 @@ and comment = parse
 	"*/" { token lexbuf }
 | _ { comment lexbuf }
 
-(* ?? 
+(* ??
 and comment2 = parse
 	'\n' { token lexbuf}
 | _ { comment2 lexbuf } *)

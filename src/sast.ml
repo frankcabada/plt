@@ -27,7 +27,7 @@ type sexpr =
 	| SUnop of uop * sexpr * datatype
 	| SAssign of string * sexpr * datatype
 	| SCall of string * sexpr list * datatype
-	| SMat_init of sexpr * sexpr * sexpr
+	| SMatrix_init of sexpr * sexpr * sexpr
 	| SMatrix_access of string * sexpr * sexpr
 	| SMatrix_row of string * sexpr
 	| SMatrix_col of string * sexpr
@@ -42,7 +42,6 @@ type sstmt =
 	| SFor of sexpr * sexpr * sexpr * sstmt
 	| SWhile of sexpr * sstmt
 	| SReturn of sexpr
-	| SBreak
 	(* | Elseif of expr * stmt * stmt *)
 
 (* Function Declarations *)

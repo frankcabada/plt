@@ -4,7 +4,7 @@
 %token LPAREN RPAREN LBRACE RBRACE LBRACKET RBRACKET
 
 /* Control Flow */
-%token IF /*ELSEIF*/ ELSE WHILE FOR RETURN BREAK
+%token IF /*ELSEIF*/ ELSE WHILE FOR RETURN
 
 /* Conditionals */
 %token EQ NEQ LT GT LEQ GEQ AND OR NOT
@@ -93,7 +93,6 @@ stmt_list:
 stmt:
     expr SEMI                                               { Expr $1 }
   | RETURN SEMI                                             { Return Noexpr }
-  | BREAK SEMI                                              { Break }
   | RETURN expr SEMI                                        { Return $2 }
   | LBRACE stmt_list RBRACE                                 { Block(List.rev $2) }
   | IF LPAREN expr RPAREN stmt %prec NOELSE                 { If($3, $5, Block([])) }
@@ -128,7 +127,7 @@ expr:
   | ID ASSIGN expr                                           { Assign($1, $3) }
   | LPAREN expr RPAREN                                       { $2 }
   | ID LPAREN actuals_opt RPAREN                             { Call($1, $3) }
-  | LBRACKET expr COLON expr COLON expr RBRACKET             { Mat_init($2, $4, $6) }
+  | LBRACKET expr COLON expr COLON expr RBRACKET             { Matrix_init($2, $4, $6) }
   | LBRACKET actuals_opt RBRACKET                            { Matrix_lit($2) }
   | ID LBRACKET expr COMMA expr RBRACKET                     { Matrix_access($1, $3, $5) }
   | ID LBRACKET expr COMMA COLON RBRACKET                    { Matrix_row($1, $3) } /* ?? that's all */

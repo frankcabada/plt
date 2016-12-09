@@ -13,6 +13,8 @@ let action = if Array.length Sys.argv > 1 then
   List.assoc Sys.argv.(1)
     [ ("-a",Ast); ("-l",LLVM_IR); ("-c",Compile) ]
   else Compile in
+    let outfile = if (Array.length Sys.argv > 2 && action=Compile) then Sys.argv.(2)
+    else "out.ll" in
     let lexbuf = Lexing.from_channel stdin in
     let ast = Parser.program Scanner.token lexbuf in
 
@@ -25,4 +27,4 @@ let action = if Array.length Sys.argv > 1 then
       | LLVM_IR -> print_string(Llvm.string_of_llmodule(Codegen.translate sast))
       | Compile -> let m = Codegen.translate sast in
           Llvm_analysis.assert_valid_module m; (* Useful built-in check *)
-          print_module ("hello_world.ll") (m);
+          print_module (outfile) (m);

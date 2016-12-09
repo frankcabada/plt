@@ -19,7 +19,7 @@ cd ../parser
 ./scripts/clean.sh
 cd ../../hello_world
 ./scripts/build.sh > build.log
-cat hello_world.cmat | ./cmat.native -c
+cat hello_world.cmat | ./cmat.native -c "hello_world.ll"
 lli hello_world.ll > hello_world.res
 diff -q hello_world.out hello_world.res
 ./scripts/clean.sh

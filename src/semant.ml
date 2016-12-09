@@ -75,7 +75,6 @@ and check_binop fname_map func_st e1 op e2 =
 	| Less | Leq | Greater | Geq when type1 = Datatype(Int) && type2 = Datatype(Int) -> SBinop(se1, op, se2, Datatype(Bool))
 	| Add | Mult | Sub | Div -> get_arithmetic_binop_type se1 se2 op (type1, type2)
 	| _ -> raise (Exceptions.InvalidBinopExpression ((Utils.string_of_op op) ^ " is not a supported binary op"))
-	(*	| Less | Leq | Greater | Geq -> get_comparison_binop_type type1 type2 se1 se2 op *)
 
 and check_matrix_init fname_map func_st e1 e2 e3 =
 	ignore(check_expr_is_int_lit e1);

@@ -137,10 +137,7 @@ let translate(globals, functions) =
                          ignore (match fdecl.S.sreturn_type with
                                   A.Datatype(A.Void) -> L.build_ret_void builder
                                 | _ -> L.build_ret (expr builder e) builder); builder
-(*        | S.SReturn e -> ignore (match fdecl.S.sreturn_type with
-            A.Datatype(A.Void) -> L.build_ret_void builder
-          | _ -> L.build_ret (expr builder e) builder); builder
-*)        | S.SIf (predicate, then_stmt, else_stmt) ->
+        | S.SIf (predicate, then_stmt, else_stmt) ->
            let bool_val = expr builder predicate in
            let merge_bb = L.append_block context
                     "merge" the_function in

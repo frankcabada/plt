@@ -8,6 +8,16 @@ module S = Sast
 module StringMap = Map.Make(String)
 
 let translate(globals, functions) =
+  let return_var_mymap = StringMap.empty in
+
+  let fxn_return_var_to_map var fd = 
+    StringMap.add var fd return_var_mymap in
+
+  let find_fxn_return_var var =
+    try StringMap.find var return_var_mymap
+    with Not_found -> 0 in
+
+
   let context = L.global_context() in
   let the_module = L.create_module context "CMAT"
 

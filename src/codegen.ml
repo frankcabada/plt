@@ -15,7 +15,7 @@ let translate(globals, functions) =
 
   let find_fxn_return_var var =
     try StringMap.find var return_var_mymap
-    with Not_found -> 0 in
+    with Not_found -> "" in
 
 
   let context = L.global_context() in
@@ -132,10 +132,15 @@ let translate(globals, functions) =
       let rec stmt builder = function
           S.SBlock sl -> List.fold_left stmt builder sl
         | S.SExpr e -> ignore (expr builder e); builder
-        | S.SReturn e -> ignore (match fdecl.S.sreturn_type with
+        | S.SReturn e -> ignore(match e with 
+                                S.SId(s, d) -> fxn_return_var_to_map (fdecl.S.sfname^"_return") s);
+                         ignore (match fdecl.S.sreturn_type with
+                                  A.Datatype(A.Void) -> L.build_ret_void builder
+                                | _ -> L.build_ret (expr builder e) builder); builder
+(*        | S.SReturn e -> ignore (match fdecl.S.sreturn_type with
             A.Datatype(A.Void) -> L.build_ret_void builder
           | _ -> L.build_ret (expr builder e) builder); builder
-        | S.SIf (predicate, then_stmt, else_stmt) ->
+*)        | S.SIf (predicate, then_stmt, else_stmt) ->
            let bool_val = expr builder predicate in
            let merge_bb = L.append_block context
                     "merge" the_function in

@@ -73,6 +73,10 @@ exception IncorrectNumberOfArguments of string * int * int
 exception ClassIsNotExtendedBy of string * string
 
 (* Codegen Exceptions *)
+exception UnsupportedVectorType
+exception UnsupportedMatrixType
+exception InvalidVectorDimension
+exception InvalidMatrixDimension
 exception InvalidTypePassedToPrintf
 exception InvalidBinaryOperator
 exception UnknownVariable of string

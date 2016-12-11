@@ -6,7 +6,7 @@ echo "Compiling source"
 ./scripts/build.sh > build.log
 echo "Compilation complete"
 
-cat hello_world.cmat | ./cmat.native -c
+cat hello_world.cmat | ./cmat.native -c "hello_world.ll"
 echo ""
 read -p "Press [Enter] key to run Hello World"
 echo ""

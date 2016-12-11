@@ -1,0 +1,26 @@
+int main() {
+    int i;
+    float f;
+    bool b;
+    i=0;
+    f = foo();
+    bar();
+    b = foobar();
+    return i;
+}
+
+float foo() {
+    float j;
+    j=1.1;
+    return j;
+}
+
+void bar() {
+    int k;
+}
+
+bool foobar() {
+    bool b;
+    b = true;
+    return b;
+}

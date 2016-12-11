@@ -11,17 +11,34 @@ let translate(globals, functions) =
   let context = L.global_context() in
   let the_module = L.create_module context "CMAT"
 
-  and i32_t   = L.i32_type context
-  and i1_t    = L.i1_type context
-  and i8_t    = L.i8_type context
-  and float_t = L.float_type context
-  and void_t  = L.void_type context in
+  and i32_t     = L.i32_type context
+  and i1_t      = L.i1_type context
+  and i8_t      = L.i8_type context
+  and float_t   = L.float_type context
+  and void_t    = L.void_type context
+  and array_t   = L.array_type
+  and pointer_t = L.pointer_type in
 
   let ltype_of_typ = function
-      A.Int  -> i32_t
-    | A.Float -> float_t
-    | A.Bool -> i1_t
-    | A.Void -> void_t in
+      A.Int     -> i32_t
+    | A.Float   -> float_t
+    | A.Bool    -> i1_t
+    | A.Void    -> void_t
+    | A.String  -> pointer_t i8_t
+    | A.Vector(typ, size) ->
+        let size' = match size with Int_lit(s) -> s | _ -> raise(Exceptions.InvalidVectorDimension) in
+        (match typ with
+            A.Int      ->  array_t i32_t size'
+            | A.Float  -> array_t float_t size'
+            | _ -> raise(Exceptions.UnsupportedVectorType))
+    | A.Matrix(typ, rows, cols) ->
+        let rows' = match rows with Int_lit(s) -> s | _ -> raise(Exceptions.InvalidMatrixDimension) in
+        let cols' = match cols with Int_lit(s) -> s | _ -> raise(Exceptions.InvalidMatrixDimension) in
+        (match typ with
+            A.Int      -> array_t (array_t i32_t cols') rows'
+            | A.Float  -> array_t (array_t float_t cols') rows'
+            | _ -> raise(Exceptions.UnsupportedMatrixType))
+    in
 
   let ltype_of_datatype = function
     A.Datatype(p) -> ltype_of_typ p in

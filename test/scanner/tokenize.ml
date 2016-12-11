@@ -40,14 +40,13 @@ let stringify = function
   (* Literals *)
   | NUM_LIT(num) -> "NUM_LIT"
   | STRING_LIT(string) -> "STRING_LIT"
-
   | SEMI -> "SEMI" | LBRACKET -> "LBRACKET" | RBRACKET -> "RBRACKET"
   | LT -> "LT" | GT -> "GT" | INC -> "INC" | DEC -> "DEC"
   | COLON -> "COLON" | FOR -> "FOR" | WHILE -> "WHILE"
   | RETURN -> "RETURN"
   | TRUE -> "TRUE" | FALSE -> "FALSE"
   | INT -> "INT" | BOOL -> "BOOL" | VOID -> "VOID" | FLOAT -> "FLOAT"
-  | STRING -> "STRING" |NULL -> "NULL" | MATRIX -> "MATRIX"
+  | STRING -> "STRING" |NULL -> "NULL" | MATRIX -> "MATRIX" | VECTOR -> "VECTOR"
 
 let _ =
   let lexbuf = Lexing.from_channel stdin in

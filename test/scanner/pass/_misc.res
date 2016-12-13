@@ -1,3 +1,0 @@
-SEMI
-COMMA
-COLON

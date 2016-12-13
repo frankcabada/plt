@@ -1,3 +1,3 @@
 #!/bin/bash
 
-rm -f *.cmo *.cmi *.res parser.* scanner.* ast.* parserize
+rm -f *.cmo *.cmi pass/*.res fail/*.res parser.* scanner.* ast.* parserize

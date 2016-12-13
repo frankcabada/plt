@@ -1,4 +1,0 @@
-INT
-ID
-ASSIGN
-NUM_LIT

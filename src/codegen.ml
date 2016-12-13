@@ -8,6 +8,16 @@ module S = Sast
 module StringMap = Map.Make(String)
 
 let translate(globals, functions) =
+  let return_var_mymap = StringMap.empty in
+
+  let fxn_return_var_to_map var fd = 
+    ignore(StringMap.add var fd return_var_mymap) in
+
+  let find_fxn_return_var var =
+    try StringMap.find var return_var_mymap
+    with Not_found -> "" in
+
+
   let context = L.global_context() in
   let the_module = L.create_module context "CMAT"
 
@@ -139,9 +149,12 @@ let translate(globals, functions) =
       let rec stmt builder = function
           S.SBlock sl -> List.fold_left stmt builder sl
         | S.SExpr e -> ignore (expr builder e); builder
-        | S.SReturn e -> ignore (match fdecl.S.sreturn_type with
-            A.Datatype(A.Void) -> L.build_ret_void builder
-          | _ -> L.build_ret (expr builder e) builder); builder
+        | S.SReturn e -> ignore(match e with 
+                                S.SId(s, d) -> (fxn_return_var_to_map (fdecl.S.sfname ^ "_return") s)
+                               | _ -> ());
+                         ignore(match fdecl.S.sreturn_type with
+                                  A.Datatype(A.Void) -> L.build_ret_void builder
+                                | _ -> L.build_ret (expr builder e) builder); builder
         | S.SIf (predicate, then_stmt, else_stmt) ->
            let bool_val = expr builder predicate in
            let merge_bb = L.append_block context
@@ -189,16 +202,23 @@ let translate(globals, functions) =
       let free_var var =
         ignore(L.build_free (lookup var) builder);
       in
-      let free_locals fdecl =
-        List.iter (function A.Local(d, s) -> free_var s) fdecl.S.slocals
+      let free_locals fdecl var =
+        List.iter (function A.Local(d, s) -> ignore(match var with 
+                             "" -> free_var s
+                          |  _ -> let id = find_fxn_return_var var in
+                                  (match id with 
+                                    s -> print_string s
+                                  | _ -> free_var s))) fdecl.S.slocals
       in
       (* Build the code for each statement in the function *)
       let builder = stmt builder (S.SBlock fdecl.S.sbody) in
 
       (* Add a return if the last block falls off the end *)
       add_terminal builder (match fdecl.S.sreturn_type with
-          A.Datatype(A.Void) -> ignore (free_locals fdecl); L.build_ret_void
-          | t -> L.build_ret (L.const_int (ltype_of_datatype t) 0))
+          A.Datatype(A.Void) -> ignore (free_locals fdecl ""); L.build_ret_void
+          | t -> ignore (free_locals fdecl (fdecl.S.sfname ^ "_return")); 
+                L.build_ret (L.const_int (ltype_of_datatype t) 0))
       in
       List.iter build_function_body functions;
+      (*TODO: FREE EVERYTHING HERE -> LAST LINE OF LLVM CODE*)
       the_module

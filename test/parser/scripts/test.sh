@@ -187,11 +187,11 @@ diff fail/_postfix_unop.out fail/_postfix_unop.res > /dev/null
 if [ $? = 0 ]; then
   echo -e "\e[0;32m"
   echo "-----------------------------------------"
-  echo "|  PARSER: BAD MATRIX DECL TEST PASSED  |"
+  echo "|   PARSER: POSTFIX UNOP TEST PASSED    |"
   echo "-----------------------------------------"
 else
   echo -e "\e[0;31m"
   echo "-----------------------------------------"
-  echo "|  PARSER: BAD MATRIX DECL TEST FAILED  |"
+  echo "|   PARSER: POSTFIX UNOP TEST FAILED    |"
   echo "-----------------------------------------"
 fi

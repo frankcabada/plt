@@ -1,4 +1,4 @@
 int main() {
-  print_line("Hello world!");
+  print_string("Hello world!");
   return 0;
 }

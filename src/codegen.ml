@@ -1,6 +1,7 @@
 open Llvm
 open Ast
 open Sast
+open Exceptions
 module L = Llvm
 module A = Ast
 module S = Sast
@@ -8,47 +9,20 @@ module S = Sast
 module StringMap = Map.Make(String)
 
 let translate(globals, functions) =
-  let return_var_mymap = StringMap.empty in
-
-  let fxn_return_var_to_map var fd = 
-    ignore(StringMap.add var fd return_var_mymap) in
-
-  let find_fxn_return_var var =
-    try StringMap.find var return_var_mymap
-    with Not_found -> "" in
-
-
   let context = L.global_context() in
   let the_module = L.create_module context "CMAT"
 
-  and i32_t     = L.i32_type context
-  and i1_t      = L.i1_type context
-  and i8_t      = L.i8_type context
-  and float_t   = L.float_type context
-  and void_t    = L.void_type context
-  and array_t   = L.array_type
-  and pointer_t = L.pointer_type in
+  and i32_t   = L.i32_type context
+  and i1_t    = L.i1_type context
+  and i8_t    = L.i8_type context
+  and float_t = L.float_type context
+  and void_t  = L.void_type context in
 
   let ltype_of_typ = function
-      A.Int     -> i32_t
-    | A.Float   -> float_t
-    | A.Bool    -> i1_t
-    | A.Void    -> void_t
-    | A.String  -> pointer_t i8_t
-    | A.Vector(typ, size) ->
-        let size' = match size with Int_lit(s) -> s | _ -> raise(Exceptions.InvalidVectorDimension) in
-        (match typ with
-            A.Int      ->  array_t i32_t size'
-            | A.Float  -> array_t float_t size'
-            | _ -> raise(Exceptions.UnsupportedVectorType))
-    | A.Matrix(typ, rows, cols) ->
-        let rows' = match rows with Int_lit(s) -> s | _ -> raise(Exceptions.InvalidMatrixDimension) in
-        let cols' = match cols with Int_lit(s) -> s | _ -> raise(Exceptions.InvalidMatrixDimension) in
-        (match typ with
-            A.Int      -> array_t (array_t i32_t cols') rows'
-            | A.Float  -> array_t (array_t float_t cols') rows'
-            | _ -> raise(Exceptions.UnsupportedMatrixType))
-    in
+      A.Int  -> i32_t
+    | A.Float -> float_t
+    | A.Bool -> i1_t
+    | A.Void -> void_t in
 
   let ltype_of_datatype = function
     A.Datatype(p) -> ltype_of_typ p in
@@ -81,6 +55,13 @@ let translate(globals, functions) =
 
     let builder = (* Create an instruction builder *)
       L.builder_at_end context (L.entry_block the_function) in
+
+    let int_format_str =
+      L.build_global_stringptr "%d\n" "fmt" builder
+    and
+      float_format_str =
+      L.build_global_stringptr "%f\n" "fmt" builder in
+
 
     let local_vars =
       let add_formal m (t, n) p = L.set_value_name n p;
@@ -131,10 +112,13 @@ let translate(globals, functions) =
             | A.Not   -> L.build_not e' "tmp" builder
             | A.Inc   -> L.build_add e' (L.const_int i32_t 1) "tmp" builder
             | A.Dec   -> L.build_sub e' (L.const_int i32_t 1) "tmp" builder)
-        | S.SCall ("print_line", [e], d) ->
-            L.build_call printf_func
-              [| (expr builder e) |]
-              "printf" builder
+        | S.SCall ("print_string", [e], d) -> let get_string = function S.SString_lit s -> s | _ -> "" in
+            let s_ptr = L.build_global_stringptr ((get_string e) ^ "\n") ".str" builder in
+            L.build_call printf_func [| s_ptr |] "printf" builder
+        | S.SCall ("print_int", [e], d) ->
+            L.build_call printf_func [| int_format_str ; (expr builder e) |] "printf" builder
+        | S.SCall ("print_float", [e], d) ->
+            L.build_call printf_func [| float_format_str ; (expr builder e) |] "printf" builder
         | S.SCall (f, act, d) ->
             let (fdef, fdecl) = StringMap.find f function_decls in
             let actuals = List.rev (List.map (expr builder) (List.rev act)) in
@@ -149,12 +133,9 @@ let translate(globals, functions) =
       let rec stmt builder = function
           S.SBlock sl -> List.fold_left stmt builder sl
         | S.SExpr e -> ignore (expr builder e); builder
-        | S.SReturn e -> ignore(match e with 
-                                S.SId(s, d) -> (fxn_return_var_to_map (fdecl.S.sfname ^ "_return") s)
-                               | _ -> ());
-                         ignore(match fdecl.S.sreturn_type with
-                                  A.Datatype(A.Void) -> L.build_ret_void builder
-                                | _ -> L.build_ret (expr builder e) builder); builder
+        | S.SReturn e -> ignore (match fdecl.S.sreturn_type with
+            A.Datatype(A.Void) -> L.build_ret_void builder
+          | _ -> L.build_ret (expr builder e) builder); builder
         | S.SIf (predicate, then_stmt, else_stmt) ->
            let bool_val = expr builder predicate in
            let merge_bb = L.append_block context
@@ -202,13 +183,8 @@ let translate(globals, functions) =
       let free_var var =
         ignore(L.build_free (lookup var) builder);
       in
-      let free_locals fdecl var =
-        List.iter (function A.Local(d, s) -> ignore(match var with 
-                             "" -> free_var s
-                          |  _ -> let id = find_fxn_return_var var in
-                                  (match id with 
-                                    s -> print_string s
-                                  | _ -> free_var s))) fdecl.S.slocals
+      let free_locals fdecl =
+        List.iter (function A.Local(d, s) -> free_var s) fdecl.S.slocals
       in
       let free_main = ignore(match fdecl.S.sfname with 
                           "main" -> let map_list = StringMap.fold (fun a b list1-> (a,b) :: list1) return_var_mymap [] in

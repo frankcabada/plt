@@ -27,7 +27,7 @@ let get_arithmetic_binop_type se1 se2 op = function
 		| (Datatype(String), Datatype(Int))
 		| (Datatype(String), Datatype(String)) 	-> SBinop(se1, op, se2, Datatype(String))
 		| (Datatype(Int), Datatype(Int)) 		-> SBinop(se1, op, se2, Datatype(Int))
-		| _ -> raise (Exceptions.InvalidBinopExpression "Arithmetic operators onlu supprts Int, Float, and String")
+		| _ -> raise (Exceptions.InvalidBinopExpression "Arithmetic operators only supports Int, Float, and String")
 
 let rec get_ID_type s func_st =
 	try StringMap.find s func_st
@@ -138,7 +138,7 @@ and expr_to_sexpr fname_map func_st = function
 	| Unop(op, e)          	-> check_unop fname_map func_st op e
 	| Assign(s, e)   				-> check_assign fname_map func_st s e
 	| Binop(e1, op, e2)    	-> check_binop fname_map func_st e1 op e2
-	| Call(s, el)						-> let fd = function_decl s fname_map in
+	| Call(s, el)			-> let fd = function_decl s fname_map in
 		if List.length el != List.length fd.formals then
 			raise (Exceptions.IncorrectNumberOfArguments(fd.fname, List.length el, List.length fd.formals))
 		else
@@ -181,9 +181,13 @@ let add_reserved_functions =
 	in
 	let void_t = Datatype(Void) in
 	let str_t = Datatype(String) in
+	let i32_t = Datatype(Int) in
+	let float_t = Datatype(Float) in
 	let mf t n = Formal(t, n) in (* Make formal *)
 	let reserved = [
-		reserved_stub "print_line" 	(void_t) 	([mf str_t "string_in"]);
+		reserved_stub "print_string" 	(void_t) 	([mf str_t "string_in"]);
+		reserved_stub "print_int"		(void_t)	([mf i32_t "int_in"]);
+		reserved_stub "print_float"		(void_t)	([mf float_t "float_in"]);
 	] in
 	reserved
 

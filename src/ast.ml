@@ -43,11 +43,9 @@ type stmt =
 	| Block of stmt list
 	| Expr of expr
 	| If of expr * stmt * stmt
-	| Else of stmt
 	| For of expr * expr * expr * stmt
 	| While of expr * stmt
 	| Return of expr
-	(*  	| Elseif of expr * stmt * stmt *)
 
 (* Function Declarations *)
 type func_decl = {

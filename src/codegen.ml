@@ -216,8 +216,8 @@ let translate(globals, functions) =
                              "" -> free_var s
                           |  _ -> let id = find_fxn_return_var var in
                                   (match id with 
-                                    s -> print_string s
-                                  | _ -> free_var s))) fdecl.S.slocals (*??this pattern matching not used??*)
+                                    "" -> free_var s
+                                  |  s -> ()))) fdecl.S.slocals
       in
       let free_main = ignore(match fdecl.S.sfname with 
                           "main" -> let map_list = StringMap.fold (fun a b list1-> (a,b) :: list1) return_var_mymap [] in

@@ -39,11 +39,9 @@ type sstmt =
 	  SBlock of sstmt list
 	| SExpr of sexpr
 	| SIf of sexpr * sstmt * sstmt
-	| SElse of sstmt
 	| SFor of sexpr * sexpr * sexpr * sstmt
 	| SWhile of sexpr * sstmt
 	| SReturn of sexpr
-	(* | Elseif of expr * stmt * stmt *)
 
 (* Function Declarations *)
 type sfunc_decl = {

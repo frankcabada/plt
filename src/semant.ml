@@ -8,16 +8,15 @@ module StringMap = Map.Make(String)
 let get_equality_binop_type type1 type2 se1 se2 op =
 	if (type1 = Datatype(Float) || type2 = Datatype(Float)) then raise(Exceptions.InvalidBinopExpression "Cannot use equality for floats")
 	else
-	match type1, type2 with
-		Datatype(String), Datatype(Int)
-	|   Datatype(Int), Datatype(String) -> SBinop(se1, op, se2, Datatype(Bool))
-	|   _ ->
-		if type1 = type2 then SBinop(se1, op, se2, Datatype(Bool))
-		else raise (Exceptions.InvalidBinopExpression "Can only use equality with Int and Strings unless same types")
+		if type1 = type2 && (type1 = Datatype(String) || type1 = Datatype(Int)) then SBinop(se1, op, se2, Datatype(Bool))
+		else raise (Exceptions.InvalidBinopExpression("Can only use equality operators with ints and Strings"))
 
 let get_logical_binop_type se1 se2 op = function
-	  (Datatype(Bool), Datatype(Bool)) -> SBinop(se1, op, se2, Datatype(Bool))
-	| _ -> raise (Exceptions.InvalidBinopExpression "Can only use Bools for logical operators")
+		(Datatype(Int), Datatype(Int))
+		| (Datatype(Float), Datatype(Float))
+		| (Datatype(Int), Datatype(Float))
+		| (Datatype(Float), Datatype(Int)) -> SBinop(se1, op, se2, Datatype(Bool))
+		| _ -> raise (Exceptions.InvalidBinopExpression "Can only use Bools for logical operators")
 
 let get_arithmetic_binop_type se1 se2 op = function
 		  (Datatype(Int), Datatype(Float))
@@ -46,6 +45,10 @@ let get_arithmetic_binop_type se1 se2 op = function
 						SBinop(se1, op, se2, Datatype(Matrix(typ1, i1, j2)))
 					else raise(Exceptions.MismatchedMatricesForMult("Matrices M1(i1,j1) and M2(i2,j2) must have j1 = i2 and be of same type to be multiplied"))
 				| _ -> raise(Exceptions.UnsupportedMatrixBinop("Cannot divide matrices")))
+		| (Datatype(Int), Datatype(Vector(Int, n))) -> SBinop(se1, op, se2, Datatype(Vector(Int, n)))
+		| (Datatype(Int), Datatype(Matrix(Int,i,j))) -> SBinop(se1, op, se2, Datatype(Matrix(Int, i, j)))
+		| (Datatype(Float), Datatype(Vector(Float, n))) -> SBinop(se1, op, se2, Datatype(Vector(Float, n)))
+		| (Datatype(Float), Datatype(Matrix(Float,i,j))) -> SBinop(se1, op, se2, Datatype(Matrix(Float, i, j)))
 		| _ -> raise (Exceptions.InvalidBinopExpression("Arithmetic operators on unsupported type"))
 
 let rec get_ID_type s func_st =
@@ -290,7 +293,9 @@ let convert_fdecl_to_sfdecl fname_map fdecl =
 
 let check_function_return fname fbody returnType =
 	let len = List.length fbody in
-		if len = 0 then () else
+		if len = 0 && returnType != Datatype(Void) then
+			raise(Exceptions.AllNonVoidFunctionsMustEndWithReturn(fname))
+		else
 		let final_stmt = List.hd (List.rev fbody) in
 			match returnType, final_stmt with
 				Datatype(Void), Return(_) -> raise(Exceptions.AllVoidFunctionsMustNotReturn(fname))

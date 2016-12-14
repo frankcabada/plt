@@ -24,7 +24,7 @@ let translate(globals, functions) =
   and i32_t     = L.i32_type context
   and i1_t      = L.i1_type context
   and i8_t      = L.i8_type context
-  and float_t   = L.float_type context
+  and float_t   = L.double_type context
   and void_t    = L.void_type context
   and array_t   = L.array_type
   and pointer_t = L.pointer_type in
@@ -229,9 +229,9 @@ let translate(globals, functions) =
 
       (* Add a return if the last block falls off the end *)
       add_terminal builder (match fdecl.S.sreturn_type with
-          A.Datatype(A.Void) -> ignore (free_locals fdecl ""); L.build_ret_void
-          | t -> ignore (free_locals fdecl (fdecl.S.sfname ^ "_return"));
-                         free_main;
+          A.Datatype(A.Void) -> (*ignore (free_locals fdecl "");*) L.build_ret_void
+          | t -> (*ignore (free_locals fdecl (fdecl.S.sfname ^ "_return"));
+                         free_main;*)
                          L.build_ret (L.const_int (ltype_of_datatype t) 0))
       in
       (*List.iter build_function_body functions;*)

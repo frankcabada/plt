@@ -1,0 +1,29 @@
+int main() {
+    int i;
+    int j;
+    int k;
+    float f;
+    float g;
+    float h;
+    i = 2;
+    j = 4;
+    f = 2.2;
+    g = 3.3;
+    k = i+j;
+    print_int(k);
+    k = i-j;
+    print_int(k);
+    k = i*j;
+    print_int(k);
+    k = j/i;
+    print_int(k);
+    /*h = g+f;
+    print_float(h);
+    h = g-f;
+    print_float(h);
+    h = g*f;
+    print_float(h);
+    h = g/f;
+    print_float(h);*/
+    return 0;
+}

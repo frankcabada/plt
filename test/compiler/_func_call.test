@@ -1,6 +1,7 @@
 int main() {
     int i;
-    foo(i);
+    i=4;
+    print_int(foo(i));
     return 0;
 }
 

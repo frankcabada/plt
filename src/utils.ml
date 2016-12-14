@@ -132,9 +132,6 @@ let rec string_of_stmt indent =
 				indent_string ^ "else\n" ^
 					string_of_stmt (indent+1) s2
 
-		|   Else(s) ->
-				indent_string ^ "else\n" ^ string_of_stmt (indent+1) s
-
 		| 	For(e1, e2, e3, s) 		->
 				indent_string ^ "for (" ^ string_of_expr e1  ^ " ; " ^ string_of_expr e2 ^ " ; " ^ string_of_expr e3  ^ ")\n" ^
 					string_of_stmt (indent) s
@@ -180,9 +177,6 @@ let rec string_of_sstmt indent =
 
 		| 	SWhile(e, s) 			->
 				indent_string ^ "while (" ^ string_of_sexpr e ^ ")\n" ^
-					string_of_sstmt (indent) s
-		|   SElse(s) ->
-				indent_string ^ "else\n" ^
 					string_of_sstmt (indent) s
 
 	in get_stmt_string

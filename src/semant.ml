@@ -270,7 +270,6 @@ let rec stmt_to_sstmt fname_map func_st = function
 	| Block(sl) 			-> SBlock(convert_stmt_list_to_sstmt_list fname_map func_st sl)
 	| Expr(e) 				-> SExpr(expr_to_sexpr fname_map func_st e)
 	| If(e, s1, s2) 		-> SIf((expr_to_sexpr fname_map func_st e), (stmt_to_sstmt fname_map func_st s1), (stmt_to_sstmt fname_map func_st s2))
-	| Else(s) 				-> SElse(stmt_to_sstmt fname_map func_st s)
 	| For(e1, e2, e3, s) 	-> SFor((expr_to_sexpr fname_map func_st e1), (expr_to_sexpr fname_map func_st e2), (expr_to_sexpr fname_map func_st e3), (stmt_to_sstmt fname_map func_st s))
 	| While(e, s)			-> SWhile((expr_to_sexpr fname_map func_st e), (stmt_to_sstmt fname_map func_st s))
 
@@ -310,7 +309,6 @@ let rec check_stmt fname_map fdecl = function
 	| If(e, s1, s2) 		-> check_if fname_map fdecl s1 s2
 	| While(e, s)				-> check_while fname_map fdecl s
 	| For(e1, e2, e3, s)-> check_for fname_map fdecl s
-	| Else(s)						-> check_else fname_map fdecl s
 	| Expr(e)						-> ()
 
 and check_fbody fname_map fdecl fbody =

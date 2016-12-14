@@ -210,6 +210,11 @@ let translate(globals, functions) =
                                     s -> print_string s
                                   | _ -> free_var s))) fdecl.S.slocals
       in
+      let free_main = ignore(match fdecl.S.sfname with 
+                          "main" -> let map_list = StringMap.fold (fun a b list1-> (a,b) :: list1) return_var_mymap [] in
+                                    List.iter (fun (x,y) -> free_var y) map_list
+                        | _ -> ());
+      in
       (* Build the code for each statement in the function *)
       let builder = stmt builder (S.SBlock fdecl.S.sbody) in
 
@@ -217,8 +222,14 @@ let translate(globals, functions) =
       add_terminal builder (match fdecl.S.sreturn_type with
           A.Datatype(A.Void) -> ignore (free_locals fdecl ""); L.build_ret_void
           | t -> ignore (free_locals fdecl (fdecl.S.sfname ^ "_return")); 
-                L.build_ret (L.const_int (ltype_of_datatype t) 0))
+                         free_main;
+                         L.build_ret (L.const_int (ltype_of_datatype t) 0))
       in
-      List.iter build_function_body functions;
+      (*List.iter build_function_body functions;*)
+
+      List.iter build_function_body (match functions with 
+                                       head :: tail -> List.rev functions
+                                     | head -> functions);
+
       (*TODO: FREE EVERYTHING HERE -> LAST LINE OF LLVM CODE*)
-      the_module
+      the_module (*returned as a module to whatever called this*)

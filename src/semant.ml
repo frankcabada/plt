@@ -23,11 +23,30 @@ let get_arithmetic_binop_type se1 se2 op = function
 		  (Datatype(Int), Datatype(Float))
 		| (Datatype(Float), Datatype(Int))
 		| (Datatype(Float), Datatype(Float)) 	-> SBinop(se1, op, se2, Datatype(Float))
-		| (Datatype(Int), Datatype(String))
-		| (Datatype(String), Datatype(Int))
-		| (Datatype(String), Datatype(String)) 	-> SBinop(se1, op, se2, Datatype(String))
+		| (Datatype(String), Datatype(String)) 	->
+			(match op with
+				Add -> SBinop(se1, op, se2, Datatype(String))
+				| _ -> raise(Exceptions.UnsupportedStringBinop("Cannot subtract, multiply, or divide strings")))
 		| (Datatype(Int), Datatype(Int)) 		-> SBinop(se1, op, se2, Datatype(Int))
-		| _ -> raise (Exceptions.InvalidBinopExpression "Arithmetic operators only supports Int, Float, and String")
+		| (Datatype(Vector(typ1, n1)), Datatype(Vector(typ2, n2))) ->
+			(match op with
+				Add | Sub 	->
+					if typ1=typ2 && n1=n2 then
+						SBinop(se1, op, se2, Datatype(Vector(typ1, n1)))
+					else raise(Exceptions.MismatchedVectorsForBinop("Vectors must be same type and size for +/-"))
+				| _ 		-> raise(Exceptions.UnsupportedVectorBinop("Cannot multiply or divide vectors")))
+		| (Datatype(Matrix(typ1, i1, j1)), Datatype(Matrix(typ2, i2, j2))) ->
+			(match op with
+				Add | Sub 	->
+					if typ1=typ2 && i1=i2 && j1=j2 then
+						SBinop(se1, op, se2, Datatype(Matrix(typ1, i1, j2)))
+					else raise(Exceptions.MismatchedMatricesForAddSub("Matrices must be same type and dimensions for +/-"))
+				| Mult 		->
+					if typ1=typ2 && j1 = i2 then
+						SBinop(se1, op, se2, Datatype(Matrix(typ1, i1, j2)))
+					else raise(Exceptions.MismatchedMatricesForMult("Matrices M1(i1,j1) and M2(i2,j2) must have j1 = i2 and be of same type to be multiplied"))
+				| _ -> raise(Exceptions.UnsupportedMatrixBinop("Cannot divide matrices")))
+		| _ -> raise (Exceptions.InvalidBinopExpression("Arithmetic operators on unsupported type"))
 
 let rec get_ID_type s func_st =
 	try StringMap.find s func_st
@@ -130,13 +149,13 @@ and function_decl s fname_map =
 and expr_to_sexpr fname_map func_st = function
 	  Num_lit(Int_lit(n))  	-> SNum_lit(SInt_lit(n))
 	| Num_lit(Float_lit(n))	-> SNum_lit(SFloat_lit(n))
-	| Bool_lit(b)       		-> SBool_lit(b)
+	| Bool_lit(b)       	-> SBool_lit(b)
 	| String_lit(s)        	-> SString_lit(s)
 	| Id(s)                	-> SId(s, get_ID_type s func_st)
 	| Null                 	-> SNull
 	| Noexpr               	-> SNoexpr
 	| Unop(op, e)          	-> check_unop fname_map func_st op e
-	| Assign(s, e)   				-> check_assign fname_map func_st s e
+	| Assign(s, e)   		-> check_assign fname_map func_st s e
 	| Binop(e1, op, e2)    	-> check_binop fname_map func_st e1 op e2
 	| Call(s, el)			-> let fd = function_decl s fname_map in
 		if List.length el != List.length fd.formals then
@@ -153,21 +172,21 @@ and expr_to_sexpr fname_map func_st = function
 and get_type_from_sexpr sexpr = match sexpr with
 	  SNum_lit(SInt_lit(_))				-> Datatype(Int)
 	| SNum_lit(SFloat_lit(_))			-> Datatype(Float)
-	| SBool_lit(_)								-> Datatype(Bool)
-	| SString_lit(_) 							-> Datatype(String)
-	| SNoexpr 										-> Datatype(Void)
-	| SNull												-> Datatype(Void)
-	| SId(_, d) 									-> d
-	| SBinop(_, _, _, d) 					-> d
-	| SAssign(_, _, d) 						-> d
-	| SCall(_, _, d)							-> d
-	| SUnop(_, _, d) 							-> d
+	| SBool_lit(_)						-> Datatype(Bool)
+	| SString_lit(_) 					-> Datatype(String)
+	| SNoexpr 							-> Datatype(Void)
+	| SNull								-> Datatype(Void)
+	| SId(_, d) 						-> d
+	| SBinop(_, _, _, d) 				-> d
+	| SAssign(_, _, d) 					-> d
+	| SCall(_, _, d)					-> d
+	| SUnop(_, _, d) 					-> d
 	| SVector_access(_, _, d)			-> d
-	| SMatrix_access(_, _, _, d)	-> d
-	| SMatrix_init(_, _, _, d)		-> d
+	| SMatrix_access(_, _, _, d)		-> d
+	| SMatrix_init(_, _, _, d)			-> d
 	| SMatrix_row(_, _, d)				-> d
 	| SMatrix_col(_, _, d)				-> d
-	| SMatrix_lit(_, d)						-> d
+	| SMatrix_lit(_, d)					-> d
 
 let add_reserved_functions =
 	let reserved_stub name return_type formals =

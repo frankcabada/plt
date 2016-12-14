@@ -1,5 +1,6 @@
 int main() {
     int i;
     i=5;
+    print_int(i);
     return 0;
 }

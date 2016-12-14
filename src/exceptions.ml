@@ -71,6 +71,12 @@ exception CannotPassNonInheritedClassesInPlaceOfOthers of string * string
 exception IncorrectTypePassedToFunction of string * string
 exception IncorrectNumberOfArguments of string * int * int
 exception ClassIsNotExtendedBy of string * string
+exception MismatchedVectorsForBinop of string
+exception UnsupportedVectorBinop of string
+exception UnsupportedMatrixBinop of string
+exception UnsupportedStringBinop of string
+exception MismatchedMatricesForAddSub of string
+exception MismatchedMatricesForMult of string
 
 (* Codegen Exceptions *)
 exception UnsupportedVectorType

@@ -13,7 +13,6 @@ echo ""
 lli hello_world.ll
 echo ""
 
-echo ""
 echo "Cleaning up"
 ./scripts/clean.sh
 echo "Presentation done"

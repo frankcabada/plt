@@ -1,0 +1,30 @@
+int main() {
+    int i;
+    float f;
+    bool t;
+    bool fa;
+    i=0;
+    f = foo();
+    i = bar();
+    t = foobar();
+    fa = false;
+    if(t) {
+        print_int(i);
+        print_float(f);
+    }
+    if(fa) {}
+    else print_string("Hello!");
+    return i;
+}
+
+float foo() {
+    return 1.1;
+}
+
+int bar() {
+    return 42;
+}
+
+bool foobar() {
+    return true;
+}

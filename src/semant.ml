@@ -8,14 +8,11 @@ module StringMap = Map.Make(String)
 let get_equality_binop_type type1 type2 se1 se2 op =
 	if (type1 = Datatype(Float) || type2 = Datatype(Float)) then raise(Exceptions.InvalidBinopExpression "Cannot use equality for floats")
 	else
-		if type1 = type2 && (type1 = Datatype(String) || type1 = Datatype(Int)) then SBinop(se1, op, se2, Datatype(Bool))
+		if type1 = type2 && (type1 = Datatype(String) || type1 = Datatype(Int)) then SBinop(se1, op, se2, type1)
 		else raise (Exceptions.InvalidBinopExpression("Can only use equality operators with ints and Strings"))
 
 let get_logical_binop_type se1 se2 op = function
-		(Datatype(Int), Datatype(Int))
-		| (Datatype(Float), Datatype(Float))
-		| (Datatype(Int), Datatype(Float))
-		| (Datatype(Float), Datatype(Int)) -> SBinop(se1, op, se2, Datatype(Bool))
+		| (Datatype(Bool), Datatype(Bool)) -> SBinop(se1, op, se2, Datatype(Bool))
 		| _ -> raise (Exceptions.InvalidBinopExpression "Can only use Bools for logical operators")
 
 let get_arithmetic_binop_type se1 se2 op = function
@@ -94,7 +91,7 @@ and check_binop fname_map func_st e1 op e2 =
 	match op with
 	Equal | Neq -> get_equality_binop_type type1 type2 se1 se2 op
 	| And | Or -> get_logical_binop_type se1 se2 op (type1, type2)
-	| Less | Leq | Greater | Geq when type1 = Datatype(Int) && type2 = Datatype(Int) -> SBinop(se1, op, se2, Datatype(Bool))
+	| Less | Leq | Greater | Geq when type1 = type2 && (type1 = Datatype(Int) || type1 = Datatype(Float)) -> SBinop(se1, op, se2, type1)
 	| Add | Mult | Sub | Div -> get_arithmetic_binop_type se1 se2 op (type1, type2)
 	| _ -> raise (Exceptions.InvalidBinopExpression ((Utils.string_of_op op) ^ " is not a supported binary op"))
 

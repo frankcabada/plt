@@ -17,13 +17,13 @@ int main() {
     print_int(k);
     k = j/i;
     print_int(k);
-    /*h = g+f;
+    h = g+f;
     print_float(h);
     h = g-f;
     print_float(h);
     h = g*f;
     print_float(h);
     h = g/f;
-    print_float(h);*/
+    print_float(h);
     return 0;
 }

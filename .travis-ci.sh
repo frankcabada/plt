@@ -7,14 +7,16 @@ sudo apt-get install -qq -y ocaml ocaml-native-compilers menhir opam
 opam init -a
 eval `opam config env`
 opam install -y depext
-opam depext llvm.3.4
-opam install -y llvm.3.4 ocamlfind
 
 cd ./test/scanner
 ./scripts/build.sh
 ./scripts/test.sh
 ./scripts/clean.sh
 cd ../parser
+./scripts/test.sh
+./scripts/clean.sh
+cd ../compiler
+./scripts/build.sh > build.log
 ./scripts/test.sh
 ./scripts/clean.sh
 cd ../../hello_world

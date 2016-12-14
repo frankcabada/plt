@@ -117,20 +117,46 @@ let translate(globals, functions) =
         | S.SBinop (e1, op, e2, d) ->
             let e1' = expr builder e1
             and e2' = expr builder e2 in
-            (match op with
-              A.Add     -> L.build_add
-            | A.Sub   -> L.build_sub
-            | A.Mult    -> L.build_mul
-            | A.Div   -> L.build_sdiv
-            | A.And   -> L.build_and
-            | A.Or    -> L.build_or
-            | A.Equal   -> L.build_icmp L.Icmp.Eq
-            | A.Neq   -> L.build_icmp L.Icmp.Ne
-            | A.Less    -> L.build_icmp L.Icmp.Slt
-            | A.Leq   -> L.build_icmp L.Icmp.Sle
-            | A.Greater -> L.build_icmp L.Icmp.Sgt
-            | A.Geq   -> L.build_icmp L.Icmp.Sge
-            ) e1' e2' "tmp" builder
+
+            let int_bops op = 
+              match op with
+              A.Add     -> L.build_add e1' e2' "tmp" builder
+            | A.Sub   -> L.build_sub e1' e2' "tmp" builder
+            | A.Mult    -> L.build_mul e1' e2' "tmp" builder
+            | A.Div   -> L.build_sdiv e1' e2' "tmp" builder
+            | A.And   -> L.build_and e1' e2' "tmp" builder
+            | A.Or    -> L.build_or e1' e2' "tmp" builder
+            | A.Equal   -> L.build_icmp L.Icmp.Eq e1' e2' "tmp" builder
+            | A.Neq   -> L.build_icmp L.Icmp.Ne e1' e2' "tmp" builder
+            | A.Less    -> L.build_icmp L.Icmp.Slt e1' e2' "tmp" builder
+            | A.Leq   -> L.build_icmp L.Icmp.Sle e1' e2' "tmp" builder
+            | A.Greater -> L.build_icmp L.Icmp.Sgt e1' e2' "tmp" builder
+            | A.Geq   -> L.build_icmp L.Icmp.Sge e1' e2' "tmp" builder
+            in
+
+            let float_bops op =
+              match op with
+                A.Add     -> L.build_fadd e1' e2' "tmp" builder
+              | A.Sub   -> L.build_fsub e1' e2' "tmp" builder
+              | A.Mult    -> L.build_fmul e1' e2' "tmp" builder
+              | A.Div   -> L.build_fdiv e1' e2' "tmp" builder
+              | A.And   -> L.build_and e1' e2' "tmp" builder
+              | A.Or    -> L.build_or e1' e2' "tmp" builder
+              | A.Equal   -> L.build_fcmp L.Fcmp.Oeq e1' e2' "tmp" builder
+              | A.Neq   -> L.build_fcmp L.Fcmp.One e1' e2' "tmp" builder
+              | A.Less    -> L.build_fcmp L.Fcmp.Olt e1' e2' "tmp" builder
+              | A.Leq   -> L.build_fcmp L.Fcmp.Ole e1' e2' "tmp" builder
+              | A.Greater -> L.build_fcmp L.Fcmp.Ogt e1' e2' "tmp" builder
+              | A.Geq   -> L.build_fcmp L.Fcmp.Oge e1' e2' "tmp" builder
+            in
+
+            let check_binop_type d =
+              match d with
+                Datatype(Int) -> int_bops op
+              | Datatype(Float) -> float_bops op
+            in
+            check_binop_type d
+
         | S.SUnop(op, e, d)   ->
             let e' = expr builder e in (match op with
               A.Neg   -> L.build_neg e' "tmp" builder

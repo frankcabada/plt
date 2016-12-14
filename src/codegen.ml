@@ -1,6 +1,7 @@
 open Llvm
 open Ast
 open Sast
+open Semant
 module L = Llvm
 module A = Ast
 module S = Sast
@@ -115,17 +116,18 @@ let translate(globals, functions) =
         | S.SAssign (s, e, d) -> let e' = expr builder e in
                 ignore (L.build_store e' (lookup s) builder); e'
         | S.SBinop (e1, op, e2, d) ->
-            let e1' = expr builder e1
-            and e2' = expr builder e2 in
+            let type1 = Semant.get_type_from_sexpr e1 in
+            let type2 = Semant.get_type_from_sexpr e2 in
 
-            let int_bops op = 
+            let e1 = expr builder e1
+            and e2 = expr builder e2 in
+
+            let int_bops op e1' e2' = 
               match op with
               A.Add     -> L.build_add e1' e2' "tmp" builder
             | A.Sub   -> L.build_sub e1' e2' "tmp" builder
             | A.Mult    -> L.build_mul e1' e2' "tmp" builder
             | A.Div   -> L.build_sdiv e1' e2' "tmp" builder
-            | A.And   -> L.build_and e1' e2' "tmp" builder
-            | A.Or    -> L.build_or e1' e2' "tmp" builder
             | A.Equal   -> L.build_icmp L.Icmp.Eq e1' e2' "tmp" builder
             | A.Neq   -> L.build_icmp L.Icmp.Ne e1' e2' "tmp" builder
             | A.Less    -> L.build_icmp L.Icmp.Slt e1' e2' "tmp" builder
@@ -134,14 +136,12 @@ let translate(globals, functions) =
             | A.Geq   -> L.build_icmp L.Icmp.Sge e1' e2' "tmp" builder
             in
 
-            let float_bops op =
+            let float_bops op e1' e2' =
               match op with
                 A.Add     -> L.build_fadd e1' e2' "tmp" builder
               | A.Sub   -> L.build_fsub e1' e2' "tmp" builder
               | A.Mult    -> L.build_fmul e1' e2' "tmp" builder
               | A.Div   -> L.build_fdiv e1' e2' "tmp" builder
-              | A.And   -> L.build_and e1' e2' "tmp" builder
-              | A.Or    -> L.build_or e1' e2' "tmp" builder
               | A.Equal   -> L.build_fcmp L.Fcmp.Oeq e1' e2' "tmp" builder
               | A.Neq   -> L.build_fcmp L.Fcmp.One e1' e2' "tmp" builder
               | A.Less    -> L.build_fcmp L.Fcmp.Olt e1' e2' "tmp" builder
@@ -150,11 +150,30 @@ let translate(globals, functions) =
               | A.Geq   -> L.build_fcmp L.Fcmp.Oge e1' e2' "tmp" builder
             in
 
+            let bool_bops op e1' e2' =
+              match op with
+              | A.And   -> L.build_and e1' e2' "tmp" builder
+              | A.Or    -> L.build_or e1' e2' "tmp" builder
+            in
+
+            let cast lhs rhs lhsType rhsType =
+              match (lhsType, rhsType) with
+                  (Datatype(Int), Datatype(Int)) -> (lhs, rhs), Datatype(Int)
+                | (Datatype(Float), Datatype(Float)) ->  (lhs, rhs), Datatype(Float)
+                | (Datatype(Bool), Datatype(Bool)) ->  (lhs, rhs), Datatype(Bool)
+                | (Datatype(Int), Datatype(Float)) ->   (build_sitofp lhs float_t "tmp" builder, rhs), Datatype(Float)
+                | (Datatype(Float), Datatype(Int)) ->   (lhs, build_sitofp rhs float_t "tmp" builder), Datatype(Float)
+            in
+
+            let (e1, e2), d = cast e1 e2 type1 type2 in
+
             let check_binop_type d =
               match d with
-                Datatype(Int) -> int_bops op
-              | Datatype(Float) -> float_bops op
+                Datatype(Int) -> int_bops op e1 e2
+              | Datatype(Float) -> float_bops op e1 e2
+              | Datatype(Bool) -> bool_bops op e1 e2
             in
+
             check_binop_type d
 
         | S.SUnop(op, e, d)   ->

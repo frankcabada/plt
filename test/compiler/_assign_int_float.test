@@ -1,0 +1,9 @@
+int main() {
+    int i;
+    float f;
+    i = 5;
+    f = 42.42;
+    print_int(i);
+    print_float(f);
+    return 0;
+}

@@ -1,8 +1,12 @@
+int g;
+
 int main() {
     int i;
     float f;
+    g=2;
     i = 5;
     f = 42.42;
+    print_int(g);
     print_int(i);
     print_float(f);
     return 0;

@@ -1,19 +1,5 @@
 #! /bin/bash
 
-cat pass/_vdecl.test | ./cmat.native -c pass/_vdecl.ll
-diff pass/_vdecl.out pass/_vdecl.ll > /dev/null
-if [ $? = 0 ]; then
-  echo -e "\e[0;32m"
-  echo "-----------------------------------------"
-  echo "|      COMPILER: VDECL TEST PASSED      |"
-  echo "-----------------------------------------"
-else
-  echo -e "\e[0;31m"
-  echo "-----------------------------------------"
-  echo "|      COMPILER: VDECL TEST FAILED      |"
-  echo "-----------------------------------------"
-fi
-
 cat pass/_assign_int_float.test | ./cmat.native -c pass/_assign_int_float.ll
 lli pass/_assign_int_float.ll > pass/_assign_int_float.res
 diff pass/_assign_int_float.out pass/_assign_int_float.res > /dev/null

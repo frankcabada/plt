@@ -261,9 +261,10 @@ let check_var_decls globals =
 
 (* Function Declaration Checking Functions *)
 
-let fdecl_to_func_st fdecl =
-	let funcst = List.fold_left (fun m f -> StringMap.add (get_formal_id f) (get_formal_type f) m) StringMap.empty fdecl.formals in
-		List.fold_left (fun m l -> StringMap.add (get_local_id l) (get_local_type l) m) funcst fdecl.locals
+let fdecl_to_func_st globals fdecl =
+	let ffunc_st = List.fold_left (fun m f -> StringMap.add (get_formal_id f) (get_formal_type f) m) StringMap.empty fdecl.formals in
+		let lffunc_st = List.fold_left (fun m l -> StringMap.add (get_local_id l) (get_local_type l) m) ffunc_st fdecl.locals in
+			List.fold_left (fun m g -> StringMap.add (snd g) (fst g) m) lffunc_st globals
 
 let rec stmt_to_sstmt fname_map func_st = function
 	  Return(e)				-> SReturn(expr_to_sexpr fname_map func_st e)
@@ -279,13 +280,13 @@ let fdecls_to_fname_map fdecls =
 	List.fold_left
 		(fun m fd -> StringMap.add fd.fname fd m) StringMap.empty (fdecls @ add_reserved_functions)
 
-let convert_fdecl_to_sfdecl fname_map fdecl =
+let convert_fdecl_to_sfdecl globs fname_map fdecl =
 	{
 		sfname 				= fdecl.fname;
-		sreturn_type 	= fdecl.return_type;
+		sreturn_type 		= fdecl.return_type;
 		sformals 			= fdecl.formals;
 		slocals 			= fdecl.locals;
-		sbody 				= (convert_stmt_list_to_sstmt_list fname_map (fdecl_to_func_st fdecl) fdecl.body);
+		sbody 				= (convert_stmt_list_to_sstmt_list fname_map (fdecl_to_func_st globs fdecl) fdecl.body);
 	}
 
 let check_function_return fname fbody returnType =
@@ -305,42 +306,42 @@ let check_return fname_map fdecl func_st e =
 	let t = get_type_from_sexpr se in
 		if (t=fdecl.return_type) then () else raise(Exceptions.ReturnTypeMismatch(Utils.string_of_datatype t, Utils.string_of_datatype fdecl.return_type))
 
-let rec check_stmt fname_map fdecl = function
-	Return(e) 					-> check_return fname_map fdecl (fdecl_to_func_st fdecl) e
-	| Block(sl) 				-> check_fbody fname_map fdecl sl
-	| If(e, s1, s2) 		-> check_if fname_map fdecl s1 s2
-	| While(e, s)				-> check_while fname_map fdecl s
-	| For(e1, e2, e3, s)-> check_for fname_map fdecl s
-	| Expr(e)						-> ()
+let rec check_stmt globs fname_map fdecl = function
+	Return(e) 					-> check_return fname_map fdecl (fdecl_to_func_st globs fdecl) e
+	| Block(sl) 				-> check_fbody globs fname_map fdecl sl
+	| If(e, s1, s2) 			-> check_if globs fname_map fdecl s1 s2
+	| While(e, s)				-> check_while globs fname_map fdecl s
+	| For(e1, e2, e3, s)		-> check_for globs fname_map fdecl s
+	| Expr(e)					-> ()
 
-and check_fbody fname_map fdecl fbody =
-	ignore(List.iter (check_stmt fname_map fdecl) fbody);
+and check_fbody globs fname_map fdecl fbody =
+	ignore(List.iter (check_stmt globs fname_map fdecl) fbody);
 
-and check_if fname_map fdecl s1 s2 =
-	ignore(check_stmt fname_map fdecl s1);
-	ignore(check_stmt fname_map fdecl s2);
+and check_if globs fname_map fdecl s1 s2 =
+	ignore(check_stmt globs fname_map fdecl s1);
+	ignore(check_stmt globs fname_map fdecl s2);
 
-and check_while fname_map fdecl stmt =
-	ignore(check_stmt fname_map fdecl stmt);
+and check_while globs fname_map fdecl stmt =
+	ignore(check_stmt globs fname_map fdecl stmt);
 
-and check_for fname_map fdecl stmt =
-	ignore(check_stmt fname_map fdecl stmt);
+and check_for globs fname_map fdecl stmt =
+	ignore(check_stmt globs fname_map fdecl stmt);
 
-and check_else fname_map fdecl stmt =
-	ignore(check_stmt fname_map fdecl stmt);;
+and check_else globs fname_map fdecl stmt =
+	ignore(check_stmt globs fname_map fdecl stmt);;
 
-let check_function fname_map global_st fdecl =
+let check_function globals fname_map global_st fdecl =
 	ignore(List.iter check_not_void_formal fdecl.formals);
 	ignore(List.iter check_not_void_local fdecl.locals);
 	ignore(report_duplicate "function" ((List.map get_formal_id fdecl.formals) @ (List.map get_local_id fdecl.locals)));
 	ignore(check_function_return fdecl.fname fdecl.body fdecl.return_type);
-	ignore(check_fbody fname_map fdecl fdecl.body);;
+	ignore(check_fbody globals fname_map fdecl fdecl.body);;
 
 let check_functions global_st globals fdecls =
 	let sast =
 		let fname_map = fdecls_to_fname_map fdecls in
 		ignore(report_duplicate "function" (List.map (fun fd -> fd.fname) fdecls));
-		ignore(List.iter (check_function fname_map global_st) fdecls);
-		let sfdecls = List.map (convert_fdecl_to_sfdecl fname_map) fdecls in
+		ignore(List.iter (check_function globals fname_map global_st) fdecls);
+		let sfdecls = List.map (convert_fdecl_to_sfdecl globals fname_map) fdecls in
 		(globals, sfdecls)
-		in sast
+	in sast

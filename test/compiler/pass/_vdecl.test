@@ -1,9 +1,0 @@
-int main() {
-    int d;
-    float f;
-    vector float [5] v;
-    matrix int [7,6] m;
-    bool t;
-    String s;
-    return 0;
-}

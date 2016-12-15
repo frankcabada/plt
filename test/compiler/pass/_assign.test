@@ -4,7 +4,7 @@ int main() {
     int i;
     float f;
     vector float [5] v;
-    matrix int [3, 3] m;
+    matrix int [4, 3] m;
     m[0,0] = 1;
     m[0,1] = 2;
     m[0,2] = 3;
@@ -35,5 +35,8 @@ int main() {
     print_float(v[2]);
     print_float(v[3]);
     print_float(v[4]);
+    print_int(m:rows);
+    print_int(m:cols);
+    print_int(v:len);
     return 0;
 }

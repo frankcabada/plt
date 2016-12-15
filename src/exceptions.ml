@@ -22,6 +22,9 @@ exception CanOnlyAccessLengthOfArray
 exception CanOnlyDeleteObjectsOrArrays
 exception CannotAccessLengthOfCharArray
 exception CannotUseReservedFuncName of string
+exception CannotUseRowsOnNonMatrix of string
+exception CannotUseColsOnNonMatrix of string
+exception CannotUseLenOnNonVector of string
 exception CyclicalDependencyBetween of string * string
 exception DuplicateFunc of string
 exception DuplicateFunction of string
@@ -63,6 +66,7 @@ exception UnsupportedMatrixBinop of string
 exception UnsupportedStringBinop of string
 exception UnsupportedVectorBinop of string
 exception VectorAccessOnNonMatrix of string
+exception VectorDimensionMustBeIntLit
 exception VoidFunctionFormal of string
 exception VoidFunctionLocal of string
 exception VoidFunc of string

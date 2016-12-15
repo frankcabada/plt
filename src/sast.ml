@@ -27,12 +27,13 @@ type sexpr =
 	| SUnop of uop * sexpr * datatype
 	| SAssign of sexpr * sexpr * datatype
 	| SCall of string * sexpr list * datatype
-	| SMatrix_init of sexpr * sexpr * sexpr * datatype
 	| SVector_access of string * sexpr * datatype
 	| SMatrix_access of string * sexpr * sexpr * datatype
 	| SMatrix_row of string * sexpr * datatype
 	| SMatrix_col of string * sexpr * datatype
-	(*| Const of primitives * expr (* ?? is this correct *)*)
+	| SRows of int
+	| SCols of int
+	| SLen of int
 
 (* Statements *)
 type sstmt =
@@ -54,7 +55,3 @@ type sfunc_decl = {
 
 (* All method declarations | Main entry method *)
 type sprogram = var_dec list * func_decl list
-(*{
-	var_dec : var_dec list;
-	funcs : sfunc_decl list;
-}*)

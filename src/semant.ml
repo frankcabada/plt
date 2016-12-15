@@ -96,12 +96,6 @@ and check_binop fname_map func_st e1 op e2 =
 	| Add | Mult | Sub | Div -> get_arithmetic_binop_type se1 se2 op (type1, type2)
 	| _ -> raise (Exceptions.InvalidBinopExpression ((Utils.string_of_op op) ^ " is not a supported binary op"))
 
-and check_matrix_init fname_map func_st e1 e2 e3 =
-	ignore(check_expr_is_int_lit e1);
-	ignore(check_expr_is_int_lit e2);
-	ignore(check_expr_is_int_lit e3);
-	SMatrix_init(expr_to_sexpr fname_map func_st e1, expr_to_sexpr fname_map func_st e2, expr_to_sexpr fname_map func_st e3, Datatype(Int))
-
 and check_expr_is_int_lit e = match e with
 	Num_lit(Int_lit(n)) -> n
 	| _ -> raise(Exceptions.MatrixDimensionMustBeIntLit)
@@ -152,28 +146,48 @@ and function_decl s fname_map =
 	try StringMap.find s fname_map
 	with Not_found -> raise (Exceptions.FunctionNotFound(s))
 
+and check_rows s func_st =
+	let typ = get_ID_type s func_st in
+		match typ with
+			Datatype(Matrix(_, r, _)) -> (match r with Int_lit(n) -> SRows(n) | _ -> raise(Exceptions.MatrixDimensionMustBeIntLit))
+			| _ -> raise(Exceptions.CannotUseRowsOnNonMatrix(s))
+
+and check_cols s func_st =
+	let typ = get_ID_type s func_st in
+		match typ with
+			Datatype(Matrix(_, _, c)) -> (match c with Int_lit(n) -> SCols(n) | _ -> raise(Exceptions.MatrixDimensionMustBeIntLit))
+			| _ -> raise(Exceptions.CannotUseRowsOnNonMatrix(s))
+
+and check_len s func_st =
+	let typ = get_ID_type s func_st in
+		match typ with
+			Datatype(Vector(_, l)) -> (match l with Int_lit(n) -> SLen(n) | _ -> raise(Exceptions.VectorDimensionMustBeIntLit))
+			| _ -> raise(Exceptions.CannotUseRowsOnNonMatrix(s))
+
 and expr_to_sexpr fname_map func_st = function
-	  Num_lit(Int_lit(n))  	-> SNum_lit(SInt_lit(n))
-	| Num_lit(Float_lit(n))	-> SNum_lit(SFloat_lit(n))
-	| Bool_lit(b)       	-> SBool_lit(b)
-	| String_lit(s)        	-> SString_lit(s)
-	| Id(s)                	-> SId(s, get_ID_type s func_st)
-	| Null                 	-> SNull
-	| Noexpr               	-> SNoexpr
-	| Unop(op, e)          	-> check_unop fname_map func_st op e
-	| Assign(s, e)   		-> check_assign fname_map func_st s e
-	| Binop(e1, op, e2)    	-> check_binop fname_map func_st e1 op e2
-	| Call(s, el)			-> let fd = function_decl s fname_map in
+	  Num_lit(Int_lit(n))  		-> SNum_lit(SInt_lit(n))
+	| Num_lit(Float_lit(n))		-> SNum_lit(SFloat_lit(n))
+	| Bool_lit(b)       		-> SBool_lit(b)
+	| String_lit(s)        		-> SString_lit(s)
+	| Id(s)                		-> SId(s, get_ID_type s func_st)
+	| Null                 		-> SNull
+	| Noexpr               		-> SNoexpr
+	| Unop(op, e)          		-> check_unop fname_map func_st op e
+	| Assign(s, e)   			-> check_assign fname_map func_st s e
+	| Binop(e1, op, e2)    		-> check_binop fname_map func_st e1 op e2
+	| Call(s, el)				-> let fd = function_decl s fname_map in
 		if List.length el != List.length fd.formals then
 			raise (Exceptions.IncorrectNumberOfArguments(fd.fname, List.length el, List.length fd.formals))
 		else
 		SCall(s, List.map (expr_to_sexpr fname_map func_st) el, fd.return_type)
-	| Vector_access(s, e)				-> check_vector_access fname_map func_st s e
+	| Vector_access(s, e)		-> check_vector_access fname_map func_st s e
 	| Matrix_access(s, e1, e2)	-> check_matrix_access fname_map func_st s e1 e2
-	| Matrix_init(e1, e2, e3) 	-> check_matrix_init fname_map func_st e1 e2 e3
-	| Matrix_row(s, e)       		-> check_matrix_row fname_map func_st s e
-	| Matrix_col(s, e)       		-> check_matrix_col fname_map func_st s e
-	| Matrix_lit(el)						-> check_matrix_lit fname_map func_st el
+	| Matrix_row(s, e)       	-> check_matrix_row fname_map func_st s e
+	| Matrix_col(s, e)       	-> check_matrix_col fname_map func_st s e
+	| Matrix_lit(el)			-> check_matrix_lit fname_map func_st el
+	| Rows(s)					-> check_rows s func_st
+	| Cols(s)					-> check_cols s func_st
+	| Len(s)					-> check_len s func_st
 
 and get_type_from_sexpr sexpr = match sexpr with
 	  SNum_lit(SInt_lit(_))				-> Datatype(Int)
@@ -182,6 +196,9 @@ and get_type_from_sexpr sexpr = match sexpr with
 	| SString_lit(_) 					-> Datatype(String)
 	| SNoexpr 							-> Datatype(Void)
 	| SNull								-> Datatype(Void)
+	| SRows(r) 							-> Datatype(Int)
+	| SCols(c) 							-> Datatype(Int)
+	| SLen(l) 							-> Datatype(Int)
 	| SId(_, d) 						-> d
 	| SBinop(_, _, _, d) 				-> d
 	| SAssign(_, _, d) 					-> d
@@ -189,7 +206,6 @@ and get_type_from_sexpr sexpr = match sexpr with
 	| SUnop(_, _, d) 					-> d
 	| SVector_access(_, _, d)			-> d
 	| SMatrix_access(_, _, _, d)		-> d
-	| SMatrix_init(_, _, _, d)			-> d
 	| SMatrix_row(_, _, d)				-> d
 	| SMatrix_col(_, _, d)				-> d
 	| SMatrix_lit(_, d)					-> d
@@ -297,15 +313,17 @@ let convert_fdecl_to_sfdecl globs fname_map fdecl =
 
 let check_function_return fname fbody returnType =
 	let len = List.length fbody in
-		if len = 0 && returnType != Datatype(Void) then
-			raise(Exceptions.AllNonVoidFunctionsMustEndWithReturn(fname))
-		else
-		let final_stmt = List.hd (List.rev fbody) in
-			match returnType, final_stmt with
-				Datatype(Void), Return(_) -> raise(Exceptions.AllVoidFunctionsMustNotReturn(fname))
-				|	Datatype(Void), _ 	  -> ()
-				| _, Return(_)	 	      -> ()
-				| _, _					  -> raise(Exceptions.AllNonVoidFunctionsMustEndWithReturn(fname))
+		if len > 0
+			then
+				let final_stmt = List.hd (List.rev fbody) in
+					match returnType, final_stmt with
+						Datatype(Void), Return(_) -> raise(Exceptions.AllVoidFunctionsMustNotReturn(fname))
+						| Datatype(Void), _ 	  -> ()
+						| _, Return(_)	 	      -> ()
+						| _, _					  -> raise(Exceptions.AllNonVoidFunctionsMustEndWithReturn(fname))
+			else
+				if returnType = Datatype(Void) then ()
+				else raise(Exceptions.AllNonVoidFunctionsMustEndWithReturn(fname))
 
 let check_return fname_map fdecl func_st e =
 	let se = expr_to_sexpr fname_map func_st e in

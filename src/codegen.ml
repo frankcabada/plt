@@ -236,6 +236,9 @@ let translate(globals, functions) =
             in
 
             check_unop_type d
+        | S.SRows(r) -> L.const_int i32_t r
+        | S.SCols(c) -> L.const_int i32_t c
+        | S.SLen(l)  -> L.const_int i32_t l
         | S.SCall ("print_string", [e], d) -> let get_string = function S.SString_lit s -> s | _ -> "" in
             let s_ptr = L.build_global_stringptr ((get_string e) ^ "\n") ".str" builder in
             L.build_call printf_func [| s_ptr |] "printf" builder
@@ -255,7 +258,6 @@ let translate(globals, functions) =
         | S.SVector_access (s, se, d) ->
             let i = expr builder se in (build_vector_access s (L.const_int i32_t 0) i builder false)
         (*| S.SMatrix_lit (_, _)
-        | S.SMatrix_init (_, _, _, _)
         | S.SMatrix_row (_, _, _)
         | S.SMatrix_col (_, _, _)*)
         in

@@ -177,11 +177,35 @@ let translate(globals, functions) =
             check_binop_type d
 
         | S.SUnop(op, e, d)   ->
-            let e' = expr builder e in (match op with
+            let e' = expr builder e in 
+
+            let int_unops op =
+              match op with
               A.Neg   -> L.build_neg e' "tmp" builder
             | A.Not   -> L.build_not e' "tmp" builder
-            | A.Inc   -> L.build_add e' (L.const_int i32_t 1) "tmp" builder
-            | A.Dec   -> L.build_sub e' (L.const_int i32_t 1) "tmp" builder)
+            | A.Inc   -> L.build_store (L.build_add e' (L.const_int i32_t 1) "tmp" builder) (lookup (match e with S.SId(s, d) -> s)) builder
+            | A.Dec   -> L.build_store (L.build_sub e' (L.const_int i32_t 1) "tmp" builder) (lookup (match e with S.SId(s, d) -> s)) builder
+            in
+
+            let float_unops op =
+              match op with
+              A.Neg   -> L.build_fneg e' "tmp" builder
+            in
+
+            let bool_unops op =
+              match op with
+              A.Not   -> L.build_not e' "tmp" builder
+            in
+
+            let check_unop_type d =
+              match d with
+                Datatype(Int) -> int_unops op
+              | Datatype(Float) -> float_unops op
+              | Datatype(Bool) -> bool_unops op
+            in
+
+            check_unop_type d
+
         | S.SCall ("print_string", [e], d) -> let get_string = function S.SString_lit s -> s | _ -> "" in
             let s_ptr = L.build_global_stringptr ((get_string e) ^ "\n") ".str" builder in
             L.build_call printf_func [| s_ptr |] "printf" builder

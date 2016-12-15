@@ -9,13 +9,13 @@ module S = Sast
 module StringMap = Map.Make(String)
 
 let translate(globals, functions) =
-  let return_var_mymap = StringMap.empty in
+  let return_var_mymap = ref (StringMap.empty) in
 
   let fxn_return_var_to_map var fd =
-    StringMap.add var fd return_var_mymap in
+    return_var_mymap := StringMap.add var fd !return_var_mymap in
 
   let find_fxn_return_var var =
-    try StringMap.find var return_var_mymap
+    try StringMap.find var !return_var_mymap
     with Not_found -> "" in
 
   let context = L.global_context() in
@@ -280,15 +280,15 @@ let translate(globals, functions) =
         ignore(L.build_free (lookup var) builder);
       in
       let free_locals fdecl var =
-        List.iter (function A.Local(d, s) -> ignore(match var with
-                             "" -> free_var s
-                          |  _ -> let id = find_fxn_return_var var in
-                                  (match id with
-                                    "" -> print_string("should free s\n");
-                                  |  s -> print_string("do not free return\n")))) fdecl.S.slocals
+        let id = find_fxn_return_var var in
+        print_string(id);
+        List.iter (function A.Local(d, s) -> ignore(match id with
+                            "" -> print_string("should free " ^ s ^ "\n")
+                          | s  -> print_string("should not free " ^ s ^ "\n")
+                          | _  -> print_string("do not free " ^ s ^ "\n"))) fdecl.S.slocals
       in
       let free_main = ignore(match fdecl.S.sfname with
-                          "main" -> let map_list = StringMap.fold (fun a b list1-> (a,b) :: list1) return_var_mymap [] in
+                          "main" -> let map_list = StringMap.fold (fun a b list1-> (a,b) :: list1) !return_var_mymap [] in
                                     List.iter (fun (x,y) -> free_var y) map_list
                         | _ -> ());
       in
@@ -303,6 +303,7 @@ let translate(globals, functions) =
                          L.build_ret (L.const_int (ltype_of_datatype t) 0))
       in
       List.iter build_function_body functions;
+      StringMap.iter (fun k v -> print_string(k ^ " " ^ v ^ "\n")) !return_var_mymap;
 
       (*TODO: FREE GLOBALS HERE IF ACCESSIBLE -> LAST LINE OF LLVM CODE*)
       the_module (*returned as a module to whatever called this*)

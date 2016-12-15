@@ -64,6 +64,8 @@ let translate(globals, functions) =
     L.var_arg_function_type i32_t [| L.pointer_type i8_t |] in
   let printf_func =
     L.declare_function "printf" printf_t the_module in
+  let str_cat = L.function_type (i32_t) [|(L.pointer_type i8_t); (L.pointer_type i8_t)|] in
+  let str_cat_func = L.declare_function "strcat" str_cat the_module in
 
   let function_decls =
     let function_decl m fdecl =
@@ -124,7 +126,14 @@ let translate(globals, functions) =
 
             let int_bops op e1' e2' = 
               match op with
-              A.Add     -> L.build_add e1' e2' "tmp" builder
+              A.Add     -> (match d with 
+                              Datatype(String) -> let get_string = function 
+                                                           S.SString_lit(s) -> s
+                                                           | _ -> "" in
+                                                  let s_ptr1 = L.build_global_stringptr ((get_string e1)) ".str" builder in
+                                                  let s_ptr2 = L.build_global_stringptr ((get_string e2)) ".str" builder in
+                               L.build_global_stringptr (str_cat_func [| s_ptr1; s_ptr2 |]) "strcat" builder
+                            | _ -> L.build_add e1' e2' "tmp" builder)
             | A.Sub   -> L.build_sub e1' e2' "tmp" builder
             | A.Mult    -> L.build_mul e1' e2' "tmp" builder
             | A.Div   -> L.build_sdiv e1' e2' "tmp" builder
@@ -170,6 +179,7 @@ let translate(globals, functions) =
             let check_binop_type d =
               match d with
                 Datatype(Int) -> int_bops op e1 e2
+              | Datatype(String) -> int_bops op e1 e2
               | Datatype(Float) -> float_bops op e1 e2
               | Datatype(Bool) -> bool_bops op e1 e2
             in

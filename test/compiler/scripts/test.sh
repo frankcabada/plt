@@ -1,8 +1,8 @@
 #! /bin/bash
 
-cat pass/_assign_int_float.test | ./cmat.native -c pass/_assign_int_float.ll
-lli pass/_assign_int_float.ll > pass/_assign_int_float.res
-diff pass/_assign_int_float.out pass/_assign_int_float.res > /dev/null
+cat pass/_assign.test | ./cmat.native -c pass/_assign.ll
+lli pass/_assign.ll > pass/_assign.res
+diff pass/_assign.out pass/_assign.res > /dev/null
 if [ $? = 0 ]; then
   echo -e "\e[0;32m"
   echo "-----------------------------------------"

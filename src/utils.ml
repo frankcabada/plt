@@ -60,7 +60,7 @@ and string_of_expr = function
 	| String_lit(s)						-> "\"" ^ (String.escaped s) ^ "\""
 	| Id(s)										-> s
 	| Binop(e1, o, e2)				-> (string_of_expr e1) ^ " " ^ (string_of_op o) ^ " " ^ (string_of_expr e2)
-	| Assign(s, e)						-> (s) ^ " = " ^ (string_of_expr e)
+	| Assign(e1, e2)						-> (string_of_expr e1) ^ " = " ^ (string_of_expr e2)
 	| Noexpr									-> ""
 	| Call(f, el)							-> f ^ "(" ^ String.concat ", " (List.map string_of_expr el) ^ ")"
 	| Unop(uop, e)						-> (string_of_uop uop) ^ "(" ^ string_of_expr e ^ ")"
@@ -91,7 +91,7 @@ and string_of_sexpr = function
 	| SString_lit(s)							-> "\"" ^ (String.escaped s) ^ "\""
 	| SId(s, _)										-> s
 	| SBinop(e1, o, e2, _)				-> (string_of_sexpr e1) ^ " " ^ (string_of_op o) ^ " " ^ (string_of_sexpr e2)
-	| SAssign(s, e, _)						-> (s) ^ " = " ^ (string_of_sexpr e)
+	| SAssign(se1, se2, _)						-> (string_of_sexpr se1) ^ " = " ^ (string_of_sexpr se2)
 	| SNoexpr											-> ""
 	| SCall(f, el, _)							-> f ^ "(" ^ String.concat ", " (List.map string_of_sexpr el) ^ ")"
 	| SUnop(uop, e, _)						-> (string_of_uop uop) ^ "(" ^ string_of_sexpr e ^ ")"

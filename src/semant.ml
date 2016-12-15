@@ -52,16 +52,17 @@ let rec get_ID_type s func_st =
 	try StringMap.find s func_st
 	with | Not_found -> raise (Exceptions.UndefinedID(s))
 
-and check_assign fname_map func_st s e =
-	let type1 = get_ID_type s func_st in
-	let se = expr_to_sexpr fname_map func_st e in
-	let type2 = get_type_from_sexpr se in
+and check_assign fname_map func_st e1 e2 =
+	let se1 = expr_to_sexpr fname_map func_st e1 in
+	let type1 = get_type_from_sexpr se1 in
+	let se2 = expr_to_sexpr fname_map func_st e2 in
+	let type2 = get_type_from_sexpr se2 in
 	match type1, type2 with
 		Datatype(String), Datatype(Int)
-		| Datatype(Int), Datatype(String) -> SAssign(s, se, type1)
+		| Datatype(Int), Datatype(String) -> SAssign(se1, se2, type1)
 		| _ ->
 	if type1 = type2
-		then SAssign(s, se, type1)
+		then SAssign(se1, se2, type1)
 	else raise(Exceptions.AssignmentTypeMismatch(Utils.string_of_datatype type1, Utils.string_of_datatype type2))
 
 and check_unop fname_map func_st op e =
@@ -102,8 +103,8 @@ and check_matrix_init fname_map func_st e1 e2 e3 =
 	SMatrix_init(expr_to_sexpr fname_map func_st e1, expr_to_sexpr fname_map func_st e2, expr_to_sexpr fname_map func_st e3, Datatype(Int))
 
 and check_expr_is_int_lit e = match e with
-	Num_lit(Int_lit(_)) -> ()
-	| _ -> raise(Exceptions.InvalidMatrixInit)
+	Num_lit(Int_lit(n)) -> n
+	| _ -> raise(Exceptions.MatrixDimensionMustBeIntLit)
 
 and check_matrix_row fname_map func_st s e =
 	ignore(check_expr_is_int_lit e);
@@ -120,11 +121,16 @@ and check_matrix_col fname_map func_st s e =
 			| _ -> raise(Exceptions.MatrixColOnNonMatrix(s))
 
 and check_matrix_access fname_map func_st s e1 e2 =
-	ignore(check_expr_is_int_lit e1);
-	ignore(check_expr_is_int_lit e2);
+	let i = check_expr_is_int_lit e1 in
+	let j = check_expr_is_int_lit e2 in
 	let t = get_ID_type s func_st	in
 		match t with
-			Datatype(Matrix(d,_,_)) -> SMatrix_access(s, expr_to_sexpr fname_map func_st e1, expr_to_sexpr fname_map func_st e2, Datatype(d))
+			Datatype(Matrix(d,rows,cols)) ->
+				let r = (match rows with Int_lit(n) -> n | _ -> raise(Exceptions.MatrixDimensionMustBeIntLit))
+				and c = (match cols with Int_lit(n) -> n | _ -> raise(Exceptions.MatrixDimensionMustBeIntLit)) in
+				if i < r && j < c
+					then SMatrix_access(s, expr_to_sexpr fname_map func_st e1, expr_to_sexpr fname_map func_st e2, Datatype(d))
+					else raise(Exceptions.MatrixOutOfBoundsAccess(s))
 			| _ -> raise(Exceptions.MatrixAccessOnNonMatrix(s))
 
 and check_vector_access fname_map func_st s e =

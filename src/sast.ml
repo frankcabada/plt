@@ -25,7 +25,7 @@ type sexpr =
 	| SNull
 	| SBinop of sexpr * op * sexpr * datatype
 	| SUnop of uop * sexpr * datatype
-	| SAssign of string * sexpr * datatype
+	| SAssign of sexpr * sexpr * datatype
 	| SCall of string * sexpr list * datatype
 	| SMatrix_init of sexpr * sexpr * sexpr * datatype
 	| SVector_access of string * sexpr * datatype

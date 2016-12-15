@@ -29,14 +29,13 @@ type expr =
 	| Null
 	| Binop of expr * op * expr
 	| Unop of uop * expr
-	| Assign of string * expr
+	| Assign of expr * expr
 	| Call of string * expr list
 	| Matrix_init of expr * expr * expr
 	| Vector_access of string * expr
 	| Matrix_access of string * expr * expr
 	| Matrix_row of string * expr
 	| Matrix_col of string * expr
-	(*| Const of primitives * expr (* ?? is this correct *)*)
 
 (* Statements *)
 type stmt =

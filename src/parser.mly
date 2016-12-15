@@ -124,7 +124,7 @@ expr:
   | NOT expr                                                 { Unop(Not, $2) }
   | INC expr                                                 { Unop(Inc, $2) } /* only prefix increment */
   | DEC expr                                                 { Unop(Dec, $2) } /* only prefix decrement */
-  | ID ASSIGN expr                                           { Assign($1, $3) }
+  | expr ASSIGN expr                                         { Assign($1, $3) }
   | LPAREN expr RPAREN                                       { $2 }
   | ID LPAREN actuals_opt RPAREN                             { Call($1, $3) }
   | LBRACKET expr COLON expr COLON expr RBRACKET             { Matrix_init($2, $4, $6) }

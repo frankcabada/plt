@@ -279,11 +279,7 @@ let translate(globals, functions) =
                          free_main;*)
                          L.build_ret (L.const_int (ltype_of_datatype t) 0))
       in
-      (*List.iter build_function_body functions;*)
-
-      List.iter build_function_body (match functions with
-                                       head :: tail -> List.rev functions
-                                     | head -> functions);
+      List.iter build_function_body functions;
 
       (*TODO: FREE EVERYTHING HERE -> LAST LINE OF LLVM CODE*)
       the_module (*returned as a module to whatever called this*)

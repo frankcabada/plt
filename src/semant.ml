@@ -42,10 +42,22 @@ let get_arithmetic_binop_type se1 se2 op = function
 						SBinop(se1, op, se2, Datatype(Matrix(typ1, i1, j2)))
 					else raise(Exceptions.MismatchedMatricesForMult("Matrices M1(i1,j1) and M2(i2,j2) must have j1 = i2 and be of same type to be multiplied"))
 				| _ -> raise(Exceptions.UnsupportedMatrixBinop("Cannot divide matrices")))
-		| (Datatype(Int), Datatype(Vector(Int, n))) -> SBinop(se1, op, se2, Datatype(Vector(Int, n)))
-		| (Datatype(Int), Datatype(Matrix(Int,i,j))) -> SBinop(se1, op, se2, Datatype(Matrix(Int, i, j)))
-		| (Datatype(Float), Datatype(Vector(Float, n))) -> SBinop(se1, op, se2, Datatype(Vector(Float, n)))
-		| (Datatype(Float), Datatype(Matrix(Float,i,j))) -> SBinop(se1, op, se2, Datatype(Matrix(Float, i, j)))
+		| (Datatype(Int), Datatype(Vector(Int, n))) ->
+			(match op with
+				Mult -> SBinop(se1, op, se2, Datatype(Vector(Int, n)))
+				| _ -> raise(Exceptions.UnsupportedVectorBinop("Cannot add, subtract, or divide ints with vectors")))
+		| (Datatype(Int), Datatype(Matrix(Int,i,j))) ->
+			(match op with
+				Mult -> SBinop(se1, op, se2, Datatype(Matrix(Int, i, j)))
+				| _ -> raise(Exceptions.UnsupportedMatrixBinop("Cannot add, subtract, or divide ints with matrices")))
+		| (Datatype(Float), Datatype(Vector(Float, n))) ->
+			(match op with
+				Mult -> SBinop(se1, op, se2, Datatype(Vector(Float, n)))
+				| _ -> raise(Exceptions.UnsupportedVectorBinop("Cannot add, subtract, or divide floats with vectors")))
+		| (Datatype(Float), Datatype(Matrix(Float,i,j))) ->
+			(match op with
+				Mult -> SBinop(se1, op, se2, Datatype(Matrix(Float, i, j)))
+				| _ -> raise(Exceptions.UnsupportedMatrixBinop("Cannot add, subtract, or divide floats with matrices")))
 		| _ -> raise (Exceptions.InvalidBinopExpression("Arithmetic operators on unsupported type"))
 
 let rec get_ID_type s func_st =

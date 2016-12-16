@@ -1,6 +1,6 @@
 #! /bin/bash
 
-cat pass/_assign.test | ./cmat.native -c pass/_assign.ll
+./cmat.native -c pass/_assign.test pass/_assign.ll
 lli pass/_assign.ll > pass/_assign.res
 diff pass/_assign.out pass/_assign.res > /dev/null
 if [ $? = 0 ]; then
@@ -15,7 +15,7 @@ else
   echo "-----------------------------------------"
 fi
 
-cat pass/_func_call.test | ./cmat.native -c pass/_func_call.ll
+./cmat.native -c pass/_func_call.test pass/_func_call.ll
 lli pass/_func_call.ll > pass/_func_call.res
 diff pass/_func_call.out pass/_func_call.res > /dev/null
 if [ $? = 0 ]; then
@@ -30,7 +30,7 @@ else
   echo "-----------------------------------------"
 fi
 
-cat pass/_arithmetic_binops.test | ./cmat.native -c pass/_arithmetic_binops.ll
+./cmat.native -c pass/_arithmetic_binops.test pass/_arithmetic_binops.ll
 lli pass/_arithmetic_binops.ll > pass/_arithmetic_binops.res
 diff pass/_arithmetic_binops.out pass/_arithmetic_binops.res > /dev/null
 if [ $? = 0 ]; then
@@ -45,7 +45,7 @@ else
   echo "-----------------------------------------"
 fi
 
-cat pass/_return.test | ./cmat.native -c pass/_return.ll
+./cmat.native -c pass/_return.test pass/_return.ll
 lli pass/_return.ll > pass/_return.res
 diff pass/_return.out pass/_return.res > /dev/null
 if [ $? = 0 ]; then
@@ -60,7 +60,7 @@ else
   echo "-----------------------------------------"
 fi
 
-cat pass/_control_flow.test | ./cmat.native -c pass/_control_flow.ll
+./cmat.native -c pass/_control_flow.test pass/_control_flow.ll
 lli pass/_control_flow.ll > pass/_control_flow.res
 diff pass/_control_flow.out pass/_control_flow.res > /dev/null
 if [ $? = 0 ]; then

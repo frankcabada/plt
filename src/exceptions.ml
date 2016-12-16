@@ -42,9 +42,7 @@ exception InvalidForStatementType
 exception InvalidMatrixInit
 exception InvalidWhileStatementType
 exception InvalidUnaryOperation
-exception LHSofRootAccessMustBeIDorFunc of string
 exception LocalAssignTypeMismatch of string * string
-exception MainNotDefined
 exception MatrixDimensionMustBeIntLit
 exception MatrixAccessOnNonMatrix of string
 exception MatrixColOnNonMatrix of string
@@ -73,13 +71,8 @@ exception VoidFunc of string
 exception VoidGlobal of string
 
 (* Codegen Exceptions *)
-exception ArrayLargerThan1Unsupported
 exception AssignLHSMustBeAssignable
-exception CanOnlyCompareArraysWithNull of string * string
-exception CannotAssignParam of string
-exception CannotCastTypeException of string * string
 exception DecMustBeCalledOnID
-exception FloatOpNotSupported
 exception IllegalBoolBinop
 exception IllegalBoolUnop
 exception IllegalCast
@@ -87,19 +80,12 @@ exception IllegalFloatBinop
 exception IllegalFloatUnop
 exception IllegalIntBinop
 exception IncMustBeCalledOnID
-exception IntOpNotSupported
 exception InvalidBinaryOperator
-exception InvalidBinopEvaluationType
 exception InvalidMatrixDimension
-exception InvalidStructType of string
-exception InvalidTypePassedToPrintf
 exception InvalidUnopType
 exception InvalidUnopEvaluationType
 exception InvalidVectorDimension
-exception LLVMFunctionNotFound of string
-exception ObjOpNotSupported of string
-exception UnableToCallFunctionWithoutParent of string
-exception UnknownVariable of string
 exception UnopNotSupported
-exception UnsupportedVectorType
+exception UnsupportedBinopType
 exception UnsupportedMatrixType
+exception UnsupportedVectorType

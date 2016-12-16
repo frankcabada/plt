@@ -37,45 +37,29 @@ ACCEPT
                                                       [stmt_list:
                                                         [stmt_list:
                                                           [stmt_list:
-                                                            [stmt_list:
-                                                              [stmt_list:]
-                                                              [stmt:
-                                                                [expr: NUM_LIT]
-                                                                SEMI
-                                                              ]
-                                                            ]
+                                                            [stmt_list:]
                                                             [stmt:
-                                                              [expr: STRING_LIT]
+                                                              [expr: NUM_LIT]
                                                               SEMI
                                                             ]
                                                           ]
                                                           [stmt:
-                                                            [expr: TRUE]
+                                                            [expr: STRING_LIT]
                                                             SEMI
                                                           ]
                                                         ]
-                                                        [stmt:
-                                                          [expr: FALSE]
-                                                          SEMI
-                                                        ]
+                                                        [stmt: [expr: TRUE] SEMI]
                                                       ]
-                                                      [stmt: [expr: NULL] SEMI]
+                                                      [stmt: [expr: FALSE] SEMI]
                                                     ]
-                                                    [stmt: [expr: ID] SEMI]
+                                                    [stmt: [expr: NULL] SEMI]
                                                   ]
-                                                  [stmt:
-                                                    [expr:
-                                                      [expr: NUM_LIT]
-                                                      PLUS
-                                                      [expr: NUM_LIT]
-                                                    ]
-                                                    SEMI
-                                                  ]
+                                                  [stmt: [expr: ID] SEMI]
                                                 ]
                                                 [stmt:
                                                   [expr:
                                                     [expr: NUM_LIT]
-                                                    MINUS
+                                                    PLUS
                                                     [expr: NUM_LIT]
                                                   ]
                                                   SEMI
@@ -84,7 +68,7 @@ ACCEPT
                                               [stmt:
                                                 [expr:
                                                   [expr: NUM_LIT]
-                                                  TIMES
+                                                  MINUS
                                                   [expr: NUM_LIT]
                                                 ]
                                                 SEMI
@@ -93,7 +77,7 @@ ACCEPT
                                             [stmt:
                                               [expr:
                                                 [expr: NUM_LIT]
-                                                DIVIDE
+                                                TIMES
                                                 [expr: NUM_LIT]
                                               ]
                                               SEMI
@@ -102,7 +86,7 @@ ACCEPT
                                           [stmt:
                                             [expr:
                                               [expr: NUM_LIT]
-                                              EQ
+                                              DIVIDE
                                               [expr: NUM_LIT]
                                             ]
                                             SEMI
@@ -111,7 +95,7 @@ ACCEPT
                                         [stmt:
                                           [expr:
                                             [expr: NUM_LIT]
-                                            NEQ
+                                            EQ
                                             [expr: NUM_LIT]
                                           ]
                                           SEMI
@@ -120,57 +104,45 @@ ACCEPT
                                       [stmt:
                                         [expr:
                                           [expr: NUM_LIT]
-                                          LEQ
+                                          NEQ
                                           [expr: NUM_LIT]
                                         ]
                                         SEMI
                                       ]
                                     ]
                                     [stmt:
-                                      [expr: [expr: NUM_LIT] GEQ [expr: NUM_LIT]]
+                                      [expr: [expr: NUM_LIT] LEQ [expr: NUM_LIT]]
                                       SEMI
                                     ]
                                   ]
                                   [stmt:
-                                    [expr: [expr: NUM_LIT] AND [expr: NUM_LIT]]
+                                    [expr: [expr: NUM_LIT] GEQ [expr: NUM_LIT]]
                                     SEMI
                                   ]
                                 ]
                                 [stmt:
-                                  [expr: [expr: NUM_LIT] OR [expr: NUM_LIT]]
+                                  [expr: [expr: NUM_LIT] AND [expr: NUM_LIT]]
                                   SEMI
                                 ]
                               ]
-                              [stmt: [expr: MINUS [expr: NUM_LIT]] SEMI]
+                              [stmt:
+                                [expr: [expr: NUM_LIT] OR [expr: NUM_LIT]]
+                                SEMI
+                              ]
                             ]
-                            [stmt: [expr: NOT [expr: NUM_LIT]] SEMI]
+                            [stmt: [expr: MINUS [expr: NUM_LIT]] SEMI]
                           ]
-                          [stmt: [expr: INC [expr: NUM_LIT]] SEMI]
+                          [stmt: [expr: NOT [expr: NUM_LIT]] SEMI]
                         ]
-                        [stmt: [expr: DEC [expr: NUM_LIT]] SEMI]
+                        [stmt: [expr: INC [expr: NUM_LIT]] SEMI]
                       ]
-                      [stmt: [expr: ID ASSIGN [expr: NUM_LIT]] SEMI]
+                      [stmt: [expr: DEC [expr: NUM_LIT]] SEMI]
                     ]
-                    [stmt: [expr: LPAREN [expr: NUM_LIT] RPAREN] SEMI]
+                    [stmt: [expr: [expr: ID] ASSIGN [expr: NUM_LIT]] SEMI]
                   ]
-                  [stmt: [expr: ID LPAREN [actuals_opt:] RPAREN] SEMI]
+                  [stmt: [expr: LPAREN [expr: NUM_LIT] RPAREN] SEMI]
                 ]
-                [stmt:
-                  [expr:
-                    ID
-                    ASSIGN
-                    [expr:
-                      LBRACKET
-                      [expr: NUM_LIT]
-                      COLON
-                      [expr: NUM_LIT]
-                      COLON
-                      [expr: NUM_LIT]
-                      RBRACKET
-                    ]
-                  ]
-                  SEMI
-                ]
+                [stmt: [expr: ID LPAREN [actuals_opt:] RPAREN] SEMI]
               ]
               [stmt:
                 [expr:

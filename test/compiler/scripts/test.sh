@@ -1,22 +1,8 @@
 #! /bin/bash
 
-cat pass/_vdecl.test | ./cmat.native -c pass/_vdecl.ll
-diff pass/_vdecl.out pass/_vdecl.ll > /dev/null
-if [ $? = 0 ]; then
-  echo -e "\e[0;32m"
-  echo "-----------------------------------------"
-  echo "|      COMPILER: VDECL TEST PASSED      |"
-  echo "-----------------------------------------"
-else
-  echo -e "\e[0;31m"
-  echo "-----------------------------------------"
-  echo "|      COMPILER: VDECL TEST FAILED      |"
-  echo "-----------------------------------------"
-fi
-
-cat pass/_assign_int_float.test | ./cmat.native -c pass/_assign_int_float.ll
-lli pass/_assign_int_float.ll > pass/_assign_int_float.res
-diff pass/_assign_int_float.out pass/_assign_int_float.res > /dev/null
+./cmat.native -c pass/_assign.test pass/_assign.ll
+lli pass/_assign.ll > pass/_assign.res
+diff pass/_assign.out pass/_assign.res > /dev/null
 if [ $? = 0 ]; then
   echo -e "\e[0;32m"
   echo "-----------------------------------------"
@@ -29,7 +15,22 @@ else
   echo "-----------------------------------------"
 fi
 
-cat pass/_func_call.test | ./cmat.native -c pass/_func_call.ll
+./cmat.native -c pass/_include.test pass/_include.ll
+lli pass/_include.ll > pass/_include.res
+diff pass/_include.out pass/_include.res > /dev/null
+if [ $? = 0 ]; then
+  echo -e "\e[0;32m"
+  echo "-----------------------------------------"
+  echo "|     COMPILER: INCLUDE TEST PASSED     |"
+  echo "-----------------------------------------"
+else
+  echo -e "\e[0;31m"
+  echo "-----------------------------------------"
+  echo "|     COMPILER: INCLUDE TEST FAILED     |"
+  echo "-----------------------------------------"
+fi
+
+./cmat.native -c pass/_func_call.test pass/_func_call.ll
 lli pass/_func_call.ll > pass/_func_call.res
 diff pass/_func_call.out pass/_func_call.res > /dev/null
 if [ $? = 0 ]; then
@@ -44,7 +45,7 @@ else
   echo "-----------------------------------------"
 fi
 
-cat pass/_arithmetic_binops.test | ./cmat.native -c pass/_arithmetic_binops.ll
+./cmat.native -c pass/_arithmetic_binops.test pass/_arithmetic_binops.ll
 lli pass/_arithmetic_binops.ll > pass/_arithmetic_binops.res
 diff pass/_arithmetic_binops.out pass/_arithmetic_binops.res > /dev/null
 if [ $? = 0 ]; then
@@ -59,7 +60,7 @@ else
   echo "-----------------------------------------"
 fi
 
-cat pass/_return.test | ./cmat.native -c pass/_return.ll
+./cmat.native -c pass/_return.test pass/_return.ll
 lli pass/_return.ll > pass/_return.res
 diff pass/_return.out pass/_return.res > /dev/null
 if [ $? = 0 ]; then
@@ -74,7 +75,7 @@ else
   echo "-----------------------------------------"
 fi
 
-cat pass/_control_flow.test | ./cmat.native -c pass/_control_flow.ll
+./cmat.native -c pass/_control_flow.test pass/_control_flow.ll
 lli pass/_control_flow.ll > pass/_control_flow.res
 diff pass/_control_flow.out pass/_control_flow.res > /dev/null
 if [ $? = 0 ]; then
@@ -86,5 +87,20 @@ else
   echo -e "\e[0;31m"
   echo "-----------------------------------------"
   echo "|  COMPILER: CONTROL FLOW TEST FAILED   |"
+  echo "-----------------------------------------"
+fi
+
+./cmat.native -c pass/_mat_lit.test pass/_mat_lit.ll
+lli pass/_mat_lit.ll > pass/_mat_lit.res
+diff pass/_mat_lit.out pass/_mat_lit.res > /dev/null
+if [ $? = 0 ]; then
+  echo -e "\e[0;32m"
+  echo "-----------------------------------------"
+  echo "| COMPILER: MATRIX LITERAL TEST PASSED  |"
+  echo "-----------------------------------------"
+else
+  echo -e "\e[0;31m"
+  echo "-----------------------------------------"
+  echo "| COMPILER: MATRIX LITERAL TEST FAILED  |"
   echo "-----------------------------------------"
 fi

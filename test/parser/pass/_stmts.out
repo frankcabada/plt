@@ -24,7 +24,7 @@ ACCEPT
                 [stmt_list:
                   [stmt_list:
                     [stmt_list:]
-                    [stmt: [expr: ID ASSIGN [expr: NUM_LIT]] SEMI]
+                    [stmt: [expr: [expr: ID] ASSIGN [expr: NUM_LIT]] SEMI]
                   ]
                   [stmt:
                     FOR
@@ -40,7 +40,11 @@ ACCEPT
                       [stmt_list:
                         [stmt_list:]
                         [stmt:
-                          [expr: ID ASSIGN [expr: [expr: ID] MINUS [expr: ID]]]
+                          [expr:
+                            [expr: ID]
+                            ASSIGN
+                            [expr: [expr: ID] MINUS [expr: ID]]
+                          ]
                           SEMI
                         ]
                       ]
@@ -58,7 +62,11 @@ ACCEPT
                     [stmt_list:
                       [stmt_list:]
                       [stmt:
-                        [expr: ID ASSIGN [expr: [expr: ID] PLUS [expr: ID]]]
+                        [expr:
+                          [expr: ID]
+                          ASSIGN
+                          [expr: [expr: ID] PLUS [expr: ID]]
+                        ]
                         SEMI
                       ]
                     ]

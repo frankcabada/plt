@@ -1,0 +1,6 @@
+#include <pass/inc.cmat>;
+
+int main() {
+    foo();
+    return 0;
+}

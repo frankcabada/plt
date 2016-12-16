@@ -19,20 +19,21 @@ type sexpr =
 	  SNum_lit of snum
 	| SBool_lit of bool
 	| SString_lit of string
-	| SMatrix_lit of sexpr list * datatype
+	| SMatrix_lit of sexpr list list * datatype
 	| SId of string * datatype
 	| SNoexpr
 	| SNull
 	| SBinop of sexpr * op * sexpr * datatype
 	| SUnop of uop * sexpr * datatype
-	| SAssign of string * sexpr * datatype
+	| SAssign of sexpr * sexpr * datatype
 	| SCall of string * sexpr list * datatype
-	| SMatrix_init of sexpr * sexpr * sexpr * datatype
 	| SVector_access of string * sexpr * datatype
 	| SMatrix_access of string * sexpr * sexpr * datatype
 	| SMatrix_row of string * sexpr * datatype
 	| SMatrix_col of string * sexpr * datatype
-	(*| Const of primitives * expr (* ?? is this correct *)*)
+	| SRows of int
+	| SCols of int
+	| SLen of int
 
 (* Statements *)
 type sstmt =
@@ -54,7 +55,3 @@ type sfunc_decl = {
 
 (* All method declarations | Main entry method *)
 type sprogram = var_dec list * func_decl list
-(*{
-	var_dec : var_dec list;
-	funcs : sfunc_decl list;
-}*)

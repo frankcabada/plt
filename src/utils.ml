@@ -55,29 +55,31 @@ let rec string_of_bracket_expr = function
 	| 	head :: tail 	-> "[" ^ (string_of_expr head) ^ "]" ^ (string_of_bracket_expr tail)
 
 and string_of_expr = function
-	Num_lit(i)								-> string_of_num i
-	| Bool_lit(b)							-> if b then "true" else "false"
-	| String_lit(s)						-> "\"" ^ (String.escaped s) ^ "\""
-	| Id(s)										-> s
-	| Binop(e1, o, e2)				-> (string_of_expr e1) ^ " " ^ (string_of_op o) ^ " " ^ (string_of_expr e2)
-	| Assign(s, e)						-> (s) ^ " = " ^ (string_of_expr e)
-	| Noexpr									-> ""
-	| Call(f, el)							-> f ^ "(" ^ String.concat ", " (List.map string_of_expr el) ^ ")"
-	| Unop(uop, e)						-> (string_of_uop uop) ^ "(" ^ string_of_expr e ^ ")"
-	| Null										-> "null"
-	| Matrix_lit(el) 					-> "Matrix_lit"
-	| Matrix_init(_, _, _)		-> "Matrix_init"
+	Num_lit(i)					-> string_of_num i
+	| Bool_lit(b)				-> if b then "true" else "false"
+	| String_lit(s)				-> "\"" ^ (String.escaped s) ^ "\""
+	| Id(s)						-> s
+	| Binop(e1, o, e2)			-> (string_of_expr e1) ^ " " ^ (string_of_op o) ^ " " ^ (string_of_expr e2)
+	| Assign(e1, e2)			-> (string_of_expr e1) ^ " = " ^ (string_of_expr e2)
+	| Noexpr					-> ""
+	| Call(f, el)				-> f ^ "(" ^ String.concat ", " (List.map string_of_expr el) ^ ")"
+	| Unop(uop, e)				-> (string_of_uop uop) ^ "(" ^ string_of_expr e ^ ")"
+	| Null						-> "null"
+	| Matrix_lit(el) 			-> "Matrix_lit"
 	| Vector_access (s, i) 		-> (s) ^ "[" ^ (string_of_expr i) ^ "]"
-	| Matrix_access (s, i, j) -> (s) ^ "[" ^ (string_of_expr i) ^ "," ^ (string_of_expr j) ^ "]"
-	| Matrix_row (s, i)				-> (s) ^ "[" ^ (string_of_expr i)^ ",:]"
-	| Matrix_col (s, j)				-> (s) ^ "[:," ^ (string_of_expr j) ^ "]"
+	| Matrix_access (s, i, j) 	-> (s) ^ "[" ^ (string_of_expr i) ^ "," ^ (string_of_expr j) ^ "]"
+	| Matrix_row (s, i)			-> (s) ^ "[" ^ (string_of_expr i)^ ",:]"
+	| Matrix_col (s, j)			-> (s) ^ "[:," ^ (string_of_expr j) ^ "]"
+	| Rows(s)					-> (s) ^ ":rows"
+	| Cols(s)					-> (s) ^ ":cols"
+	| Len(s)					-> (s) ^ ":len"
 
 let string_of_snum = function
 		SInt_lit(x) -> string_of_int x
 	|	SFloat_lit(x) -> string_of_float x
 
 let rec string_of_bracket_sexpr = function
-			[] 				-> ""
+		[] 				-> ""
 	| 	head :: tail 	-> "[" ^ (string_of_sexpr head) ^ "]" ^ (string_of_bracket_sexpr tail)
 
 and string_of_sarray_primitive = function
@@ -86,22 +88,24 @@ and string_of_sarray_primitive = function
 	| 	head :: tail 	-> (string_of_sexpr head) ^ ", " ^ (string_of_sarray_primitive tail)
 
 and string_of_sexpr = function
-	SNum_lit(i)										-> string_of_snum i
-	| SBool_lit(b)								-> if b then "true" else "false"
-	| SString_lit(s)							-> "\"" ^ (String.escaped s) ^ "\""
-	| SId(s, _)										-> s
-	| SBinop(e1, o, e2, _)				-> (string_of_sexpr e1) ^ " " ^ (string_of_op o) ^ " " ^ (string_of_sexpr e2)
-	| SAssign(s, e, _)						-> (s) ^ " = " ^ (string_of_sexpr e)
-	| SNoexpr											-> ""
-	| SCall(f, el, _)							-> f ^ "(" ^ String.concat ", " (List.map string_of_sexpr el) ^ ")"
-	| SUnop(uop, e, _)						-> (string_of_uop uop) ^ "(" ^ string_of_sexpr e ^ ")"
-	| SNull												-> "null"
-	| SMatrix_lit (_, _)					-> "SMatrix_lit"
-	| SMatrix_init (_, _, _, _)		-> "SMatrix_init"
+	SNum_lit(i)						-> string_of_snum i
+	| SBool_lit(b)					-> if b then "true" else "false"
+	| SString_lit(s)				-> "\"" ^ (String.escaped s) ^ "\""
+	| SId(s, _)						-> s
+	| SBinop(e1, o, e2, _)			-> (string_of_sexpr e1) ^ " " ^ (string_of_op o) ^ " " ^ (string_of_sexpr e2)
+	| SAssign(se1, se2, _)			-> (string_of_sexpr se1) ^ " = " ^ (string_of_sexpr se2)
+	| SNoexpr						-> ""
+	| SCall(f, el, _)				-> f ^ "(" ^ String.concat ", " (List.map string_of_sexpr el) ^ ")"
+	| SUnop(uop, e, _)				-> (string_of_uop uop) ^ "(" ^ string_of_sexpr e ^ ")"
+	| SNull							-> "null"
+	| SMatrix_lit (_, _)			-> "SMatrix_lit"
 	| SVector_access (s, i, _) 		-> (s) ^ "[" ^ (string_of_sexpr i) ^ "]"
-	| SMatrix_access (s, i, j, _) -> (s) ^ "[" ^ (string_of_sexpr i) ^ "," ^ (string_of_sexpr j) ^ "]"
-	| SMatrix_row (s, i, _)				-> (s) ^ "[" ^ (string_of_sexpr i)^ ",:]"
-	| SMatrix_col (s, j, _)				-> (s) ^ "[:," ^ (string_of_sexpr j) ^ "]"
+	| SMatrix_access (s, i, j, _) 	-> (s) ^ "[" ^ (string_of_sexpr i) ^ "," ^ (string_of_sexpr j) ^ "]"
+	| SMatrix_row (s, i, _)			-> (s) ^ "[" ^ (string_of_sexpr i)^ ",:]"
+	| SMatrix_col (s, j, _)			-> (s) ^ "[:," ^ (string_of_sexpr j) ^ "]"
+	| SCols(c)						-> "SCols"
+	| SRows(r)						-> "SRows"
+	| SLen(l)						-> "SLen"
 
 let string_of_local_expr = function
 		Noexpr -> ""

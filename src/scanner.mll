@@ -31,6 +31,7 @@ rule token = parse
 
 (* Misc. *)
 | ';' { SEMI } | ',' { COMMA } | ':' { COLON }
+| "rows" { ROWS } | "cols" { COLS } | "len" { LEN }
 
 (* Literals *)
 | ['0'-'9']+ as lxm { NUM_LIT(Ast.Int_lit(int_of_string lxm)) }

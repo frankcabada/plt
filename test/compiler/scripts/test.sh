@@ -15,6 +15,21 @@ else
   echo "-----------------------------------------"
 fi
 
+./cmat.native -c pass/_include.test pass/_include.ll
+lli pass/_include.ll > pass/_include.res
+diff pass/_include.out pass/_include.res > /dev/null
+if [ $? = 0 ]; then
+  echo -e "\e[0;32m"
+  echo "-----------------------------------------"
+  echo "|     COMPILER: INCLUDE TEST PASSED     |"
+  echo "-----------------------------------------"
+else
+  echo -e "\e[0;31m"
+  echo "-----------------------------------------"
+  echo "|     COMPILER: INCLUDE TEST FAILED     |"
+  echo "-----------------------------------------"
+fi
+
 ./cmat.native -c pass/_func_call.test pass/_func_call.ll
 lli pass/_func_call.ll > pass/_func_call.res
 diff pass/_func_call.out pass/_func_call.res > /dev/null

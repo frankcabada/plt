@@ -128,11 +128,11 @@ and check_matrix_col fname_map func_st s e =
 			| _ -> raise(Exceptions.MatrixColOnNonMatrix(s))
 
 and check_matrix_access fname_map func_st s e1 e2 =
+	ignore(check_expr_is_int func_st e1);
+	ignore(check_expr_is_int func_st e2);
 	let t = get_ID_type s func_st	in
 		match t with
 			Datatype(Matrix(d,rows,cols)) ->
-				ignore(check_expr_is_int func_st e1);
-				ignore(check_expr_is_int func_st e2);
 				SMatrix_access(s, expr_to_sexpr fname_map func_st e1, expr_to_sexpr fname_map func_st e2, Datatype(d))
 			| _ -> raise(Exceptions.MatrixAccessOnNonMatrix(s))
 

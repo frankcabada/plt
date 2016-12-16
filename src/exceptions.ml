@@ -43,7 +43,8 @@ exception InvalidMatrixInit
 exception InvalidWhileStatementType
 exception InvalidUnaryOperation
 exception LocalAssignTypeMismatch of string * string
-exception MatrixDimensionMustBeIntLit
+exception MalformedMatrixLit
+exception MatrixDimensionMustBeInt
 exception MatrixAccessOnNonMatrix of string
 exception MatrixColOnNonMatrix of string
 exception MatrixLitMustBeOneType

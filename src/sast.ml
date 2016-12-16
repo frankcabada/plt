@@ -19,7 +19,7 @@ type sexpr =
 	  SNum_lit of snum
 	| SBool_lit of bool
 	| SString_lit of string
-	| SMatrix_lit of sexpr list * datatype
+	| SMatrix_lit of sexpr list list * datatype
 	| SId of string * datatype
 	| SNoexpr
 	| SNull

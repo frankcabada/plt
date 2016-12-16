@@ -23,7 +23,7 @@ type expr =
 	| Num_lit of num
 	| Bool_lit of bool
 	| String_lit of string
-	| Matrix_lit of expr list
+	| Matrix_lit of num list list
 	| Id of string
 	| Noexpr
 	| Null

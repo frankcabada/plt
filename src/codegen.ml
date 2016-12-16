@@ -79,8 +79,8 @@ let translate(globals, functions) =
         (* Create an instruction builder *)
         let builder = L.builder_at_end context (L.entry_block the_function) in
 
-        let int_format_str = L.build_global_stringptr "%d\n" "fmt" builder
-        and float_format_str = L.build_global_stringptr "%f\n" "fmt" builder
+        let int_format_str = L.build_global_stringptr "%d " "fmt" builder
+        and float_format_str = L.build_global_stringptr "%f " "fmt" builder
         in
 
         let local_vars =
@@ -220,27 +220,23 @@ let translate(globals, functions) =
                 check_binop_type d
             | S.SUnop(op, e, d)         ->
                 let e' = expr builder e in
-
                 let int_unops op =
                     (match op with
-                        A.Neg   -> L.build_neg e' "tmp" builder
+                        A.Neg     -> L.build_neg e' "tmp" builder
                         | A.Not   -> L.build_not e' "tmp" builder
                         | A.Inc   -> L.build_store (L.build_add e' (L.const_int i32_t 1) "tmp" builder) (lookup (match e with S.SId(s, d) -> s | _->raise(Exceptions.IncMustBeCalledOnID))) builder
                         | A.Dec   -> L.build_store (L.build_sub e' (L.const_int i32_t 1) "tmp" builder) (lookup (match e with S.SId(s, d) -> s | _->raise(Exceptions.DecMustBeCalledOnID))) builder)
                 in
-
                 let float_unops op =
                     match op with
                         A.Neg   -> L.build_fneg e' "tmp" builder
                         | _     -> raise(Exceptions.IllegalFloatUnop)
                 in
-
                 let bool_unops op =
                     match op with
                         A.Not   -> L.build_not e' "tmp" builder
                         | _       -> raise(Exceptions.IllegalBoolUnop)
                 in
-
                 let check_unop_type d =
                     match d with
                         Datatype(Int)   -> int_unops op
@@ -275,8 +271,24 @@ let translate(globals, functions) =
             | S.SVector_access (s, se, d) ->
                 let i = expr builder se in
                     (build_vector_access s (L.const_int i32_t 0) i builder false)
-            (*| S.SMatrix_lit (_, _)
-            | S.SMatrix_row (_, _, _)
+            | S.SMatrix_lit (sll, d) ->
+                (match d with
+                    A.Datatype(A.Float) ->
+                        let realOrder       = List.map List.rev sll in
+                        let i64Lists        = List.map (List.map (expr builder)) realOrder in
+                        let listOfArrays    = List.map Array.of_list i64Lists in
+                        let i64ListOfArrays = List.rev (List.map (L.const_array float_t) listOfArrays) in
+                        let arrayOfArrays   = Array.of_list i64ListOfArrays in
+                            L.const_array (array_t float_t (List.length (List.hd sll))) arrayOfArrays
+                    | A.Datatype(A.Int)  ->
+                        let realOrder       = List.map List.rev sll in
+                        let i32Lists        = List.map (List.map (expr builder)) realOrder in
+                        let listOfArrays    = List.map Array.of_list i32Lists in
+                        let i32ListOfArrays = List.rev (List.map (L.const_array i32_t) listOfArrays) in
+                        let arrayOfArrays   = Array.of_list i32ListOfArrays in
+                            L.const_array (array_t i32_t (List.length (List.hd sll))) arrayOfArrays
+                    | _ -> raise(Exceptions.UnsupportedMatrixType))
+            (*| S.SMatrix_row (_, _, _)
             | S.SMatrix_col (_, _, _)*)
         in
 
@@ -289,52 +301,44 @@ let translate(globals, functions) =
         let rec stmt builder = function
             S.SBlock sl -> List.fold_left stmt builder sl
             | S.SExpr e -> ignore (expr builder e); builder
-            | S.SReturn e -> ignore(match fdecl.S.sreturn_type with
-                    A.Datatype(A.Void) -> L.build_ret_void builder
-                    | _ -> L.build_ret (expr builder e) builder); builder
+            | S.SReturn e ->
+                ignore(match fdecl.S.sreturn_type with
+                    A.Datatype(A.Void)  -> L.build_ret_void builder
+                    | _                 -> L.build_ret (expr builder e) builder); builder
             | S.SIf (predicate, then_stmt, else_stmt) ->
-            let bool_val = expr builder predicate in
-            let merge_bb = L.append_block context
-            "merge" the_function in
-            let then_bb = L.append_block context
-            "then" the_function in
-            add_terminal
-            (stmt (L.builder_at_end context then_bb)
-            then_stmt)
-            (L.build_br merge_bb);
-            let else_bb = L.append_block context
-            "else" the_function in
-            add_terminal
-            (stmt (L.builder_at_end context else_bb)
-            else_stmt)
-            (L.build_br merge_bb);
-
-            ignore (L.build_cond_br bool_val
-            then_bb else_bb builder);
-            L.builder_at_end context merge_bb
+                let bool_val = expr builder predicate in
+                let merge_bb = L.append_block context
+                    "merge" the_function in
+                let then_bb = L.append_block context
+                    "then" the_function in
+                add_terminal
+                    (stmt (L.builder_at_end context then_bb) then_stmt)
+                    (L.build_br merge_bb);
+                let else_bb = L.append_block context
+                    "else" the_function in
+                add_terminal
+                    (stmt (L.builder_at_end context else_bb) else_stmt)
+                    (L.build_br merge_bb);
+                ignore (L.build_cond_br bool_val then_bb else_bb builder);
+                L.builder_at_end context merge_bb
             | S.SWhile (predicate, body) ->
-            let pred_bb = L.append_block context
-            "while" the_function in
-            ignore (L.build_br pred_bb builder);
-            let body_bb = L.append_block context
-            "while_body" the_function in
-            add_terminal (stmt (L.builder_at_end
-            context body_bb)
-            body)
-            (L.build_br pred_bb);
-            let pred_builder =
-            L.builder_at_end context pred_bb in
-            let bool_val =
-            expr pred_builder predicate in
-            let merge_bb = L.append_block context
-            "merge" the_function in
-            ignore (L.build_cond_br bool_val
-            body_bb merge_bb pred_builder);
-            L.builder_at_end context merge_bb
+                let pred_bb = L.append_block context
+                    "while" the_function in
+                ignore (L.build_br pred_bb builder);
+                let body_bb = L.append_block context
+                    "while_body" the_function in
+                add_terminal (stmt (L.builder_at_end context body_bb) body)
+                (L.build_br pred_bb);
+                let pred_builder = L.builder_at_end context pred_bb in
+                let bool_val = expr pred_builder predicate in
+                let merge_bb = L.append_block context
+                    "merge" the_function in
+                ignore (L.build_cond_br bool_val body_bb merge_bb pred_builder);
+                L.builder_at_end context merge_bb
             | S.SFor (e1, e2, e3, body) -> stmt builder
-            (S.SBlock [S.SExpr e1 ;
-            S.SWhile (e2, S.SBlock [body ;
-            S.SExpr e3]) ])
+                (S.SBlock [S.SExpr e1 ;
+                    S.SWhile (e2, S.SBlock [body ;
+                        S.SExpr e3]) ])
         in
 
         (* Build the code for each statement in the function *)

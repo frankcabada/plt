@@ -74,3 +74,18 @@ else
   echo "|  COMPILER: CONTROL FLOW TEST FAILED   |"
   echo "-----------------------------------------"
 fi
+
+./cmat.native -c pass/_mat_lit.test pass/_mat_lit.ll
+lli pass/_mat_lit.ll > pass/_mat_lit.res
+diff pass/_mat_lit.out pass/_mat_lit.res > /dev/null
+if [ $? = 0 ]; then
+  echo -e "\e[0;32m"
+  echo "-----------------------------------------"
+  echo "| COMPILER: MATRIX LITERAL TEST PASSED  |"
+  echo "-----------------------------------------"
+else
+  echo -e "\e[0;31m"
+  echo "-----------------------------------------"
+  echo "| COMPILER: MATRIX LITERAL TEST FAILED  |"
+  echo "-----------------------------------------"
+fi

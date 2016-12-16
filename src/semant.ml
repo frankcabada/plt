@@ -108,51 +108,61 @@ and check_binop fname_map func_st e1 op e2 =
 	| Add | Mult | Sub | Div -> get_arithmetic_binop_type se1 se2 op (type1, type2)
 	| _ -> raise (Exceptions.InvalidBinopExpression ((Utils.string_of_op op) ^ " is not a supported binary op"))
 
-and check_expr_is_int_lit e = match e with
-	Num_lit(Int_lit(n)) -> n
-	| _ -> raise(Exceptions.MatrixDimensionMustBeIntLit)
+and check_expr_is_int func_st e = match e with
+	Num_lit(Int_lit(n)) -> Datatype(Int)
+	| Id(s) 			-> get_ID_type s func_st
+	| _ -> raise(Exceptions.MatrixDimensionMustBeInt)
 
 and check_matrix_row fname_map func_st s e =
-	ignore(check_expr_is_int_lit e);
+	ignore(check_expr_is_int func_st e);
 	let t = get_ID_type s func_st	in
 		match t with
 			Datatype(Matrix(d,_,_)) -> SMatrix_row(s, expr_to_sexpr fname_map func_st e, Datatype(d))
 			| _ -> raise(Exceptions.MatrixRowOnNonMatrix(s))
 
 and check_matrix_col fname_map func_st s e =
-	ignore(check_expr_is_int_lit e);
+	ignore(check_expr_is_int func_st e);
 	let t = get_ID_type s func_st	in
 		match t with
 			Datatype(Matrix(d,_,_)) -> SMatrix_col(s, expr_to_sexpr fname_map func_st e, Datatype(d))
 			| _ -> raise(Exceptions.MatrixColOnNonMatrix(s))
 
 and check_matrix_access fname_map func_st s e1 e2 =
-	let i = check_expr_is_int_lit e1 in
-	let j = check_expr_is_int_lit e2 in
 	let t = get_ID_type s func_st	in
 		match t with
 			Datatype(Matrix(d,rows,cols)) ->
-				let r = (match rows with Int_lit(n) -> n | _ -> raise(Exceptions.MatrixDimensionMustBeIntLit))
-				and c = (match cols with Int_lit(n) -> n | _ -> raise(Exceptions.MatrixDimensionMustBeIntLit)) in
-				if i < r && j < c
-					then SMatrix_access(s, expr_to_sexpr fname_map func_st e1, expr_to_sexpr fname_map func_st e2, Datatype(d))
-					else raise(Exceptions.MatrixOutOfBoundsAccess(s))
+				ignore(check_expr_is_int func_st e1);
+				ignore(check_expr_is_int func_st e2);
+				SMatrix_access(s, expr_to_sexpr fname_map func_st e1, expr_to_sexpr fname_map func_st e2, Datatype(d))
 			| _ -> raise(Exceptions.MatrixAccessOnNonMatrix(s))
 
 and check_vector_access fname_map func_st s e =
-	ignore(check_expr_is_int_lit e);
+	ignore(check_expr_is_int func_st e);
 	let t = get_ID_type s func_st	in
 		match t with
 			Datatype(Vector(d,_)) -> SVector_access(s, expr_to_sexpr fname_map func_st e, Datatype(d))
 			| _ -> raise(Exceptions.VectorAccessOnNonMatrix(s))
 
-and check_matrix_lit fname_map func_st el =
-	let sl = List.map (expr_to_sexpr fname_map func_st) el in
-	  	let t = get_type_from_sexpr (List.hd sl) in
-			ignore(List.iter (fun sexpr ->
-						if t = get_type_from_sexpr sexpr then ()
-						else raise(Exceptions.MatrixLitMustBeOneType)) sl);
-			SMatrix_lit(sl, t)
+and lit_to_slit n = match n with
+	Int_lit(n) -> SNum_lit(SInt_lit(n))
+	| Float_lit(n) -> SNum_lit(SFloat_lit(n))
+
+and typ_of_lit n = match n with
+	Int_lit(n) -> Datatype(Int)
+	| Float_lit(n) -> Datatype(Float)
+
+and check_matrix_lit fname_map func_st nll =
+	let snll = (List.map (fun nl -> (List.map lit_to_slit nl)) nll) in
+	let first = List.hd (List.hd nll) in
+	let first_size = List.length (List.hd nll) in
+		ignore(List.iter (fun nl -> if (List.length nl = first_size) then () else raise(Exceptions.MalformedMatrixLit)) nll);
+	let first_typ = typ_of_lit first in
+		ignore(List.iter (fun nl -> List.iter (fun n ->
+			(let typ = typ_of_lit n in
+				if (typ = first_typ)
+					then ()
+					else raise(Exceptions.MatrixLitMustBeOneType))) nl) nll);
+	SMatrix_lit(snll, first_typ)
 
 and function_decl s fname_map =
 	try StringMap.find s fname_map
@@ -161,13 +171,13 @@ and function_decl s fname_map =
 and check_rows s func_st =
 	let typ = get_ID_type s func_st in
 		match typ with
-			Datatype(Matrix(_, r, _)) -> (match r with Int_lit(n) -> SRows(n) | _ -> raise(Exceptions.MatrixDimensionMustBeIntLit))
+			Datatype(Matrix(_, r, _)) -> (match r with Int_lit(n) -> SRows(n) | _ -> raise(Exceptions.MatrixDimensionMustBeInt))
 			| _ -> raise(Exceptions.CannotUseRowsOnNonMatrix(s))
 
 and check_cols s func_st =
 	let typ = get_ID_type s func_st in
 		match typ with
-			Datatype(Matrix(_, _, c)) -> (match c with Int_lit(n) -> SCols(n) | _ -> raise(Exceptions.MatrixDimensionMustBeIntLit))
+			Datatype(Matrix(_, _, c)) -> (match c with Int_lit(n) -> SCols(n) | _ -> raise(Exceptions.MatrixDimensionMustBeInt))
 			| _ -> raise(Exceptions.CannotUseRowsOnNonMatrix(s))
 
 and check_len s func_st =
@@ -196,7 +206,7 @@ and expr_to_sexpr fname_map func_st = function
 	| Matrix_access(s, e1, e2)	-> check_matrix_access fname_map func_st s e1 e2
 	| Matrix_row(s, e)       	-> check_matrix_row fname_map func_st s e
 	| Matrix_col(s, e)       	-> check_matrix_col fname_map func_st s e
-	| Matrix_lit(el)			-> check_matrix_lit fname_map func_st el
+	| Matrix_lit(nll)			-> check_matrix_lit fname_map func_st nll
 	| Rows(s)					-> check_rows s func_st
 	| Cols(s)					-> check_cols s func_st
 	| Len(s)					-> check_len s func_st
@@ -220,16 +230,22 @@ and get_type_from_sexpr sexpr = match sexpr with
 	| SMatrix_access(_, _, _, d)		-> d
 	| SMatrix_row(_, _, d)				-> d
 	| SMatrix_col(_, _, d)				-> d
-	| SMatrix_lit(_, d)					-> d
+	| SMatrix_lit(sll, d)				->
+		let c = List.length (List.hd sll) in
+		let r = List.length sll in
+		match d with
+			Datatype(Int) 		-> Datatype(Matrix(Int, Int_lit(r), Int_lit(c)))
+			| Datatype(Float)	-> Datatype(Matrix(Float, Int_lit(r), Int_lit(c)))
+			| _ 				-> raise(Exceptions.UnsupportedMatrixType)
 
 let add_reserved_functions =
 	let reserved_stub name return_type formals =
 		{
-			return_type			= return_type;
-			fname 					= name;
-			formals 				= formals;
-			locals					= [];
-			body 						= [];
+			return_type	= return_type;
+			fname 		= name;
+			formals 	= formals;
+			locals		= [];
+			body 		= [];
 		}
 	in
 	let void_t = Datatype(Void) in
@@ -316,23 +332,22 @@ let fdecls_to_fname_map fdecls =
 
 let convert_fdecl_to_sfdecl globs fname_map fdecl =
 	{
-		sfname 				= fdecl.fname;
-		sreturn_type 		= fdecl.return_type;
-		sformals 			= fdecl.formals;
-		slocals 			= fdecl.locals;
-		sbody 				= (convert_stmt_list_to_sstmt_list fname_map (fdecl_to_func_st globs fdecl) fdecl.body);
+		sfname 			= fdecl.fname;
+		sreturn_type 	= fdecl.return_type;
+		sformals 		= fdecl.formals;
+		slocals 		= fdecl.locals;
+		sbody 			= (convert_stmt_list_to_sstmt_list fname_map (fdecl_to_func_st globs fdecl) fdecl.body);
 	}
 
 let check_function_return fname fbody returnType =
 	let len = List.length fbody in
 		if len > 0
-			then
-				let final_stmt = List.hd (List.rev fbody) in
-					match returnType, final_stmt with
-						Datatype(Void), Return(_) -> raise(Exceptions.AllVoidFunctionsMustNotReturn(fname))
-						| Datatype(Void), _ 	  -> ()
-						| _, Return(_)	 	      -> ()
-						| _, _					  -> raise(Exceptions.AllNonVoidFunctionsMustEndWithReturn(fname))
+			then let final_stmt = List.hd (List.rev fbody) in
+				match returnType, final_stmt with
+					Datatype(Void), Return(_) -> raise(Exceptions.AllVoidFunctionsMustNotReturn(fname))
+					| Datatype(Void), _ 	  -> ()
+					| _, Return(_)	 	      -> ()
+					| _, _					  -> raise(Exceptions.AllNonVoidFunctionsMustEndWithReturn(fname))
 			else
 				if returnType = Datatype(Void) then ()
 				else raise(Exceptions.AllNonVoidFunctionsMustEndWithReturn(fname))

@@ -13,6 +13,9 @@ let get_equality_binop_type type1 type2 se1 se2 op =
 
 let get_logical_binop_type se1 se2 op = function
 		| (Datatype(Bool), Datatype(Bool)) -> SBinop(se1, op, se2, Datatype(Bool))
+		| (Datatype(Int), Datatype(Int))   -> SBinop(se1, op, se2, Datatype(Int))
+		| (Datatype(Int), Datatype(Bool))  -> SBinop(se1, op, se2, Datatype(Bool))
+		| (Datatype(Bool), Datatype(Int))  -> SBinop(se1, op, se2, Datatype(Bool))
 		| _ -> raise (Exceptions.InvalidBinopExpression "Can only use Bools for logical operators")
 
 let get_arithmetic_binop_type se1 se2 op = function

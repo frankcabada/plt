@@ -93,3 +93,4 @@ exception UnsupportedMatrixType
 exception UnsupportedVectorType
 exception CannotUseNewWithVectors
 exception CannotUseNewwithMatrices
+exception CanOnlyUseFreeWithVariables

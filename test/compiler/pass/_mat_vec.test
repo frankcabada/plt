@@ -1,0 +1,79 @@
+#include <../../stdlib.cmat>;
+
+int main() {
+    int i;
+    int j;
+    float f;
+    matrix int [2,3] mi;
+    matrix int [2,3] mj;
+    matrix float [3,5] me;
+    matrix float [3,5] mf;
+    vector int [2] vi;
+    vector float [2] vf;
+    i=1;
+    j=2;
+    f=5.5;
+    vi[0] = 1;
+    vi[1] = 2;
+    vf[0] = 1.1;
+    vf[1] = 2.2;
+    mi = [1,2,3;4,5,6];
+    mj = [1,2,3;4,5,6];
+    me = [1.1,2.2,3.3,4.4,5.5;1.1,2.2,3.3,4.4,5.5;1.1,2.2,3.3,4.4,5.5];
+    mf = [1.1,2.2,3.3,4.4,5.5;1.1,2.2,3.3,4.4,5.5;1.1,2.2,3.3,4.4,5.5];
+
+    print_string("vi: ");
+    printi2(vi);
+
+    print_string("vi+vi: ");
+    printi2(vi+vi);
+
+    print_string("vi-vi: ");
+    printi2(vi-vi);
+
+    print_string("j*vi: ");
+    printi2(j*vi);
+
+    print_string("vf: ");
+    printf2(vf);
+
+    print_string("vf+vf: ");
+    printf2(vf+vf);
+
+    print_string("vf-vf: ");
+    printf2(vf-vf);
+
+    print_string("f*vf: ");
+    printf2(f*vf);
+
+    print_string("mi:");
+    printi23(mi);
+
+    print_string("mj:");
+    printi23(mj);
+
+    print_string("mi+mj:");
+    printi23(mi+mj);
+
+    print_string("mi-mj:");
+    printi23(mi-mj);
+
+    print_string("j*mi:");
+    printi23(j*mi);
+
+    print_string("me:");
+    printf35(me);
+
+    print_string("mf:");
+    printf35(mf);
+
+    print_string("mf+me:");
+    printf35(mf+me);
+
+    print_string("mf-me:");
+    printf35(mf-me);
+
+    print_string("f*mf:");
+    printf35(f*mf);
+    return 0;
+}

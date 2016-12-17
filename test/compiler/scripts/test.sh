@@ -90,18 +90,18 @@ else
   echo "-----------------------------------------"
 fi
 
-./cmat.native -c pass/_mat_lit.test pass/_mat_lit.ll
-lli pass/_mat_lit.ll > pass/_mat_lit.res
-diff pass/_mat_lit.out pass/_mat_lit.res > /dev/null
+./cmat.native -c pass/_mat_vec.test pass/_mat_vec.ll
+lli pass/_mat_vec.ll > pass/_mat_vec.res
+diff pass/_mat_vec.out pass/_mat_vec.res > /dev/null
 if [ $? = 0 ]; then
   echo -e "\e[0;32m"
   echo "-----------------------------------------"
-  echo "| COMPILER: MATRIX LITERAL TEST PASSED  |"
+  echo "|  COMPILER: MATRIX/VECTOR TEST PASSED  |"
   echo "-----------------------------------------"
 else
   echo -e "\e[0;31m"
   echo "-----------------------------------------"
-  echo "| COMPILER: MATRIX LITERAL TEST FAILED  |"
+  echo "|  COMPILER: MATRIX/VECTOR TEST FAILED  |"
   echo "-----------------------------------------"
 fi
 

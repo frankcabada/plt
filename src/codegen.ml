@@ -191,12 +191,12 @@ let translate(globals, functions) =
                 in
 
                 let vector_bops iorf n_i n op e1 e2 =
+                    let lhs_str = (match e1 with SId(s,_) -> s | _ -> "") in
+                    let rhs_str = (match e2 with SId(s,_) -> s | _ -> "") in
                     match iorf with
                         "int" ->
                             (match op with
                                 A.Add       ->
-                                    let lhs_str = (match e1 with SId(s,_) -> s | _ -> "") in
-                                    let rhs_str = (match e2 with SId(s,_) -> s | _ -> "") in
                                     let tmp_v = L.build_alloca (array_t i32_t n_i) "tmpvec" builder in
                                     for i=0 to n_i do
                                             let v1 = build_vector_access n_i lhs_str (L.const_int i32_t 0) (L.const_int i32_t i) builder false in
@@ -207,8 +207,6 @@ let translate(globals, functions) =
                                     done;
                                     L.build_load (L.build_gep tmp_v [| L.const_int i32_t 0 |] "tmpvec" builder) "tmpvec" builder
                                 | A.Sub     ->
-                                    let lhs_str = (match e1 with SId(s,_) -> s | _ -> "") in
-                                    let rhs_str = (match e2 with SId(s,_) -> s | _ -> "") in
                                     let tmp_v = L.build_alloca (array_t i32_t n_i) "tmpvec" builder in
                                     for i=0 to n_i do
                                             let v1 = build_vector_access n_i lhs_str (L.const_int i32_t 0) (L.const_int i32_t i) builder false in
@@ -218,7 +216,20 @@ let translate(globals, functions) =
                                             ignore(build_store add_res ld builder);
                                     done;
                                     L.build_load (L.build_gep tmp_v [| L.const_int i32_t 0 |] "tmpvec" builder) "tmpvec" builder
-                                (*| A.Mult    -> L.build_mul e1' e2' "tmp" builder*)
+                                | A.Mult    ->
+                                    let first_typ = Semant.get_type_from_sexpr e1 in
+                                    let tmp_v = L.build_alloca (array_t i32_t n_i) "tmpvec" builder in
+                                    (match first_typ with
+                                        Datatype(Int) ->
+                                            for i=0 to n_i do
+                                                let v2 = build_vector_access n_i rhs_str (L.const_int i32_t 0) (L.const_int i32_t i) builder false in
+                                                let add_res = L.build_mul (build_load (lookup lhs_str) "tmp" builder) v2 "tmp" builder in
+                                                let ld = L.build_gep tmp_v [| L.const_int i32_t 0; L.const_int i32_t i |] "tmpvec" builder in
+                                                ignore(build_store add_res ld builder);
+                                            done;
+                                            L.build_load (L.build_gep tmp_v [| L.const_int i32_t 0 |] "tmpvec" builder) "tmpvec" builder
+                                        | Datatype(Matrix(Int,r1,c1)) -> L.const_int i32_t 0
+                                        | _ -> L.const_int i32_t 0)
                                 | _         -> raise(Exceptions.IllegalVectorBinop))
                         | "float" ->
                             (match op with
@@ -246,18 +257,31 @@ let translate(globals, functions) =
                                             ignore(build_store add_res ld builder);
                                     done;
                                     L.build_load (L.build_gep tmp_v [| L.const_int i32_t 0 |] "tmpvec" builder) "tmpvec" builder
-                                (*| A.Mult    -> L.build_mul e1' e2' "tmp" builder*)
+                                | A.Mult    ->
+                                    let first_typ = Semant.get_type_from_sexpr e1 in
+                                    let tmp_v = L.build_alloca (array_t float_t n_i) "tmpvec" builder in
+                                    (match first_typ with
+                                        Datatype(Float) ->
+                                            for i=0 to n_i do
+                                                let v2 = build_vector_access n_i rhs_str (L.const_int i32_t 0) (L.const_int i32_t i) builder false in
+                                                let add_res = L.build_fmul (build_load (lookup lhs_str) "tmp" builder) v2 "tmp" builder in
+                                                let ld = L.build_gep tmp_v [| L.const_int i32_t 0; L.const_int i32_t i |] "tmpvec" builder in
+                                                ignore(build_store add_res ld builder);
+                                            done;
+                                            L.build_load (L.build_gep tmp_v [| L.const_int i32_t 0 |] "tmpvec" builder) "tmpvec" builder
+                                        | Datatype(Matrix(Int,r1,c1)) -> L.const_int i32_t 0
+                                        | _ -> L.const_int i32_t 0)
                                 | _         -> raise(Exceptions.IllegalVectorBinop))
                         | _ -> L.const_int i32_t 0
                 in
 
                 let matrix_bops iorf r_i c_i r c op e1 e2 =
+                    let lhs_str = (match e1 with SId(s,_) -> s | _ -> "") in
+                    let rhs_str = (match e2 with SId(s,_) -> s | _ -> "") in
                     match iorf with
                         "int" ->
                             (match op with
                                 A.Add       ->
-                                    let lhs_str = (match e1 with SId(s,_) -> s | _ -> "") in
-                                    let rhs_str = (match e2 with SId(s,_) -> s | _ -> "") in
                                     let tmp_m = L.build_alloca (array_t (array_t i32_t c_i) r_i) "tmpmat" builder in
                                     for i=0 to r_i do
                                         for j=0 to c_i do
@@ -270,8 +294,6 @@ let translate(globals, functions) =
                                     done;
                                     L.build_load (L.build_gep tmp_m [| L.const_int i32_t 0 |] "tmpmat" builder) "tmpmat" builder
                                 | A.Sub     ->
-                                    let lhs_str = (match e1 with SId(s,_) -> s | _ -> "") in
-                                    let rhs_str = (match e2 with SId(s,_) -> s | _ -> "") in
                                     let tmp_m = L.build_alloca (array_t (array_t i32_t c_i) r_i) "tmpmat" builder in
                                     for i=0 to r_i do
                                         for j=0 to c_i do
@@ -283,13 +305,26 @@ let translate(globals, functions) =
                                         done
                                     done;
                                     L.build_load (L.build_gep tmp_m [| L.const_int i32_t 0 |] "tmpmat" builder) "tmpmat" builder
-                                (*| A.Mult    -> L.build_mul e1' e2' "tmp" builder*)
+                                | A.Mult    ->
+                                    let first_typ = Semant.get_type_from_sexpr e1 in
+                                    let tmp_m = L.build_alloca (array_t (array_t i32_t c_i) r_i) "tmpmat" builder in
+                                    (match first_typ with
+                                        Datatype(Int) ->
+                                            for i=0 to r_i do
+                                                for j=0 to c_i do
+                                                    let m2 = build_matrix_access r_i c_i rhs_str (L.const_int i32_t 0) (L.const_int i32_t i) (L.const_int i32_t j) builder false in
+                                                    let add_res = L.build_mul (build_load (lookup lhs_str) "tmp" builder) m2 "tmp" builder in
+                                                    let ld = L.build_gep tmp_m [| L.const_int i32_t 0; L.const_int i32_t i; L.const_int i32_t j |] "tmpmat" builder in
+                                                    ignore(build_store add_res ld builder);
+                                                done
+                                            done;
+                                            L.build_load (L.build_gep tmp_m [| L.const_int i32_t 0 |] "tmpmat" builder) "tmpmat" builder
+                                        | Datatype(Matrix(Int,r1,c1)) -> L.const_int i32_t 0
+                                        | _ -> L.const_int i32_t 0)
                                 | _         -> raise(Exceptions.IllegalMatrixBinop))
                         | "float" ->
                             (match op with
                                 A.Add       ->
-                                    let lhs_str = (match e1 with SId(s,_) -> s | _ -> "") in
-                                    let rhs_str = (match e2 with SId(s,_) -> s | _ -> "") in
                                     let tmp_m = L.build_alloca (array_t (array_t float_t c_i) r_i) "tmpmat" builder in
                                     for i=0 to r_i do
                                         for j=0 to c_i do
@@ -302,8 +337,6 @@ let translate(globals, functions) =
                                     done;
                                     L.build_load (L.build_gep tmp_m [| L.const_int i32_t 0 |] "tmpmat" builder) "tmpmat" builder
                                 | A.Sub     ->
-                                    let lhs_str = (match e1 with SId(s,_) -> s | _ -> "") in
-                                    let rhs_str = (match e2 with SId(s,_) -> s | _ -> "") in
                                     let tmp_m = L.build_alloca (array_t (array_t float_t c_i) r_i) "tmpmat" builder in
                                     for i=0 to r_i do
                                         for j=0 to c_i do
@@ -315,7 +348,22 @@ let translate(globals, functions) =
                                         done
                                     done;
                                     L.build_load (L.build_gep tmp_m [| L.const_int i32_t 0 |] "tmpmat" builder) "tmpmat" builder
-                                (*| A.Mult    -> L.build_mul e1' e2' "tmp" builder*)
+                                | A.Mult    ->
+                                    let first_typ = Semant.get_type_from_sexpr e1 in
+                                    let tmp_m = L.build_alloca (array_t (array_t float_t c_i) r_i) "tmpmat" builder in
+                                    (match first_typ with
+                                        Datatype(Float) ->
+                                            for i=0 to r_i do
+                                                for j=0 to c_i do
+                                                    let m2 = build_matrix_access r_i c_i rhs_str (L.const_int i32_t 0) (L.const_int i32_t i) (L.const_int i32_t j) builder false in
+                                                    let add_res = L.build_fmul (build_load (lookup lhs_str) "tmp" builder) m2 "tmp" builder in
+                                                    let ld = L.build_gep tmp_m [| L.const_int i32_t 0; L.const_int i32_t i; L.const_int i32_t j |] "tmpmat" builder in
+                                                    ignore(build_store add_res ld builder);
+                                                done
+                                            done;
+                                            L.build_load (L.build_gep tmp_m [| L.const_int i32_t 0 |] "tmpmat" builder) "tmpmat" builder
+                                        | Datatype(Matrix(Float,r1,c1)) -> L.const_int i32_t 0
+                                        | _ -> L.const_int i32_t 0)
                                 | _         -> raise(Exceptions.IllegalMatrixBinop))
                         | _ -> L.const_int i32_t 0
                 in
@@ -329,10 +377,18 @@ let translate(globals, functions) =
                         | (Datatype(Float), Datatype(Int))      ->   (lhs, build_sitofp rhs float_t "tmp" builder), Datatype(Float)
                         | (Datatype(Int), Datatype(Bool))       -> (lhs, rhs), Datatype(Bool)
                         | (Datatype(Bool), Datatype(Int))       -> (lhs, rhs), Datatype(Int)
+                        | (Datatype(Int), Datatype(Vector(Int, n1))) ->
+                            (lhs, rhs), Datatype(Vector(Int, n1))
+                        | (Datatype(Float), Datatype(Vector(Float, n1))) ->
+                            (lhs, rhs), Datatype(Vector(Float, n1))
                         | (Datatype(Vector(Int, n1)), Datatype(Vector(Int, n2))) ->
                             (lhs, rhs), Datatype(Vector(Int, n1))
                         | (Datatype(Vector(Float, n1)), Datatype(Vector(Float, n2))) ->
                             (lhs, rhs), Datatype(Vector(Float, n1))
+                        | (Datatype(Int), Datatype(Matrix(Int,r1,c2))) ->
+                            (lhs, rhs), Datatype(Matrix(Int, r1, c2))
+                        | (Datatype(Float), Datatype(Matrix(Float,r1,c2))) ->
+                            (lhs, rhs), Datatype(Matrix(Float, r1, c2))
                         | (Datatype(Matrix(Int,r1,c1)), Datatype(Matrix(Int,r2,c2))) ->
                             (lhs, rhs), Datatype(Matrix(Int, r1, c2))
                         | (Datatype(Matrix(Float,r1,c1)), Datatype(Matrix(Float,r2,c2))) ->

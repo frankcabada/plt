@@ -13,6 +13,9 @@ let get_equality_binop_type type1 type2 se1 se2 op =
 
 let get_logical_binop_type se1 se2 op = function
 		| (Datatype(Bool), Datatype(Bool)) -> SBinop(se1, op, se2, Datatype(Bool))
+		| (Datatype(Int), Datatype(Int))   -> SBinop(se1, op, se2, Datatype(Int))
+		| (Datatype(Int), Datatype(Bool))  -> SBinop(se1, op, se2, Datatype(Bool))
+		| (Datatype(Bool), Datatype(Int))  -> SBinop(se1, op, se2, Datatype(Bool))
 		| _ -> raise (Exceptions.InvalidBinopExpression "Can only use Bools for logical operators")
 
 let get_arithmetic_binop_type se1 se2 op = function
@@ -72,6 +75,8 @@ and check_assign fname_map func_st e1 e2 =
 	match type1, type2 with
 		Datatype(String), Datatype(Int)
 		| Datatype(Int), Datatype(String) -> SAssign(se1, se2, type1)
+		| Datatype(Int), Datatype(Bool) -> SAssign(se1, se2, type1)
+		| Datatype(Bool), Datatype(Int) -> SAssign(se1, se2, type1)
 		| _ ->
 	if type1 = type2
 		then SAssign(se1, se2, type1)
@@ -386,7 +391,12 @@ let check_function_return fname fbody returnType =
 let check_return fname_map fdecl func_st e =
 	let se = expr_to_sexpr fname_map func_st e in
 	let t = get_type_from_sexpr se in
-		if (t=fdecl.return_type) then () else raise(Exceptions.ReturnTypeMismatch(Utils.string_of_datatype t, Utils.string_of_datatype fdecl.return_type))
+		(match fdecl.return_type with
+			Datatype(Matrix(d,Int_lit(0),Int_lit(0))) ->
+			 	(match t with
+					Datatype(Matrix(d,_,_)) -> ()
+					| _ -> raise(Exceptions.ReturnTypeMismatch(Utils.string_of_datatype t, Utils.string_of_datatype fdecl.return_type)))
+			| _ -> if (t=fdecl.return_type) then () else raise(Exceptions.ReturnTypeMismatch(Utils.string_of_datatype t, Utils.string_of_datatype fdecl.return_type)))
 
 let rec check_stmt globs fname_map fdecl = function
 	Return(e) 					-> check_return fname_map fdecl (fdecl_to_func_st globs fdecl) e

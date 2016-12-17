@@ -147,12 +147,12 @@ ACCEPT
               [stmt:
                 [expr:
                   LBRACKET
-                  [actuals_opt:
-                    [actuals_list:
-                      [actuals_list: [expr: NUM_LIT]]
-                      COMMA
-                      [expr: NUM_LIT]
+                  [mat_lit:
+                    [mat_lit:
+                      [lit_list: [lit_list: [lit: NUM_LIT]] COMMA [lit: NUM_LIT]]
                     ]
+                    SEMI
+                    [lit_list: [lit_list: [lit: NUM_LIT]] COMMA [lit: NUM_LIT]]
                   ]
                   RBRACKET
                 ]

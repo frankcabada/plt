@@ -81,6 +81,7 @@ let translate(globals, functions) =
 
         let int_format_str = L.build_global_stringptr "%d\t" "fmt" builder
         and float_format_str = L.build_global_stringptr "%f\t" "fmt" builder
+        and string_format_str = L.build_global_stringptr "%s\n" "fmt" builder
         in
 
         let local_vars =
@@ -283,9 +284,7 @@ let translate(globals, functions) =
             | S.SCols(c)                -> L.const_int i32_t c
             | S.SLen(l)                 -> L.const_int i32_t l
             | S.SCall ("print_string", [e], d) ->
-                let get_string = function S.SString_lit s -> s | _ -> "" in
-                let s_ptr = L.build_global_stringptr ((get_string e) ^ "\n") ".str" builder in
-                    L.build_call printf_func [| s_ptr |] "printf" builder
+                L.build_call printf_func [| string_format_str ; (expr builder e) |] "printf" builder
             | S.SCall ("print_int", [e], d) ->
                 L.build_call printf_func [| int_format_str ; (expr builder e) |] "printf" builder
             | S.SCall ("print_float", [e], d) ->

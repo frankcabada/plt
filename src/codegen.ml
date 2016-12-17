@@ -163,6 +163,8 @@ let translate(globals, functions) =
                         | A.Leq     -> L.build_icmp L.Icmp.Sle e1' e2' "tmp" builder
                         | A.Greater -> L.build_icmp L.Icmp.Sgt e1' e2' "tmp" builder
                         | A.Geq     -> L.build_icmp L.Icmp.Sge e1' e2' "tmp" builder
+                        | A.And     -> L.build_and e1' e2' "tmp" builder
+                        | A.Or      -> L.build_or e1' e2' "tmp" builder
                         | _         -> raise(Exceptions.IllegalIntBinop)
                 in
 
@@ -320,11 +322,13 @@ let translate(globals, functions) =
 
                 let cast lhs rhs lhsType rhsType =
                     match (lhsType, rhsType) with
-                        (Datatype(Int), Datatype(Int))    -> (lhs, rhs), Datatype(Int)
-                        | (Datatype(Float), Datatype(Float))->  (lhs, rhs), Datatype(Float)
-                        | (Datatype(Bool), Datatype(Bool))  ->  (lhs, rhs), Datatype(Bool)
-                        | (Datatype(Int), Datatype(Float))  ->   (build_sitofp lhs float_t "tmp" builder, rhs), Datatype(Float)
-                        | (Datatype(Float), Datatype(Int))  ->   (lhs, build_sitofp rhs float_t "tmp" builder), Datatype(Float)
+                        (Datatype(Int), Datatype(Int))          -> (lhs, rhs), Datatype(Int)
+                        | (Datatype(Float), Datatype(Float))    ->  (lhs, rhs), Datatype(Float)
+                        | (Datatype(Bool), Datatype(Bool))      ->  (lhs, rhs), Datatype(Bool)
+                        | (Datatype(Int), Datatype(Float))      ->   (build_sitofp lhs float_t "tmp" builder, rhs), Datatype(Float)
+                        | (Datatype(Float), Datatype(Int))      ->   (lhs, build_sitofp rhs float_t "tmp" builder), Datatype(Float)
+                        | (Datatype(Int), Datatype(Bool))       -> (lhs, rhs), Datatype(Bool)
+                        | (Datatype(Bool), Datatype(Int))       -> (lhs, rhs), Datatype(Int)
                         | (Datatype(Vector(Int, n1)), Datatype(Vector(Int, n2))) ->
                             (lhs, rhs), Datatype(Vector(Int, n1))
                         | (Datatype(Vector(Float, n1)), Datatype(Vector(Float, n2))) ->

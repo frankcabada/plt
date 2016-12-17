@@ -165,7 +165,6 @@ let translate(globals, functions) =
                         | A.Geq     -> L.build_icmp L.Icmp.Sge e1' e2' "tmp" builder
                         | A.And     -> L.build_and e1' e2' "tmp" builder
                         | A.Or      -> L.build_or e1' e2' "tmp" builder
-                        | _         -> raise(Exceptions.IllegalIntBinop)
                 in
 
                 let float_bops op e1' e2' =

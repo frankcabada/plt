@@ -79,14 +79,14 @@ let translate(globals, functions) =
         (* Create an instruction builder *)
         let builder = L.builder_at_end context (L.entry_block the_function) in
 
-        let int_format_str = L.build_global_stringptr "%d " "fmt" builder
-        and float_format_str = L.build_global_stringptr "%f " "fmt" builder
+        let int_format_str = L.build_global_stringptr "%d\t" "fmt" builder
+        and float_format_str = L.build_global_stringptr "%f\t" "fmt" builder
         in
 
         let local_vars =
             let add_formal m (t, n) p = L.set_value_name n p;
-                let local = L.build_alloca (ltype_of_datatype t) n builder in
-                ignore (L.build_store p local builder);
+            let local = L.build_alloca (ltype_of_datatype t) n builder in
+            ignore (L.build_store p local builder);
             StringMap.add n local m
         in
 
@@ -104,7 +104,10 @@ let translate(globals, functions) =
             with Not_found -> StringMap.find n global_vars
         in
 
-        let build_matrix_access s i1 i2 i3 builder isAssign =
+        let build_matrix_access access_i access_j s i1 i2 i3 builder isAssign =
+            let rows = L.array_length (L.type_of (L.build_load (L.build_gep (lookup s) [| L.const_int i32_t 0 |] s builder) s builder)) in
+            let cols = L.array_length (L.type_of (L.build_load (L.build_gep (lookup s) [| L.const_int i32_t 0; L.const_int i32_t 0 |] s builder) s builder)) in
+            if ((rows < access_i) && (cols > access_j)) then raise(Exceptions.MatrixOutOfBoundsAccess(""));
             if isAssign
                 then L.build_gep (lookup s) [| i1; i2; i3 |] s builder
                 else L.build_load (L.build_gep (lookup s) [| i1; i2; i3 |] s builder) s builder
@@ -129,7 +132,9 @@ let translate(globals, functions) =
                         S.SId(s,_) -> (lookup s)
                         | S.SMatrix_access(s, i1, j1, d) ->
                             let i = expr builder i1 and j = expr builder j1 in
-                                build_matrix_access s (L.const_int i32_t 0) i j builder true
+                                let access_i = (match i1 with S.SNum_lit(SInt_lit(n)) -> n | _ -> -1)
+                                and access_j = (match j1 with S.SNum_lit(SInt_lit(n)) -> n | _ -> -1) in
+                                build_matrix_access access_i access_j s (L.const_int i32_t 0) i j builder true
                         | S.SVector_access(s, i1, d) ->
                             let i = expr builder i1 in
                                 build_vector_access s (L.const_int i32_t 0) i builder true
@@ -179,21 +184,41 @@ let translate(globals, functions) =
                         | _       -> raise(Exceptions.IllegalBoolBinop)
                 in
 
-                (*let vector_bops op e1' e2' =
-                    match op with
-                        A.Add       -> L.build_add e1' e2' "tmp" builder
-                        | A.Sub     -> L.build_sub e1' e2' "tmp" builder
-                        | A.Mult    -> L.build_mul e1' e2' "tmp" builder
-                        | _         -> raise(Exceptions.IllegalVectorBinop)
-                in
+                (*let vector_bops iorf n op e1' e2' =
+                    match iorf with
+                        "int" ->
+                            match op with
+                                A.Add       -> L.build_add e1' e2' "tmp" builder
+                                | A.Sub     -> L.build_sub e1' e2' "tmp" builder
+                                | A.Mult    -> L.build_mul e1' e2' "tmp" builder
+                                | _         -> raise(Exceptions.IllegalVectorBinop)
+                        "float" ->
+                            match op with
+                                A.Add       -> L.build_add e1' e2' "tmp" builder
+                                | A.Sub     -> L.build_sub e1' e2' "tmp" builder
+                                | A.Mult    -> L.build_mul e1' e2' "tmp" builder
+                                | _         -> raise(Exceptions.IllegalVectorBinop)
 
-                let matrix_bops op e1' e2' =
-                    match op with
-                        A.Add       -> L.build_add e1' e2' "tmp" builder
-                        | A.Sub     -> L.build_sub e1' e2' "tmp" builder
-                        | A.Mult    -> L.build_mul e1' e2' "tmp" builder
-                        | _         -> raise(Exceptions.IllegalMatrixBinop)
-                in*)
+                in
+                *)
+                let matrix_bops iorf r c op e1' e2' =
+                    match iorf with
+                        "int" ->
+                            match op with
+                                A.Add       ->
+                                    ignore(print_string ((L.string_of_llvalue e1') ^ "\n"));
+                                    ignore(print_string ((L.string_of_llvalue e2') ^ "\n"));
+                                    (*build_gep e1' [||] "tmp" builder;*) e1'
+                                (*| A.Sub     -> L.build_sub e1' e2' "tmp" builder
+                                | A.Mult    -> L.build_mul e1' e2' "tmp" builder*)
+                                | _         -> raise(Exceptions.IllegalMatrixBinop)
+                        (*"float" ->
+                            match op with
+                                A.Add       -> L.build_add e1' e2' "tmp" builder
+                                | A.Sub     -> L.build_sub e1' e2' "tmp" builder
+                                | A.Mult    -> L.build_mul e1' e2' "tmp" builder
+                                | _         -> raise(Exceptions.IllegalMatrixBinop)*)
+                in
 
                 let cast lhs rhs lhsType rhsType =
                     match (lhsType, rhsType) with
@@ -202,6 +227,8 @@ let translate(globals, functions) =
                         | (Datatype(Bool), Datatype(Bool))  ->  (lhs, rhs), Datatype(Bool)
                         | (Datatype(Int), Datatype(Float))  ->   (build_sitofp lhs float_t "tmp" builder, rhs), Datatype(Float)
                         | (Datatype(Float), Datatype(Int))  ->   (lhs, build_sitofp rhs float_t "tmp" builder), Datatype(Float)
+                        | (Datatype(Matrix(Int,r1,c1)), Datatype(Matrix(Int,r2,c2))) ->
+                            (lhs, rhs), Datatype(Matrix(Int, r1, c2))
                         | _                                 -> raise(Exceptions.IllegalCast)
                 in
 
@@ -212,8 +239,15 @@ let translate(globals, functions) =
                         Datatype(Int)               -> int_bops op e1 e2
                         | Datatype(Float)           -> float_bops op e1 e2
                         | Datatype(Bool)            -> bool_bops op e1 e2
-                        (*| Datatype(Vector(_,_))     -> vector_bops op e1 e2
-                        | Datatype(Matrix(_,_,_))   -> matrix_bops op e1 e2*)
+                        (*| Datatype(Vector(d,n))     ->
+                            match d with
+                                Int -> vector_bops "int" n op e1 e2
+                                | Float -> vector_bops "float" n op e1 e2*)
+                        | Datatype(Matrix(Int,r,c))   ->
+                            let r_i = (match r with Int_lit(n) -> n | _ -> -1)
+                            and c_i = (match c with Int_lit(n) -> n | _ -> -1) in
+                                matrix_bops "int" r_i c_i op e1 e2
+                        (*| Datatype(Matrix(Float,r,c)) -> matrix_bops "float" r c op e1 e2*)
                         | _                         -> raise(Exceptions.UnsupportedBinopType)
                 in
 
@@ -267,7 +301,9 @@ let translate(globals, functions) =
             | S.SNull                   -> L.const_null i32_t
             | S.SMatrix_access (s, se1, se2, d) ->
                 let i = expr builder se1 and j = expr builder se2 in
-                    (build_matrix_access s (L.const_int i32_t 0) i j builder false)
+                    let access_i = (match se1 with S.SNum_lit(SInt_lit(n)) -> n | _ -> -1)
+                    and access_j = (match se2 with S.SNum_lit(SInt_lit(n)) -> n | _ -> -1) in
+                    (build_matrix_access access_i access_j s (L.const_int i32_t 0) i j builder false)
             | S.SVector_access (s, se, d) ->
                 let i = expr builder se in
                     (build_vector_access s (L.const_int i32_t 0) i builder false)

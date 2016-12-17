@@ -1,0 +1,21 @@
+#include <../../stdlib.cmat>;
+
+int main() {
+    matrix int [2,2] M1;
+    matrix int [2,2] M2;
+    matrix int [2,2] M3;
+    matrix int [5,5] M4;
+    matrix int [2,7] M5;
+    M2 = [ 1, 2; 4, 5];
+    M1 = [ 1, 2; 4, 5];
+    M4 = [ 5, 5, 5, 5, 5; 5, 5, 5, 5, 5; 5, 5, 5, 5, 5; 5, 5, 5, 5, 5; 5, 5, 5, 5, 5 ];
+    M5 = [17,6,135,4,342,2534,12; 48,72423,63,52,44,232,42];
+    M3 = addi22(M1, M2);
+    print_string("M3:");
+    printi22(M3);
+    print_string("M4:");
+    printi55(M4);
+    print_string("M5:");
+    printi27(M5);
+    return 0;
+}

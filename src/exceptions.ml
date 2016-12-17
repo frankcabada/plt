@@ -80,6 +80,7 @@ exception IllegalCast
 exception IllegalFloatBinop
 exception IllegalFloatUnop
 exception IllegalIntBinop
+exception IllegalMatrixBinop
 exception IncMustBeCalledOnID
 exception InvalidBinaryOperator
 exception InvalidMatrixDimension

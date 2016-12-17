@@ -1,0 +1,740 @@
+matrix int [2,2] addi22(matrix int [2,2] M1, matrix int [2,2] M2) {
+    matrix int [2,2] M3;
+    int i;
+    int j;
+    bool b1;
+    bool b2;
+    b1 = (M1:rows == M2:rows);
+    b2 = (M1:cols == M2:cols);
+    if(b1 && b2) {
+        for(i=0; i < M1:rows; ++i) {
+            for(j=0; j < M1:cols; ++j) {
+                M3[i,j] = M1[i,j] + M2[i,j];
+            }
+        }
+    }
+    return M3;
+}
+
+int powi(int i, int n) {
+    int k;
+    int pow;
+    for(k=0; k<n; ++k) {
+        pow = pow*k;
+    }
+    return pow;
+}
+
+float powf(float f, int n) {
+    int k;
+    float pow;
+    for(k=0; k<n; ++k) {
+        pow = pow*k;
+    }
+    return pow;
+}
+
+
+void printi22(matrix int [2,2] M) {
+    int i;
+    int j;
+    for(i=0; i < M:rows; ++i) {
+        for(j=0; j < M:cols; ++j) {
+            print_int(M[i,j]);
+        }
+        print_string("");
+    }
+}
+
+void printi23(matrix int [2,3] M) {
+    int i;
+    int j;
+    for(i=0; i < M:rows; ++i) {
+        for(j=0; j < M:cols; ++j) {
+            print_int(M[i,j]);
+        }
+        print_string("");
+    }
+}
+
+void printi24(matrix int [2,4] M) {
+    int i;
+    int j;
+    for(i=0; i < M:rows; ++i) {
+        for(j=0; j < M:cols; ++j) {
+            print_int(M[i,j]);
+        }
+        print_string("");
+    }
+}
+
+void printi25(matrix int [2,5] M) {
+    int i;
+    int j;
+    for(i=0; i < M:rows; ++i) {
+        for(j=0; j < M:cols; ++j) {
+            print_int(M[i,j]);
+        }
+        print_string("");
+    }
+}
+
+void printi26(matrix int [2,6] M) {
+    int i;
+    int j;
+    for(i=0; i < M:rows; ++i) {
+        for(j=0; j < M:cols; ++j) {
+            print_int(M[i,j]);
+        }
+        print_string("");
+    }
+}
+
+void printi27(matrix int [2,7] M) {
+    int i;
+    int j;
+    for(i=0; i < M:rows; ++i) {
+        for(j=0; j < M:cols; ++j) {
+            print_int(M[i,j]);
+        }
+        print_string("");
+    }
+}
+
+void printi28(matrix int [2,8] M) {
+    int i;
+    int j;
+    for(i=0; i < M:rows; ++i) {
+        for(j=0; j < M:cols; ++j) {
+            print_int(M[i,j]);
+        }
+        print_string("");
+    }
+}
+
+void printi29(matrix int [2,9] M) {
+    int i;
+    int j;
+    for(i=0; i < M:rows; ++i) {
+        for(j=0; j < M:cols; ++j) {
+            print_int(M[i,j]);
+        }
+        print_string("");
+    }
+}
+
+void printi32(matrix int [3,2] M) {
+    int i;
+    int j;
+    for(i=0; i < M:rows; ++i) {
+        for(j=0; j < M:cols; ++j) {
+            print_int(M[i,j]);
+        }
+        print_string("");
+    }
+}
+
+void printi33(matrix int [3,3] M) {
+    int i;
+    int j;
+    for(i=0; i < M:rows; ++i) {
+        for(j=0; j < M:cols; ++j) {
+            print_int(M[i,j]);
+        }
+        print_string("");
+    }
+}
+
+void printi34(matrix int [3,4] M) {
+    int i;
+    int j;
+    for(i=0; i < M:rows; ++i) {
+        for(j=0; j < M:cols; ++j) {
+            print_int(M[i,j]);
+        }
+        print_string("");
+    }
+}
+
+void printi35(matrix int [3,5] M) {
+    int i;
+    int j;
+    for(i=0; i < M:rows; ++i) {
+        for(j=0; j < M:cols; ++j) {
+            print_int(M[i,j]);
+        }
+        print_string("");
+    }
+}
+
+void printi36(matrix int [3,6] M) {
+    int i;
+    int j;
+    for(i=0; i < M:rows; ++i) {
+        for(j=0; j < M:cols; ++j) {
+            print_int(M[i,j]);
+        }
+        print_string("");
+    }
+}
+
+void printi37(matrix int [3,7] M) {
+    int i;
+    int j;
+    for(i=0; i < M:rows; ++i) {
+        for(j=0; j < M:cols; ++j) {
+            print_int(M[i,j]);
+        }
+        print_string("");
+    }
+}
+
+void printi38(matrix int [3,8] M) {
+    int i;
+    int j;
+    for(i=0; i < M:rows; ++i) {
+        for(j=0; j < M:cols; ++j) {
+            print_int(M[i,j]);
+        }
+        print_string("");
+    }
+}
+
+void printi39(matrix int [3,9] M) {
+    int i;
+    int j;
+    for(i=0; i < M:rows; ++i) {
+        for(j=0; j < M:cols; ++j) {
+            print_int(M[i,j]);
+        }
+        print_string("");
+    }
+}
+
+void printi42(matrix int [4,2] M) {
+    int i;
+    int j;
+    for(i=0; i < M:rows; ++i) {
+        for(j=0; j < M:cols; ++j) {
+            print_int(M[i,j]);
+        }
+        print_string("");
+    }
+}
+
+void printi43(matrix int [4,3] M) {
+    int i;
+    int j;
+    for(i=0; i < M:rows; ++i) {
+        for(j=0; j < M:cols; ++j) {
+            print_int(M[i,j]);
+        }
+        print_string("");
+    }
+}
+
+void printi44(matrix int [4,4] M) {
+    int i;
+    int j;
+    for(i=0; i < M:rows; ++i) {
+        for(j=0; j < M:cols; ++j) {
+            print_int(M[i,j]);
+        }
+        print_string("");
+    }
+}
+
+void printi45(matrix int [4,5] M) {
+    int i;
+    int j;
+    for(i=0; i < M:rows; ++i) {
+        for(j=0; j < M:cols; ++j) {
+            print_int(M[i,j]);
+        }
+        print_string("");
+    }
+}
+
+void printi46(matrix int [4,6] M) {
+    int i;
+    int j;
+    for(i=0; i < M:rows; ++i) {
+        for(j=0; j < M:cols; ++j) {
+            print_int(M[i,j]);
+        }
+        print_string("");
+    }
+}
+
+void printi47(matrix int [4,7] M) {
+    int i;
+    int j;
+    for(i=0; i < M:rows; ++i) {
+        for(j=0; j < M:cols; ++j) {
+            print_int(M[i,j]);
+        }
+        print_string("");
+    }
+}
+
+void printi48(matrix int [4,8] M) {
+    int i;
+    int j;
+    for(i=0; i < M:rows; ++i) {
+        for(j=0; j < M:cols; ++j) {
+            print_int(M[i,j]);
+        }
+        print_string("");
+    }
+}
+
+void printi49(matrix int [4,9] M) {
+    int i;
+    int j;
+    for(i=0; i < M:rows; ++i) {
+        for(j=0; j < M:cols; ++j) {
+            print_int(M[i,j]);
+        }
+        print_string("");
+    }
+}
+
+void printi52(matrix int [5,2] M) {
+    int i;
+    int j;
+    for(i=0; i < M:rows; ++i) {
+        for(j=0; j < M:cols; ++j) {
+            print_int(M[i,j]);
+        }
+        print_string("");
+    }
+}
+
+void printi53(matrix int [5,3] M) {
+    int i;
+    int j;
+    for(i=0; i < M:rows; ++i) {
+        for(j=0; j < M:cols; ++j) {
+            print_int(M[i,j]);
+        }
+        print_string("");
+    }
+}
+
+void printi54(matrix int [5,4] M) {
+    int i;
+    int j;
+    for(i=0; i < M:rows; ++i) {
+        for(j=0; j < M:cols; ++j) {
+            print_int(M[i,j]);
+        }
+        print_string("");
+    }
+}
+
+void printi55(matrix int [5,5] M) {
+    int i;
+    int j;
+    for(i=0; i < M:rows; ++i) {
+        for(j=0; j < M:cols; ++j) {
+            print_int(M[i,j]);
+        }
+        print_string("");
+    }
+}
+
+void printi56(matrix int [5,6] M) {
+    int i;
+    int j;
+    for(i=0; i < M:rows; ++i) {
+        for(j=0; j < M:cols; ++j) {
+            print_int(M[i,j]);
+        }
+        print_string("");
+    }
+}
+
+void printi57(matrix int [5,7] M) {
+    int i;
+    int j;
+    for(i=0; i < M:rows; ++i) {
+        for(j=0; j < M:cols; ++j) {
+            print_int(M[i,j]);
+        }
+        print_string("");
+    }
+}
+
+void printi58(matrix int [5,8] M) {
+    int i;
+    int j;
+    for(i=0; i < M:rows; ++i) {
+        for(j=0; j < M:cols; ++j) {
+            print_int(M[i,j]);
+        }
+        print_string("");
+    }
+}
+
+void printi59(matrix int [5,9] M) {
+    int i;
+    int j;
+    for(i=0; i < M:rows; ++i) {
+        for(j=0; j < M:cols; ++j) {
+            print_int(M[i,j]);
+        }
+        print_string("");
+    }
+}
+
+void printi62(matrix int [6,2] M) {
+    int i;
+    int j;
+    for(i=0; i < M:rows; ++i) {
+        for(j=0; j < M:cols; ++j) {
+            print_int(M[i,j]);
+        }
+        print_string("");
+    }
+}
+
+void printi63(matrix int [6,3] M) {
+    int i;
+    int j;
+    for(i=0; i < M:rows; ++i) {
+        for(j=0; j < M:cols; ++j) {
+            print_int(M[i,j]);
+        }
+        print_string("");
+    }
+}
+
+void printi64(matrix int [6,4] M) {
+    int i;
+    int j;
+    for(i=0; i < M:rows; ++i) {
+        for(j=0; j < M:cols; ++j) {
+            print_int(M[i,j]);
+        }
+        print_string("");
+    }
+}
+
+void printi65(matrix int [6,5] M) {
+    int i;
+    int j;
+    for(i=0; i < M:rows; ++i) {
+        for(j=0; j < M:cols; ++j) {
+            print_int(M[i,j]);
+        }
+        print_string("");
+    }
+}
+
+void printi66(matrix int [6,6] M) {
+    int i;
+    int j;
+    for(i=0; i < M:rows; ++i) {
+        for(j=0; j < M:cols; ++j) {
+            print_int(M[i,j]);
+        }
+        print_string("");
+    }
+}
+
+void printi67(matrix int [6,7] M) {
+    int i;
+    int j;
+    for(i=0; i < M:rows; ++i) {
+        for(j=0; j < M:cols; ++j) {
+            print_int(M[i,j]);
+        }
+        print_string("");
+    }
+}
+
+void printi68(matrix int [6,8] M) {
+    int i;
+    int j;
+    for(i=0; i < M:rows; ++i) {
+        for(j=0; j < M:cols; ++j) {
+            print_int(M[i,j]);
+        }
+        print_string("");
+    }
+}
+
+void printi69(matrix int [6,9] M) {
+    int i;
+    int j;
+    for(i=0; i < M:rows; ++i) {
+        for(j=0; j < M:cols; ++j) {
+            print_int(M[i,j]);
+        }
+        print_string("");
+    }
+}
+
+void printi72(matrix int [7,2] M) {
+    int i;
+    int j;
+    for(i=0; i < M:rows; ++i) {
+        for(j=0; j < M:cols; ++j) {
+            print_int(M[i,j]);
+        }
+        print_string("");
+    }
+}
+
+void printi73(matrix int [7,3] M) {
+    int i;
+    int j;
+    for(i=0; i < M:rows; ++i) {
+        for(j=0; j < M:cols; ++j) {
+            print_int(M[i,j]);
+        }
+        print_string("");
+    }
+}
+
+void printi74(matrix int [7,4] M) {
+    int i;
+    int j;
+    for(i=0; i < M:rows; ++i) {
+        for(j=0; j < M:cols; ++j) {
+            print_int(M[i,j]);
+        }
+        print_string("");
+    }
+}
+
+void printi75(matrix int [7,5] M) {
+    int i;
+    int j;
+    for(i=0; i < M:rows; ++i) {
+        for(j=0; j < M:cols; ++j) {
+            print_int(M[i,j]);
+        }
+        print_string("");
+    }
+}
+
+void printi76(matrix int [7,6] M) {
+    int i;
+    int j;
+    for(i=0; i < M:rows; ++i) {
+        for(j=0; j < M:cols; ++j) {
+            print_int(M[i,j]);
+        }
+        print_string("");
+    }
+}
+
+void printi77(matrix int [7,7] M) {
+    int i;
+    int j;
+    for(i=0; i < M:rows; ++i) {
+        for(j=0; j < M:cols; ++j) {
+            print_int(M[i,j]);
+        }
+        print_string("");
+    }
+}
+
+void printi78(matrix int [7,8] M) {
+    int i;
+    int j;
+    for(i=0; i < M:rows; ++i) {
+        for(j=0; j < M:cols; ++j) {
+            print_int(M[i,j]);
+        }
+        print_string("");
+    }
+}
+
+void printi79(matrix int [7,9] M) {
+    int i;
+    int j;
+    for(i=0; i < M:rows; ++i) {
+        for(j=0; j < M:cols; ++j) {
+            print_int(M[i,j]);
+        }
+        print_string("");
+    }
+}
+
+void printi82(matrix int [8,2] M) {
+    int i;
+    int j;
+    for(i=0; i < M:rows; ++i) {
+        for(j=0; j < M:cols; ++j) {
+            print_int(M[i,j]);
+        }
+        print_string("");
+    }
+}
+
+void printi83(matrix int [8,3] M) {
+    int i;
+    int j;
+    for(i=0; i < M:rows; ++i) {
+        for(j=0; j < M:cols; ++j) {
+            print_int(M[i,j]);
+        }
+        print_string("");
+    }
+}
+
+void printi84(matrix int [8,4] M) {
+    int i;
+    int j;
+    for(i=0; i < M:rows; ++i) {
+        for(j=0; j < M:cols; ++j) {
+            print_int(M[i,j]);
+        }
+        print_string("");
+    }
+}
+
+void printi85(matrix int [8,5] M) {
+    int i;
+    int j;
+    for(i=0; i < M:rows; ++i) {
+        for(j=0; j < M:cols; ++j) {
+            print_int(M[i,j]);
+        }
+        print_string("");
+    }
+}
+
+void printi86(matrix int [8,6] M) {
+    int i;
+    int j;
+    for(i=0; i < M:rows; ++i) {
+        for(j=0; j < M:cols; ++j) {
+            print_int(M[i,j]);
+        }
+        print_string("");
+    }
+}
+
+void printi87(matrix int [8,7] M) {
+    int i;
+    int j;
+    for(i=0; i < M:rows; ++i) {
+        for(j=0; j < M:cols; ++j) {
+            print_int(M[i,j]);
+        }
+        print_string("");
+    }
+}
+
+void printi88(matrix int [8,8] M) {
+    int i;
+    int j;
+    for(i=0; i < M:rows; ++i) {
+        for(j=0; j < M:cols; ++j) {
+            print_int(M[i,j]);
+        }
+        print_string("");
+    }
+}
+
+void printi89(matrix int [8,9] M) {
+    int i;
+    int j;
+    for(i=0; i < M:rows; ++i) {
+        for(j=0; j < M:cols; ++j) {
+            print_int(M[i,j]);
+        }
+        print_string("");
+    }
+}
+
+void printi92(matrix int [9,2] M) {
+    int i;
+    int j;
+    for(i=0; i < M:rows; ++i) {
+        for(j=0; j < M:cols; ++j) {
+            print_int(M[i,j]);
+        }
+        print_string("");
+    }
+}
+
+void printi93(matrix int [9,3] M) {
+    int i;
+    int j;
+    for(i=0; i < M:rows; ++i) {
+        for(j=0; j < M:cols; ++j) {
+            print_int(M[i,j]);
+        }
+        print_string("");
+    }
+}
+
+void printi94(matrix int [9,4] M) {
+    int i;
+    int j;
+    for(i=0; i < M:rows; ++i) {
+        for(j=0; j < M:cols; ++j) {
+            print_int(M[i,j]);
+        }
+        print_string("");
+    }
+}
+
+void printi95(matrix int [9,5] M) {
+    int i;
+    int j;
+    for(i=0; i < M:rows; ++i) {
+        for(j=0; j < M:cols; ++j) {
+            print_int(M[i,j]);
+        }
+        print_string("");
+    }
+}
+
+void printi96(matrix int [9,6] M) {
+    int i;
+    int j;
+    for(i=0; i < M:rows; ++i) {
+        for(j=0; j < M:cols; ++j) {
+            print_int(M[i,j]);
+        }
+        print_string("");
+    }
+}
+
+void printi97(matrix int [9,7] M) {
+    int i;
+    int j;
+    for(i=0; i < M:rows; ++i) {
+        for(j=0; j < M:cols; ++j) {
+            print_int(M[i,j]);
+        }
+        print_string("");
+    }
+}
+
+void printi98(matrix int [9,8] M) {
+    int i;
+    int j;
+    for(i=0; i < M:rows; ++i) {
+        for(j=0; j < M:cols; ++j) {
+            print_int(M[i,j]);
+        }
+        print_string("");
+    }
+}
+
+void printi99(matrix int [9,9] M) {
+    int i;
+    int j;
+    for(i=0; i < M:rows; ++i) {
+        for(j=0; j < M:cols; ++j) {
+            print_int(M[i,j]);
+        }
+        print_string("");
+    }
+}

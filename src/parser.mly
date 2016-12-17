@@ -73,9 +73,7 @@ primitives:
   | VOID                                                        { Void }
   | FLOAT                                                       { Float }
   | STRING                                                      { String }
-  | VECTOR primitives LBRACKET RBRACKET                         { Vector($2, Int_lit(0)) }
   | VECTOR primitives LBRACKET NUM_LIT RBRACKET                 { Vector($2, $4) }
-  | MATRIX primitives LBRACKET RBRACKET                         { Matrix($2, Int_lit(0), Int_lit(0)) }
   | MATRIX primitives LBRACKET NUM_LIT COMMA NUM_LIT RBRACKET   { Matrix($2, $4, $6) }
 
 vdecl_list:

@@ -1,21 +1,3 @@
-matrix int [2,2] addi22(matrix int [2,2] M1, matrix int [2,2] M2) {
-    matrix int [2,2] M3;
-    int i;
-    int j;
-    bool b1;
-    bool b2;
-    b1 = (M1:rows == M2:rows);
-    b2 = (M1:cols == M2:cols);
-    if(b1 && b2) {
-        for(i=0; i < M1:rows; ++i) {
-            for(j=0; j < M1:cols; ++j) {
-                M3[i,j] = M1[i,j] + M2[i,j];
-            }
-        }
-    }
-    return M3;
-}
-
 int powi(int i, int n) {
     int k;
     int pow;
@@ -734,6 +716,710 @@ void printi99(matrix int [9,9] M) {
     for(i=0; i < M:rows; ++i) {
         for(j=0; j < M:cols; ++j) {
             print_int(M[i,j]);
+        }
+        print_string("");
+    }
+}
+
+void printf22(matrix float [2,2] M) {
+    int i;
+    int j;
+    for(i=0; i < M:rows; ++i) {
+        for(j=0; j < M:cols; ++j) {
+            print_float(M[i,j]);
+        }
+        print_string("");
+    }
+}
+
+void printf23(matrix float [2,3] M) {
+    int i;
+    int j;
+    for(i=0; i < M:rows; ++i) {
+        for(j=0; j < M:cols; ++j) {
+            print_float(M[i,j]);
+        }
+        print_string("");
+    }
+}
+
+void printf24(matrix float [2,4] M) {
+    int i;
+    int j;
+    for(i=0; i < M:rows; ++i) {
+        for(j=0; j < M:cols; ++j) {
+            print_float(M[i,j]);
+        }
+        print_string("");
+    }
+}
+
+void printf25(matrix float [2,5] M) {
+    int i;
+    int j;
+    for(i=0; i < M:rows; ++i) {
+        for(j=0; j < M:cols; ++j) {
+            print_float(M[i,j]);
+        }
+        print_string("");
+    }
+}
+
+void printf26(matrix float [2,6] M) {
+    int i;
+    int j;
+    for(i=0; i < M:rows; ++i) {
+        for(j=0; j < M:cols; ++j) {
+            print_float(M[i,j]);
+        }
+        print_string("");
+    }
+}
+
+void printf27(matrix float [2,7] M) {
+    int i;
+    int j;
+    for(i=0; i < M:rows; ++i) {
+        for(j=0; j < M:cols; ++j) {
+            print_float(M[i,j]);
+        }
+        print_string("");
+    }
+}
+
+void printf28(matrix float [2,8] M) {
+    int i;
+    int j;
+    for(i=0; i < M:rows; ++i) {
+        for(j=0; j < M:cols; ++j) {
+            print_float(M[i,j]);
+        }
+        print_string("");
+    }
+}
+
+void printf29(matrix float [2,9] M) {
+    int i;
+    int j;
+    for(i=0; i < M:rows; ++i) {
+        for(j=0; j < M:cols; ++j) {
+            print_float(M[i,j]);
+        }
+        print_string("");
+    }
+}
+
+void printf32(matrix float [3,2] M) {
+    int i;
+    int j;
+    for(i=0; i < M:rows; ++i) {
+        for(j=0; j < M:cols; ++j) {
+            print_float(M[i,j]);
+        }
+        print_string("");
+    }
+}
+
+void printf33(matrix float [3,3] M) {
+    int i;
+    int j;
+    for(i=0; i < M:rows; ++i) {
+        for(j=0; j < M:cols; ++j) {
+            print_float(M[i,j]);
+        }
+        print_string("");
+    }
+}
+
+void printf34(matrix float [3,4] M) {
+    int i;
+    int j;
+    for(i=0; i < M:rows; ++i) {
+        for(j=0; j < M:cols; ++j) {
+            print_float(M[i,j]);
+        }
+        print_string("");
+    }
+}
+
+void printf35(matrix float [3,5] M) {
+    int i;
+    int j;
+    for(i=0; i < M:rows; ++i) {
+        for(j=0; j < M:cols; ++j) {
+            print_float(M[i,j]);
+        }
+        print_string("");
+    }
+}
+
+void printf36(matrix float [3,6] M) {
+    int i;
+    int j;
+    for(i=0; i < M:rows; ++i) {
+        for(j=0; j < M:cols; ++j) {
+            print_float(M[i,j]);
+        }
+        print_string("");
+    }
+}
+
+void printf37(matrix float [3,7] M) {
+    int i;
+    int j;
+    for(i=0; i < M:rows; ++i) {
+        for(j=0; j < M:cols; ++j) {
+            print_float(M[i,j]);
+        }
+        print_string("");
+    }
+}
+
+void printf38(matrix float [3,8] M) {
+    int i;
+    int j;
+    for(i=0; i < M:rows; ++i) {
+        for(j=0; j < M:cols; ++j) {
+            print_float(M[i,j]);
+        }
+        print_string("");
+    }
+}
+
+void printf39(matrix float [3,9] M) {
+    int i;
+    int j;
+    for(i=0; i < M:rows; ++i) {
+        for(j=0; j < M:cols; ++j) {
+            print_float(M[i,j]);
+        }
+        print_string("");
+    }
+}
+
+void printf42(matrix float [4,2] M) {
+    int i;
+    int j;
+    for(i=0; i < M:rows; ++i) {
+        for(j=0; j < M:cols; ++j) {
+            print_float(M[i,j]);
+        }
+        print_string("");
+    }
+}
+
+void printf43(matrix float [4,3] M) {
+    int i;
+    int j;
+    for(i=0; i < M:rows; ++i) {
+        for(j=0; j < M:cols; ++j) {
+            print_float(M[i,j]);
+        }
+        print_string("");
+    }
+}
+
+void printf44(matrix float [4,4] M) {
+    int i;
+    int j;
+    for(i=0; i < M:rows; ++i) {
+        for(j=0; j < M:cols; ++j) {
+            print_float(M[i,j]);
+        }
+        print_string("");
+    }
+}
+
+void printf45(matrix float [4,5] M) {
+    int i;
+    int j;
+    for(i=0; i < M:rows; ++i) {
+        for(j=0; j < M:cols; ++j) {
+            print_float(M[i,j]);
+        }
+        print_string("");
+    }
+}
+
+void printf46(matrix float [4,6] M) {
+    int i;
+    int j;
+    for(i=0; i < M:rows; ++i) {
+        for(j=0; j < M:cols; ++j) {
+            print_float(M[i,j]);
+        }
+        print_string("");
+    }
+}
+
+void printf47(matrix float [4,7] M) {
+    int i;
+    int j;
+    for(i=0; i < M:rows; ++i) {
+        for(j=0; j < M:cols; ++j) {
+            print_float(M[i,j]);
+        }
+        print_string("");
+    }
+}
+
+void printf48(matrix float [4,8] M) {
+    int i;
+    int j;
+    for(i=0; i < M:rows; ++i) {
+        for(j=0; j < M:cols; ++j) {
+            print_float(M[i,j]);
+        }
+        print_string("");
+    }
+}
+
+void printf49(matrix float [4,9] M) {
+    int i;
+    int j;
+    for(i=0; i < M:rows; ++i) {
+        for(j=0; j < M:cols; ++j) {
+            print_float(M[i,j]);
+        }
+        print_string("");
+    }
+}
+
+void printf52(matrix float [5,2] M) {
+    int i;
+    int j;
+    for(i=0; i < M:rows; ++i) {
+        for(j=0; j < M:cols; ++j) {
+            print_float(M[i,j]);
+        }
+        print_string("");
+    }
+}
+
+void printf53(matrix float [5,3] M) {
+    int i;
+    int j;
+    for(i=0; i < M:rows; ++i) {
+        for(j=0; j < M:cols; ++j) {
+            print_float(M[i,j]);
+        }
+        print_string("");
+    }
+}
+
+void printf54(matrix float [5,4] M) {
+    int i;
+    int j;
+    for(i=0; i < M:rows; ++i) {
+        for(j=0; j < M:cols; ++j) {
+            print_float(M[i,j]);
+        }
+        print_string("");
+    }
+}
+
+void printf55(matrix float [5,5] M) {
+    int i;
+    int j;
+    for(i=0; i < M:rows; ++i) {
+        for(j=0; j < M:cols; ++j) {
+            print_float(M[i,j]);
+        }
+        print_string("");
+    }
+}
+
+void printf56(matrix float [5,6] M) {
+    int i;
+    int j;
+    for(i=0; i < M:rows; ++i) {
+        for(j=0; j < M:cols; ++j) {
+            print_float(M[i,j]);
+        }
+        print_string("");
+    }
+}
+
+void printf57(matrix float [5,7] M) {
+    int i;
+    int j;
+    for(i=0; i < M:rows; ++i) {
+        for(j=0; j < M:cols; ++j) {
+            print_float(M[i,j]);
+        }
+        print_string("");
+    }
+}
+
+void printf58(matrix float [5,8] M) {
+    int i;
+    int j;
+    for(i=0; i < M:rows; ++i) {
+        for(j=0; j < M:cols; ++j) {
+            print_float(M[i,j]);
+        }
+        print_string("");
+    }
+}
+
+void printf59(matrix float [5,9] M) {
+    int i;
+    int j;
+    for(i=0; i < M:rows; ++i) {
+        for(j=0; j < M:cols; ++j) {
+            print_float(M[i,j]);
+        }
+        print_string("");
+    }
+}
+
+void printf62(matrix float [6,2] M) {
+    int i;
+    int j;
+    for(i=0; i < M:rows; ++i) {
+        for(j=0; j < M:cols; ++j) {
+            print_float(M[i,j]);
+        }
+        print_string("");
+    }
+}
+
+void printf63(matrix float [6,3] M) {
+    int i;
+    int j;
+    for(i=0; i < M:rows; ++i) {
+        for(j=0; j < M:cols; ++j) {
+            print_float(M[i,j]);
+        }
+        print_string("");
+    }
+}
+
+void printf64(matrix float [6,4] M) {
+    int i;
+    int j;
+    for(i=0; i < M:rows; ++i) {
+        for(j=0; j < M:cols; ++j) {
+            print_float(M[i,j]);
+        }
+        print_string("");
+    }
+}
+
+void printf65(matrix float [6,5] M) {
+    int i;
+    int j;
+    for(i=0; i < M:rows; ++i) {
+        for(j=0; j < M:cols; ++j) {
+            print_float(M[i,j]);
+        }
+        print_string("");
+    }
+}
+
+void printf66(matrix float [6,6] M) {
+    int i;
+    int j;
+    for(i=0; i < M:rows; ++i) {
+        for(j=0; j < M:cols; ++j) {
+            print_float(M[i,j]);
+        }
+        print_string("");
+    }
+}
+
+void printf67(matrix float [6,7] M) {
+    int i;
+    int j;
+    for(i=0; i < M:rows; ++i) {
+        for(j=0; j < M:cols; ++j) {
+            print_float(M[i,j]);
+        }
+        print_string("");
+    }
+}
+
+void printf68(matrix float [6,8] M) {
+    int i;
+    int j;
+    for(i=0; i < M:rows; ++i) {
+        for(j=0; j < M:cols; ++j) {
+            print_float(M[i,j]);
+        }
+        print_string("");
+    }
+}
+
+void printf69(matrix float [6,9] M) {
+    int i;
+    int j;
+    for(i=0; i < M:rows; ++i) {
+        for(j=0; j < M:cols; ++j) {
+            print_float(M[i,j]);
+        }
+        print_string("");
+    }
+}
+
+void printf72(matrix float [7,2] M) {
+    int i;
+    int j;
+    for(i=0; i < M:rows; ++i) {
+        for(j=0; j < M:cols; ++j) {
+            print_float(M[i,j]);
+        }
+        print_string("");
+    }
+}
+
+void printf73(matrix float [7,3] M) {
+    int i;
+    int j;
+    for(i=0; i < M:rows; ++i) {
+        for(j=0; j < M:cols; ++j) {
+            print_float(M[i,j]);
+        }
+        print_string("");
+    }
+}
+
+void printf74(matrix float [7,4] M) {
+    int i;
+    int j;
+    for(i=0; i < M:rows; ++i) {
+        for(j=0; j < M:cols; ++j) {
+            print_float(M[i,j]);
+        }
+        print_string("");
+    }
+}
+
+void printf75(matrix float [7,5] M) {
+    int i;
+    int j;
+    for(i=0; i < M:rows; ++i) {
+        for(j=0; j < M:cols; ++j) {
+            print_float(M[i,j]);
+        }
+        print_string("");
+    }
+}
+
+void printf76(matrix float [7,6] M) {
+    int i;
+    int j;
+    for(i=0; i < M:rows; ++i) {
+        for(j=0; j < M:cols; ++j) {
+            print_float(M[i,j]);
+        }
+        print_string("");
+    }
+}
+
+void printf77(matrix float [7,7] M) {
+    int i;
+    int j;
+    for(i=0; i < M:rows; ++i) {
+        for(j=0; j < M:cols; ++j) {
+            print_float(M[i,j]);
+        }
+        print_string("");
+    }
+}
+
+void printf78(matrix float [7,8] M) {
+    int i;
+    int j;
+    for(i=0; i < M:rows; ++i) {
+        for(j=0; j < M:cols; ++j) {
+            print_float(M[i,j]);
+        }
+        print_string("");
+    }
+}
+
+void printf79(matrix float [7,9] M) {
+    int i;
+    int j;
+    for(i=0; i < M:rows; ++i) {
+        for(j=0; j < M:cols; ++j) {
+            print_float(M[i,j]);
+        }
+        print_string("");
+    }
+}
+
+void printf82(matrix float [8,2] M) {
+    int i;
+    int j;
+    for(i=0; i < M:rows; ++i) {
+        for(j=0; j < M:cols; ++j) {
+            print_float(M[i,j]);
+        }
+        print_string("");
+    }
+}
+
+void printf83(matrix float [8,3] M) {
+    int i;
+    int j;
+    for(i=0; i < M:rows; ++i) {
+        for(j=0; j < M:cols; ++j) {
+            print_float(M[i,j]);
+        }
+        print_string("");
+    }
+}
+
+void printf84(matrix float [8,4] M) {
+    int i;
+    int j;
+    for(i=0; i < M:rows; ++i) {
+        for(j=0; j < M:cols; ++j) {
+            print_float(M[i,j]);
+        }
+        print_string("");
+    }
+}
+
+void printf85(matrix float [8,5] M) {
+    int i;
+    int j;
+    for(i=0; i < M:rows; ++i) {
+        for(j=0; j < M:cols; ++j) {
+            print_float(M[i,j]);
+        }
+        print_string("");
+    }
+}
+
+void printf86(matrix float [8,6] M) {
+    int i;
+    int j;
+    for(i=0; i < M:rows; ++i) {
+        for(j=0; j < M:cols; ++j) {
+            print_float(M[i,j]);
+        }
+        print_string("");
+    }
+}
+
+void printf87(matrix float [8,7] M) {
+    int i;
+    int j;
+    for(i=0; i < M:rows; ++i) {
+        for(j=0; j < M:cols; ++j) {
+            print_float(M[i,j]);
+        }
+        print_string("");
+    }
+}
+
+void printf88(matrix float [8,8] M) {
+    int i;
+    int j;
+    for(i=0; i < M:rows; ++i) {
+        for(j=0; j < M:cols; ++j) {
+            print_float(M[i,j]);
+        }
+        print_string("");
+    }
+}
+
+void printf89(matrix float [8,9] M) {
+    int i;
+    int j;
+    for(i=0; i < M:rows; ++i) {
+        for(j=0; j < M:cols; ++j) {
+            print_float(M[i,j]);
+        }
+        print_string("");
+    }
+}
+
+void printf92(matrix float [9,2] M) {
+    int i;
+    int j;
+    for(i=0; i < M:rows; ++i) {
+        for(j=0; j < M:cols; ++j) {
+            print_float(M[i,j]);
+        }
+        print_string("");
+    }
+}
+
+void printf93(matrix float [9,3] M) {
+    int i;
+    int j;
+    for(i=0; i < M:rows; ++i) {
+        for(j=0; j < M:cols; ++j) {
+            print_float(M[i,j]);
+        }
+        print_string("");
+    }
+}
+
+void printf94(matrix float [9,4] M) {
+    int i;
+    int j;
+    for(i=0; i < M:rows; ++i) {
+        for(j=0; j < M:cols; ++j) {
+            print_float(M[i,j]);
+        }
+        print_string("");
+    }
+}
+
+void printf95(matrix float [9,5] M) {
+    int i;
+    int j;
+    for(i=0; i < M:rows; ++i) {
+        for(j=0; j < M:cols; ++j) {
+            print_float(M[i,j]);
+        }
+        print_string("");
+    }
+}
+
+void printf96(matrix float [9,6] M) {
+    int i;
+    int j;
+    for(i=0; i < M:rows; ++i) {
+        for(j=0; j < M:cols; ++j) {
+            print_float(M[i,j]);
+        }
+        print_string("");
+    }
+}
+
+void printf97(matrix float [9,7] M) {
+    int i;
+    int j;
+    for(i=0; i < M:rows; ++i) {
+        for(j=0; j < M:cols; ++j) {
+            print_float(M[i,j]);
+        }
+        print_string("");
+    }
+}
+
+void printf98(matrix float [9,8] M) {
+    int i;
+    int j;
+    for(i=0; i < M:rows; ++i) {
+        for(j=0; j < M:cols; ++j) {
+            print_float(M[i,j]);
+        }
+        print_string("");
+    }
+}
+
+void printf99(matrix float [9,9] M) {
+    int i;
+    int j;
+    for(i=0; i < M:rows; ++i) {
+        for(j=0; j < M:cols; ++j) {
+            print_float(M[i,j]);
         }
         print_string("");
     }

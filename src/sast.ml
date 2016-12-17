@@ -20,6 +20,7 @@ type sexpr =
 	| SBool_lit of bool
 	| SString_lit of string
 	| SMatrix_lit of sexpr list list * datatype
+	| SVector_lit of sexpr list * datatype
 	| SId of string * datatype
 	| SNoexpr
 	| SNull
@@ -34,6 +35,8 @@ type sexpr =
 	| SRows of int
 	| SCols of int
 	| SLen of int
+	| SNew of primitives
+	| SFree of sexpr
 
 (* Statements *)
 type sstmt =

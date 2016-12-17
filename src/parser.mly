@@ -16,7 +16,7 @@
 %token INT BOOL VOID STRING FLOAT TRUE FALSE MATRIX VECTOR
 
 /* Misc */
-%token SEMI COMMA COLON ROWS COLS LEN
+%token SEMI COMMA COLON ROWS COLS LEN BAR NEW FREE
 
 /* Literals, identifiers, EOF */
 %token <Ast.num> NUM_LIT
@@ -126,6 +126,7 @@ expr:
   | expr ASSIGN expr                                            { Assign($1, $3) }
   | LPAREN expr RPAREN                                          { $2 }
   | ID LPAREN actuals_opt RPAREN                                { Call($1, $3) }
+  | LBRACKET vect_lit RBRACKET                                  { Vector_lit($2) }
   | LBRACKET mat_lit RBRACKET                                   { Matrix_lit($2) }
   | ID LBRACKET expr RBRACKET                                   { Vector_access($1, $3) }
   | ID LBRACKET expr COMMA expr RBRACKET                        { Matrix_access($1, $3, $5) }
@@ -134,6 +135,8 @@ expr:
   | ID COLON ROWS                                               { Rows($1) }
   | ID COLON COLS                                               { Cols($1) }
   | ID COLON LEN                                                { Len($1) }
+  | NEW primitives                                              { New($2) }
+  | FREE expr                                                   { Free($2) }
 
 expr_opt:
     /* nothing */                   { Noexpr }
@@ -145,6 +148,10 @@ actuals_opt:
 
 lit:
     NUM_LIT                         { $1 }
+
+vect_lit:
+      lit                           { [$1] }
+    | vect_lit BAR lit              { $3 :: $1 }
 
 mat_lit:
     lit_list                        { [$1] }

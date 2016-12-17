@@ -48,11 +48,8 @@ exception MatrixDimensionMustBeInt
 exception MatrixAccessOnNonMatrix of string
 exception MatrixColOnNonMatrix of string
 exception MatrixLitMustBeOneType
-<<<<<<< HEAD
 exception VectorLitMustBeOneType
 exception MatrixOutOfBoundsAccess of string
-=======
->>>>>>> master
 exception MatrixRowOnNonMatrix of string
 exception MismatchedMatricesForAddSub of string
 exception MismatchedMatricesForMult of string

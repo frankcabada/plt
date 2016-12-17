@@ -251,6 +251,8 @@ and get_type_from_sexpr sexpr = match sexpr with
 	| SRows(r) 							-> Datatype(Int)
 	| SCols(c) 							-> Datatype(Int)
 	| SLen(l) 							-> Datatype(Int)
+	| SNew(p)							-> Datatype(p)
+	| SFree(e)							-> get_type_from_sexpr e
 	| SId(_, d) 						-> d
 	| SBinop(_, _, _, d) 				-> d
 	| SAssign(_, _, d) 					-> d

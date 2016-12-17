@@ -16,6 +16,133 @@ float powf(float f, int n) {
     return pow;
 }
 
+void printi2(vector int [2] V) {
+    int i;
+    for(i=0; i < V:len; ++i) {
+        print_int(V[i]);
+    }
+    print_string("");
+}
+
+void printi3(vector int [3] V) {
+    int i;
+    for(i=0; i < V:len; ++i) {
+        print_int(V[i]);
+    }
+    print_string("");
+}
+
+void printi4(vector int [4] V) {
+    int i;
+    for(i=0; i < V:len; ++i) {
+        print_int(V[i]);
+    }
+    print_string("");
+}
+
+void printi5(vector int [5] V) {
+    int i;
+    for(i=0; i < V:len; ++i) {
+        print_int(V[i]);
+    }
+    print_string("");
+}
+
+void printi6(vector int [6] V) {
+    int i;
+    for(i=0; i < V:len; ++i) {
+        print_int(V[i]);
+    }
+    print_string("");
+}
+
+void printi7(vector int [7] V) {
+    int i;
+    for(i=0; i < V:len; ++i) {
+        print_int(V[i]);
+    }
+    print_string("");
+}
+
+void printi8(vector int [8] V) {
+    int i;
+    for(i=0; i < V:len; ++i) {
+        print_int(V[i]);
+    }
+    print_string("");
+}
+
+void printi9(vector int [9] V) {
+    int i;
+    for(i=0; i < V:len; ++i) {
+        print_int(V[i]);
+    }
+    print_string("");
+}
+
+void printf2(vector float [2] V) {
+    int i;
+    for(i=0; i < V:len; ++i) {
+        print_float(V[i]);
+    }
+    print_string("");
+}
+
+void printf3(vector float [3] V) {
+    int i;
+    for(i=0; i < V:len; ++i) {
+        print_float(V[i]);
+    }
+    print_string("");
+}
+
+void printf4(vector float [4] V) {
+    int i;
+    for(i=0; i < V:len; ++i) {
+        print_float(V[i]);
+    }
+    print_string("");
+}
+
+void printf5(vector float [5] V) {
+    int i;
+    for(i=0; i < V:len; ++i) {
+        print_float(V[i]);
+    }
+    print_string("");
+}
+
+void printf6(vector float [6] V) {
+    int i;
+    for(i=0; i < V:len; ++i) {
+        print_float(V[i]);
+    }
+    print_string("");
+}
+
+void printf7(vector float [7] V) {
+    int i;
+    for(i=0; i < V:len; ++i) {
+        print_float(V[i]);
+    }
+    print_string("");
+}
+
+void printf8(vector float [8] V) {
+    int i;
+    for(i=0; i < V:len; ++i) {
+        print_float(V[i]);
+    }
+    print_string("");
+}
+
+void printf9(vector float [9] V) {
+    int i;
+    for(i=0; i < V:len; ++i) {
+        print_float(V[i]);
+    }
+    print_string("");
+}
 
 void printi22(matrix int [2,2] M) {
     int i;

@@ -48,7 +48,6 @@ exception MatrixDimensionMustBeInt
 exception MatrixAccessOnNonMatrix of string
 exception MatrixColOnNonMatrix of string
 exception MatrixLitMustBeOneType
-exception MatrixOutOfBoundsAccess of string
 exception MatrixRowOnNonMatrix of string
 exception MismatchedMatricesForAddSub of string
 exception MismatchedMatricesForMult of string
@@ -81,13 +80,16 @@ exception IllegalFloatBinop
 exception IllegalFloatUnop
 exception IllegalIntBinop
 exception IllegalMatrixBinop
+exception IllegalVectorBinop
 exception IncMustBeCalledOnID
 exception InvalidBinaryOperator
 exception InvalidMatrixDimension
 exception InvalidUnopType
 exception InvalidUnopEvaluationType
 exception InvalidVectorDimension
+exception MatrixOutOfBoundsAccess of string
 exception UnopNotSupported
 exception UnsupportedBinopType
 exception UnsupportedMatrixType
 exception UnsupportedVectorType
+exception VectorOutOfBoundsAccess of string

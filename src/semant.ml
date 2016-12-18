@@ -34,6 +34,13 @@ let get_arithmetic_binop_type se1 se2 op = function
 						SBinop(se1, op, se2, Datatype(Vector(typ1, n1)))
 					else raise(Exceptions.MismatchedVectorsForBinop("Vectors must be same type and size for +/-"))
 				| _ 		-> raise(Exceptions.UnsupportedVectorBinop("Cannot multiply or divide vectors")))
+		| (Datatype(Matrix(typ1, i1, j1)), Datatype(Vector(typ2, n))) ->
+			(match op with
+				| Mult 		->
+					if typ1=typ2 && j1 = n then
+						SBinop(se1, op, se2, Datatype(Vector(typ1, i1)))
+					else raise(Exceptions.MismatchedMatricesForMult("Matrix M1(i,j) and vector V(n) must have j = n and be of same type to be multiplied"))
+				| _ -> raise(Exceptions.UnsupportedMatrixBinop("Cannot add. subtract, divide matrices with vectors")))
 		| (Datatype(Matrix(typ1, i1, j1)), Datatype(Matrix(typ2, i2, j2))) ->
 			(match op with
 				Add | Sub 	->

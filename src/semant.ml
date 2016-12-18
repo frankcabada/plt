@@ -233,9 +233,9 @@ and check_new p func_st =
 		| Matrix(_,_,_)		-> raise(Exceptions.CannotUseNewwithMatrices)
 		| _ 				-> SNew(p))
 
-and check_free e func_st =
+and check_free fname_map func_st e =
 	(match e with
-		  Id(s)		-> SId(s, get_ID_type s func_st)
+		  Id(s)		-> SFree(expr_to_sexpr fname_map func_st e)
 		| _ 		-> raise(Exceptions.CanOnlyUseFreeWithVariables))
 
 and expr_to_sexpr fname_map func_st = function
@@ -265,7 +265,7 @@ and expr_to_sexpr fname_map func_st = function
 	| Len(s)					-> check_len s func_st
 	| Transpose(s)				-> check_transpose s func_st
 	| New(p) 				 	-> check_new p func_st
-	| Free(e)					-> check_free e func_st
+	| Free(e)					-> check_free fname_map func_st e
 
 and get_type_from_sexpr sexpr = match sexpr with
 	  SNum_lit(SInt_lit(_))				-> Datatype(Int)

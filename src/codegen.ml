@@ -513,7 +513,7 @@ let translate(globals, functions) =
                                             | _               -> let p' = ltype_of_typ p in
                                                                  L.build_load (L.build_malloc p' "tmp" builder) "tmp2" builder)
             | S.SFree(e)                -> (match e with
-                                              SId(s, d) -> L.build_free (lookup s) builder
+                                              S.SId(s, d) -> L.build_free (lookup s) builder
                                             | _ -> raise(Exceptions.CanOnlyUseFreeWithVariables));
             | S.SCall ("print_string", [e], d) ->
                 L.build_call printf_func [| string_format_str ; (expr builder e) |] "printf" builder

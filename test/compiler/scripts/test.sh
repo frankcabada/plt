@@ -119,20 +119,6 @@ else
   echo "-----------------------------------------"
 fi
 
-./cmat.native -c fail/_logical_operators.test fail/_logical_operators.ll >& fail/_logical_operators.res
-diff fail/_logical_operators.out fail/_logical_operators.res > /dev/null
-if [ $? = 0 ]; then
-  echo -e "\e[0;32m"
-  echo "-----------------------------------------"
-  echo "|COMPILER: LOGICAL OPERATORS TEST PASSED|"
-  echo "-----------------------------------------"
-else
-  echo -e "\e[0;31m"
-  echo "-----------------------------------------"
-  echo "|COMPILER: LOGICAL OPERATORS TEST FAILED|"
-  echo "-----------------------------------------"
-fi
-
 ./cmat.native -c fail/_matrix_equality.test fail/_matrix_equality.ll >& fail/_matrix_equality.res
 diff fail/_matrix_equality.out fail/_matrix_equality.res > /dev/null
 if [ $? = 0 ]; then

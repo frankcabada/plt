@@ -1,0 +1,50 @@
+/* This is program calculates the Nth number of the Fibonacci Series */
+
+/* globals */
+int N;
+
+#include <../stdlib.cmat>;
+
+/* Program entry point */
+int main() {
+  int fibNum;
+  N = 10;
+  
+  fibNum = fib(N);
+  print_int(fibNum);
+  /*
+  fibNum = dynamicFib(N);
+  print_int(fibNum);
+  */
+
+  return fibNum;  
+}
+
+/* Fibonacci method by recursive algorithm */
+int fib(int n) {
+  if (n <= 2) { return 1; }
+
+  return fib(n-2) + fib(n-1);
+}
+
+/* Fibonacci method by dynamic algorithm */
+int dynamicFib(int n) {
+  int i; int f1; int f2;
+  f1 = 1; f2 = 1;
+
+  if (n < 2) { return 1; }
+
+  for(i=2; i<n; ++i) {
+    if (mod(i, 2) == 0) {
+      f1 = f1 + f2;
+    }
+    else {
+      f2 = f1 + f2;
+    }
+  }
+
+  if (mod(n, 2) == 0) { return f2; }
+  else { return f1; }
+
+  return n;
+}

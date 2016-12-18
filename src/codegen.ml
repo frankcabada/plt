@@ -457,7 +457,6 @@ let translate(globals, functions) =
                 let int_unops op =
                     (match op with
                         A.Neg     -> L.build_neg e' "tmp" builder
-                        | A.Not   -> L.build_not e' "tmp" builder
                         | A.Inc   -> L.build_store (L.build_add e' (L.const_int i32_t 1) "tmp" builder) (lookup (match e with S.SId(s, d) -> s | _->raise(Exceptions.IncMustBeCalledOnID))) builder
                         | A.Dec   -> L.build_store (L.build_sub e' (L.const_int i32_t 1) "tmp" builder) (lookup (match e with S.SId(s, d) -> s | _->raise(Exceptions.DecMustBeCalledOnID))) builder)
                 in

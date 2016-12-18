@@ -316,7 +316,6 @@ let add_reserved_functions =
 	reserved
 
 (* Variable Declaration Checking Functions *)
-
 let report_duplicate s li =
 	let rec helper = function
 		n1 :: n2 :: _ when n1 = n2 ->
@@ -365,7 +364,6 @@ let check_var_decls globals =
 	add_to_global_symbol_table globals;;
 
 (* Function Declaration Checking Functions *)
-
 let fdecl_to_func_st globals fdecl =
 	let ffunc_st = List.fold_left (fun m f -> StringMap.add (get_formal_id f) (get_formal_type f) m) StringMap.empty fdecl.formals in
 		let lffunc_st = List.fold_left (fun m l -> StringMap.add (get_local_id l) (get_local_type l) m) ffunc_st fdecl.locals in

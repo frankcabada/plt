@@ -122,8 +122,8 @@ expr:
   | expr OR expr                                                { Binop($1, Or, $3) }
   | MINUS expr %prec NEG                                        { Unop(Neg, $2) }
   | NOT expr                                                    { Unop(Not, $2) }
-  | INC expr                                                    { Unop(Inc, $2) } /* only prefix increment */
-  | DEC expr                                                    { Unop(Dec, $2) } /* only prefix decrement */
+  | INC expr                                                    { Unop(Inc, $2) }
+  | DEC expr                                                    { Unop(Dec, $2) }
   | expr ASSIGN expr                                            { Assign($1, $3) }
   | LPAREN expr RPAREN                                          { $2 }
   | ID LPAREN actuals_opt RPAREN                                { Call($1, $3) }
@@ -166,4 +166,3 @@ lit_list:
 actuals_list:
     expr                            { [$1] }
   | actuals_list COMMA expr         { $3 :: $1 }
-

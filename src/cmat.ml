@@ -17,9 +17,8 @@ let _ =
     let infile =
         if (Array.length Sys.argv > 2)
             then Sys.argv.(2)
-            else ""
+            else raise(Exceptions.NoFileArgument)
     in
-
     let outfile =
         if (Array.length Sys.argv > 3 && action=Compile)
             then Sys.argv.(3)
@@ -30,11 +29,11 @@ let _ =
 
     let sast =
     let gst = Semant.check_var_decls (fst ast) in
-    Semant.check_functions gst (fst ast) (snd ast) in
+        Semant.check_functions gst (fst ast) (snd ast) in
 
     match action with
-    Ast -> print_string(Utils.string_of_program ast)
-    | LLVM_IR -> print_string(Llvm.string_of_llmodule(Codegen.translate sast))
-    | Compile -> let m = Codegen.translate sast in
-    Llvm_analysis.assert_valid_module m; (* Useful built-in check *)
-    print_module (outfile) (m);
+        Ast -> print_string(Utils.string_of_program ast)
+        | LLVM_IR -> print_string(Llvm.string_of_llmodule(Codegen.translate sast))
+        | Compile -> let m = Codegen.translate sast in
+            Llvm_analysis.assert_valid_module m; (* Useful built-in check *)
+            print_module (outfile) (m);

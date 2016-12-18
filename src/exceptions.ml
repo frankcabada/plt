@@ -1,6 +1,4 @@
-(* Dice Exceptions *)
-exception InvalidNumberCompilerArguments of int
-exception InvalidCompilerArgument of string
+(* Compiler Exceptions *)
 exception NoFileArgument
 
 (* Processor Exceptions *)
@@ -14,18 +12,12 @@ exception IllegalToken of string
 (* Analyzer Exceptions *)
 exception AllVoidFunctionsMustNotReturn of string
 exception AllNonVoidFunctionsMustEndWithReturn of string
-exception ArrayInitTypeInvalid of string
-exception ArrayAccessExpressionNotArray of string
-exception ArrayAccessInvalidParamLength of string * string
 exception AssignmentTypeMismatch of string * string
-exception CanOnlyAccessLengthOfArray
-exception CanOnlyDeleteObjectsOrArrays
-exception CannotAccessLengthOfCharArray
 exception CannotUseReservedFuncName of string
 exception CannotUseRowsOnNonMatrix of string
+exception CannotUseTransposeOnNonMatrix of string
 exception CannotUseColsOnNonMatrix of string
 exception CannotUseLenOnNonVector of string
-exception CyclicalDependencyBetween of string * string
 exception DuplicateFunc of string
 exception DuplicateFunction of string
 exception DuplicateGlobal of string
@@ -34,8 +26,6 @@ exception FunctionNotFound of string
 exception IncorrectTypePassedToFunction of string * string
 exception IncorrectNumberOfArguments of string * int * int
 exception InvalidAccessLHS of string
-exception InvalidArrayPrimitiveConsecutiveTypes of string * string
-exception InvalidArrayPrimitiveType of string
 exception InvalidBinopExpression of string
 exception InvalidIfStatementType
 exception InvalidForStatementType
@@ -58,8 +48,6 @@ exception MustPassIntegerTypeToArrayCreate
 exception MustPassIntegerTypeToArrayAccess
 exception MultipleMainsDefined
 exception ReturnTypeMismatch of string * string
-exception ObjAccessMustHaveObjectType of string
-exception CannotUseTransposeOnNonMatrix of string
 exception UndefinedID of string
 exception UnknownIdentifier of string
 exception UnknownIdentifierForClass of string * string

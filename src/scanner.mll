@@ -3,10 +3,9 @@
 rule token = parse
 (* Whitespace *)
 	[' ' '\t' '\r' '\n'] { token lexbuf }
-	(* ['n'] { token lexbux n+1 ? }  *)
 
 (* Comments *)
-| "/*" { comment lexbuf } (* | "//" { comment2 lexbuf } *)
+| "/*" { comment lexbuf }
 
 (* Delimiters *)
 | '(' { LPAREN }  | ')' { RPAREN } | '{' { LBRACE } | '}' { RBRACE }
@@ -41,7 +40,6 @@ rule token = parse
 
 (* Identifiers, EOF *)
 | ['a'-'z' 'A'-'Z']['a'-'z' 'A'-'Z' '0'-'9' '_']* as lxm { ID(lxm) }
-(*| "const" { CONST }*)
 | eof { EOF }
 | _ as char { raise (Failure("illegal character " ^
 							  Char.escaped char)) }
@@ -49,8 +47,3 @@ rule token = parse
 and comment = parse
 	"*/" { token lexbuf }
 | _ { comment lexbuf }
-
-(* ??
-and comment2 = parse
-	'\n' { token lexbuf}
-| _ { comment2 lexbuf } *)

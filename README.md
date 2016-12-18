@@ -14,6 +14,7 @@ The version of the OCaml llvm library should match the version of the LLVM
 system installed on your system.
 
 -------------------------------------------------------------------------------
+
 Installation under Ubuntu 16.04
 
 LLVM 3.8 is the default under 16.04, so we ask for a matching version of the
@@ -25,9 +26,10 @@ OCaml library.
     eval `opam config env`
 
     make
-    ./testall.sh
+    ./scripts/test.sh
 
 -------------------------------------------------------------------------------
+
 Installation under Ubuntu 15.10
 
 LLVM 3.6 is the default under 15.10, so we ask for a matching version of the
@@ -39,7 +41,7 @@ OCaml library.
     eval `opam config env`
 
     make
-    ./testall.sh
+    ./scripts/test.sh
 
 -------------------------------------------------------------------------------
 
@@ -55,9 +57,10 @@ package.
     sudo apt-get update -qq
     sudo apt-get install -y opam
     opam init
-
     eval `opam config env`
-
     opam install llvm.3.4 ocamlfind
+
+    make
+    ./scripts/test.sh
 
 -------------------------------------------------------------------------------

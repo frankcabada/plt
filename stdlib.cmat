@@ -1,3 +1,9 @@
+int mod(int dividend, int divisor) {
+    int m;
+    m = dividend - dividend / divisor * divisor;
+    return m;
+}
+
 int powi(int i, int n) {
     int k;
     int pow;

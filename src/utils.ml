@@ -1,3 +1,13 @@
+(*
+ * COMS4115: CMAT Utilities
+ *
+ * Authors:
+ *  - Marissa Ojeda
+ *  - Daniel Rojas
+ *  - Mike Berkowitz
+ *  - Frank Cabada
+ *)
+
 (* Pretty Printer *)
 open Ast
 open Sast

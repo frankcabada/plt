@@ -1,3 +1,13 @@
+(*
+ * COMS4115: CMAT Prep Module
+ *
+ * Authors:
+ *  - Marissa Ojeda
+ *  - Daniel Rojas
+ *  - Mike Berkowitz
+ *  - Frank Cabada
+ *)
+
 let process filename =
     let rec read_file filename =
       let file_regex = Str.regexp "<.+\\.cmat"  in

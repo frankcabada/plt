@@ -1,3 +1,13 @@
+(*
+ * COMS4115: CMAT Top-Level Compiler
+ *
+ * Authors:
+ *  - Marissa Ojeda
+ *  - Daniel Rojas
+ *  - Mike Berkowitz
+ *  - Frank Cabada
+ *)
+
 open Scanner
 open Parser
 open Ast

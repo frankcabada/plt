@@ -1,3 +1,13 @@
+/*
+ * COMS4115: CMAT Parser
+ *
+ * Authors:
+ *  - Marissa Ojeda
+ *  - Daniel Rojas
+ *  - Mike Berkowitz
+ *  - Frank Cabada
+ */
+
 %{ open Ast %}
 
 /* Delimiters */

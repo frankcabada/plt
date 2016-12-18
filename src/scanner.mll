@@ -1,3 +1,13 @@
+(*
+ * COMS4115: CMAT Scanner
+ *
+ * Authors:
+ *  - Marissa Ojeda
+ *  - Daniel Rojas
+ *  - Mike Berkowitz
+ *  - Frank Cabada
+ *)
+
 { open Parser }
 
 rule token = parse

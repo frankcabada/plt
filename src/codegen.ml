@@ -1,3 +1,13 @@
+(*
+ * COMS4115: CMAT Code Generator
+ *
+ * Authors:
+ *  - Marissa Ojeda
+ *  - Daniel Rojas
+ *  - Mike Berkowitz
+ *  - Frank Cabada
+ *)
+
 open Llvm
 open Ast
 open Sast

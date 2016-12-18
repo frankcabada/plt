@@ -1,5 +1,5 @@
 (*
- * COMS4115: Cmat semantically checked abstract syntax tree
+ * COMS4115: CMAT SAST
  *
  * Authors:
  *  - Marissa Ojeda

@@ -1,0 +1,8 @@
+int main() {
+  vector int [2] v;
+  float i;
+  i = 5.0;
+  v = | 1 | 2 |;
+  v = v / i;
+  return 0;
+}

@@ -1,0 +1,5 @@
+int main() {
+  vector int[2] v;
+  v = | 1 | 2.0 |;
+  return 0;
+}

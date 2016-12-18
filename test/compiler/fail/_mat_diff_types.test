@@ -1,0 +1,5 @@
+int main() {
+  matrix int[2,2] m;
+  m = [1,2;3,4.0];
+  return 0;
+}

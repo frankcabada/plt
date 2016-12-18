@@ -1,0 +1,1 @@
+Fatal error: exception Exceptions.MismatchedMatricesForMult("Matrices M1(i1,j1) and M2(i2,j2) must have j1 = i2 and be of same type to be multiplied")

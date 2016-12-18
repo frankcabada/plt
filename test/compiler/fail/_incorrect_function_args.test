@@ -1,0 +1,9 @@
+int main() {
+  int a;
+  a = sum(1,2,3);
+  return 0;
+}
+
+int sum(int x, int y) {
+  return x+y;
+}

@@ -481,12 +481,12 @@ let translate(globals, functions) =
             | S.SRows(r)                -> L.const_int i32_t r
             | S.SCols(c)                -> L.const_int i32_t c
             | S.SLen(l)                 -> L.const_int i32_t l
-            | S.SNew(p)                 -> (match p with 
+            | S.SNew(p)                 -> (match p with
                                               A.Vector(_, _)  -> raise(Exceptions.CannotUseNewWithVectors)
                                             | A.Matrix(_,_,_) -> raise(Exceptions.CannotUseNewwithMatrices)
-                                            | _               -> let p' = ltype_of_typ p in 
+                                            | _               -> let p' = ltype_of_typ p in
                                                                  L.build_load (L.build_malloc p' "tmp" builder) "tmp2" builder)
-            | S.SFree(e)                -> (match e with 
+            | S.SFree(e)                -> (match e with
                                               SId(s, d) -> L.build_free (lookup s) builder
                                             | _ -> raise(Exceptions.CanOnlyUseFreeWithVariables));
             | S.SCall ("print_string", [e], d) ->
@@ -543,8 +543,35 @@ let translate(globals, functions) =
                         let arrayOfi32 = Array.of_list i32List in
                             L.const_array (array_t i32_t (List.length sl)) arrayOfi32
                     | _ -> raise(Exceptions.UnsupportedVectorType))
-            (*| S.SMatrix_row (_, _, _)
-            | S.SMatrix_col (_, _, _)*)
+            | S.SMatrix_row (s, r, d) ->
+                let access_i = (match r with SNum_lit(SInt_lit(n)) -> n | _-> -1) in
+                let rows = L.array_length (L.type_of (L.build_load (L.build_gep (lookup s) [| L.const_int i32_t 0 |] s builder) s builder)) in
+                if (rows < access_i) then raise(Exceptions.MatrixOutOfBoundsAccess(""));
+                L.build_load (L.build_gep (lookup s) [| L.const_int i32_t 0; L.const_int i32_t access_i |] s builder) s builder
+            | S.SMatrix_col (s, c, d) ->
+                let c_i = (match c with SNum_lit(SInt_lit(n)) -> n | _ -> -1) in
+                (match d with
+                    Datatype(Matrix(Int,_,_)) ->
+                        let rows = L.array_length (L.type_of (L.build_load (L.build_gep (lookup s) [| L.const_int i32_t 0 |] s builder) s builder)) in
+                        let cols = L.array_length (L.type_of (L.build_load (L.build_gep (lookup s) [| L.const_int i32_t 0; L.const_int i32_t 0 |] s builder) s builder)) in
+                        let tmp_m = L.build_alloca (array_t i32_t cols) "tmpmat" builder in
+                        for j=0 to (rows-1) do
+                            let m1 = build_matrix_access j c_i s (L.const_int i32_t 0) (L.const_int i32_t j) (L.const_int i32_t c_i) builder false in
+                            let ld = L.build_gep tmp_m [| L.const_int i32_t 0; L.const_int i32_t j|] "tmpmat" builder in
+                            ignore(build_store m1 ld builder);
+                        done;
+                        L.build_load (L.build_gep tmp_m [| L.const_int i32_t 0 |] "tmpmat" builder) "tmpmat" builder
+                    | Datatype(Matrix(Float,_,_)) ->
+                        let rows = L.array_length (L.type_of (L.build_load (L.build_gep (lookup s) [| L.const_int i32_t 0 |] s builder) s builder)) in
+                        let cols = L.array_length (L.type_of (L.build_load (L.build_gep (lookup s) [| L.const_int i32_t 0; L.const_int i32_t 0 |] s builder) s builder)) in
+                        let tmp_m = L.build_alloca (array_t float_t cols) "tmpmat" builder in
+                        for j=0 to (rows-1) do
+                            let m1 = build_matrix_access j c_i s (L.const_int i32_t 0) (L.const_int i32_t j) (L.const_int i32_t c_i) builder false in
+                            let ld = L.build_gep tmp_m [| L.const_int i32_t 0; L.const_int i32_t j|] "tmpmat" builder in
+                            ignore(build_store m1 ld builder);
+                        done;
+                        L.build_load (L.build_gep tmp_m [| L.const_int i32_t 0 |] "tmpmat" builder) "tmpmat" builder
+                    )
         in
 
         let add_terminal builder f =

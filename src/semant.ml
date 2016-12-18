@@ -77,6 +77,8 @@ and check_assign fname_map func_st e1 e2 =
 		| Datatype(Int), Datatype(String) -> SAssign(se1, se2, type1)
 		| Datatype(Int), Datatype(Bool) -> SAssign(se1, se2, type1)
 		| Datatype(Bool), Datatype(Int) -> SAssign(se1, se2, type1)
+		| Datatype(Vector(dv,n)), Datatype(Matrix(dm,r,Int_lit(1))) -> if ((dv=dm) && (n=r)) then SAssign(se1, se2, type1) else raise(Exceptions.AssignmentTypeMismatch(Utils.string_of_datatype type1, Utils.string_of_datatype type2))
+		| Datatype(Vector(dv,n)), Datatype(Matrix(dm,Int_lit(1),c)) -> if ((dv=dm) && (n=c)) then SAssign(se1, se2, type1) else raise(Exceptions.AssignmentTypeMismatch(Utils.string_of_datatype type1, Utils.string_of_datatype type2))
 		| _ ->
 	if type1 = type2
 		then SAssign(se1, se2, type1)
@@ -121,14 +123,14 @@ and check_matrix_row fname_map func_st s e =
 	ignore(check_expr_is_int func_st e);
 	let t = get_ID_type s func_st	in
 		match t with
-			Datatype(Matrix(d,_,_)) -> SMatrix_row(s, expr_to_sexpr fname_map func_st e, Datatype(d))
+			Datatype(Matrix(d,r,c)) -> SMatrix_row(s, expr_to_sexpr fname_map func_st e, Datatype(Matrix(d,Int_lit(1),c)))
 			| _ -> raise(Exceptions.MatrixRowOnNonMatrix(s))
 
 and check_matrix_col fname_map func_st s e =
 	ignore(check_expr_is_int func_st e);
 	let t = get_ID_type s func_st	in
 		match t with
-			Datatype(Matrix(d,_,_)) -> SMatrix_col(s, expr_to_sexpr fname_map func_st e, Datatype(d))
+			Datatype(Matrix(d,r,c)) -> SMatrix_col(s, expr_to_sexpr fname_map func_st e, Datatype(Matrix(d,r,Int_lit(1))))
 			| _ -> raise(Exceptions.MatrixColOnNonMatrix(s))
 
 and check_matrix_access fname_map func_st s e1 e2 =
@@ -172,7 +174,7 @@ and check_vector_lit fname_map func_st nl =
 	let snl = (List.map lit_to_slit nl) in
 	let first = (List.hd nl) in
 	let first_typ = typ_of_lit first in
-		ignore(List.iter (fun n -> 
+		ignore(List.iter (fun n ->
 			(let typ = typ_of_lit n in
 				if (typ = first_typ)
 					then ()
@@ -233,7 +235,7 @@ and expr_to_sexpr fname_map func_st = function
 	| Matrix_row(s, e)       	-> check_matrix_row fname_map func_st s e
 	| Matrix_col(s, e)       	-> check_matrix_col fname_map func_st s e
 	| Matrix_lit(nll)			-> check_matrix_lit fname_map func_st nll
-	| Vector_lit(nl)            -> check_vector_lit fname_map func_st nl 
+	| Vector_lit(nl)            -> check_vector_lit fname_map func_st nl
 	| Rows(s)					-> check_rows s func_st
 	| Cols(s)					-> check_cols s func_st
 	| Len(s)					-> check_len s func_st

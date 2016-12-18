@@ -395,6 +395,14 @@ let translate(globals, functions) =
             | S.SRows(r)                -> L.const_int i32_t r
             | S.SCols(c)                -> L.const_int i32_t c
             | S.SLen(l)                 -> L.const_int i32_t l
+            | S.SNew(p)                 -> (match p with 
+                                              A.Vector(_, _)  -> raise(Exceptions.CannotUseNewWithVectors)
+                                            | A.Matrix(_,_,_) -> raise(Exceptions.CannotUseNewwithMatrices)
+                                            | _               -> let p' = ltype_of_typ p in 
+                                                                 L.build_load (L.build_malloc p' "tmp" builder) "tmp2" builder)
+            | S.SFree(e)                -> (match e with 
+                                              SId(s, d) -> L.build_free (lookup s) builder
+                                            | _ -> raise(Exceptions.CanOnlyUseFreeWithVariables));
             | S.SCall ("print_string", [e], d) ->
                 L.build_call printf_func [| string_format_str ; (expr builder e) |] "printf" builder
             | S.SCall ("print_int", [e], d) ->
@@ -436,6 +444,19 @@ let translate(globals, functions) =
                         let arrayOfArrays   = Array.of_list i32ListOfArrays in
                             L.const_array (array_t i32_t (List.length (List.hd sll))) arrayOfArrays
                     | _ -> raise(Exceptions.UnsupportedMatrixType))
+            | S.SVector_lit (sl, d) ->
+                (match d with
+                    A.Datatype(A.Float) ->
+                        let realOrder = List.rev sl in
+                        let i64List = List.map (expr builder) realOrder in
+                        let arrayOfi64 = Array.of_list i64List in
+                            L.const_array (array_t float_t (List.length sl)) arrayOfi64
+                    | A.Datatype(A.Int) ->
+                        let realOrder = List.rev sl in
+                        let i32List = List.map (expr builder) realOrder in
+                        let arrayOfi32 = Array.of_list i32List in
+                            L.const_array (array_t i32_t (List.length sl)) arrayOfi32
+                    | _ -> raise(Exceptions.UnsupportedVectorType))
             (*| S.SMatrix_row (_, _, _)
             | S.SMatrix_col (_, _, _)*)
         in

@@ -356,6 +356,9 @@ let add_to_global_symbol_table globs =
 	List.fold_left
 		(fun m (t,n) -> StringMap.add n t m) StringMap.empty globs
 
+let get_global_id = function
+	| (Datatype(p), n) -> n
+
 let get_formal_id = function
 	| Formal(Datatype(p), n) -> n
 
@@ -452,7 +455,7 @@ and check_else globs fname_map fdecl stmt =
 let check_function globals fname_map global_st fdecl =
 	ignore(List.iter check_not_void_formal fdecl.formals);
 	ignore(List.iter check_not_void_local fdecl.locals);
-	ignore(report_duplicate "function" ((List.map get_formal_id fdecl.formals) @ (List.map get_local_id fdecl.locals)));
+	ignore(report_duplicate "function" ((List.map get_formal_id fdecl.formals) @ (List.map get_local_id fdecl.locals) @ (List.map get_global_id globals)));
 	ignore(check_function_return fdecl.fname fdecl.body fdecl.return_type);
 	ignore(check_fbody globals fname_map fdecl fdecl.body);;
 

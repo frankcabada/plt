@@ -1,8 +1,9 @@
 int powi(int i, int n) {
     int k;
     int pow;
+    int pow = 1;
     for(k=0; k<n; ++k) {
-        pow = pow*k;
+        pow = pow*i;
     }
     return pow;
 }
@@ -11,7 +12,7 @@ float powf(float f, int n) {
     int k;
     float pow;
     for(k=0; k<n; ++k) {
-        pow = pow*k;
+        pow = pow*f;
     }
     return pow;
 }

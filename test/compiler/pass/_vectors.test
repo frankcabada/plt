@@ -1,0 +1,16 @@
+#include <../../stdlib.cmat>;
+
+int main() {
+    vector int [8] v1;
+    vector int [8] v2;
+    v1 = | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 |;
+    v2 = | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 |;
+    printi8(v1);
+    printi8(v2);
+    print_int(doti8(v1,v2));
+    print_string("");
+    v1 = v1+v2;
+    printi8(v1);
+    v1 = v1-v2;
+    return 0;
+}

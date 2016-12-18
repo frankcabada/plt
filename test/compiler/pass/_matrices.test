@@ -1,0 +1,36 @@
+#include <../../stdlib.cmat>;
+
+int main() {
+    matrix int [6,3] m63;
+    matrix int [6,3] m63b;
+    matrix int [3,5] m35;
+    matrix int [6,5] m65;
+    m63 = [1,0,0;
+           0,1,0;
+           0,0,1;
+           0,0,0;
+           0,0,0;
+           0,0,0];
+    m35 = [1,0,0,0,0;
+           0,1,0,0,0;
+           0,0,1,0,0];
+   m63b = [1,0,0;
+          0,1,0;
+          0,0,1;
+          0,0,0;
+          0,0,0;
+          0,0,0];
+    printi63(m63);
+    printi63(m63b);
+    m63b = m63b+m63;
+    printi63(m63b);
+    m63b = m63b-m63;
+    printi63(m63b);
+    m65 = m63*m35;
+    printi65(m65);
+    print_int(m65:rows);
+    print_int(m65:cols);
+    print_string("");
+    printi56(m65:tr);
+    return 0;
+}

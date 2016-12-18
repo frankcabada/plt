@@ -39,6 +39,7 @@ type expr =
 	| Rows of string
 	| Cols of string
 	| Len of string
+	| Transpose of string
 	| New of primitives
 	| Free of expr
 

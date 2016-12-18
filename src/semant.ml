@@ -205,6 +205,12 @@ and check_cols s func_st =
 			Datatype(Matrix(_, _, c)) -> (match c with Int_lit(n) -> SCols(n) | _ -> raise(Exceptions.MatrixDimensionMustBeInt))
 			| _ -> raise(Exceptions.CannotUseRowsOnNonMatrix(s))
 
+and check_transpose s func_st =
+	let typ = get_ID_type s func_st in
+		match typ with
+			Datatype(Matrix(d, r, c)) -> STranspose(s, Datatype(Matrix(d,c,r)))
+			| _ -> raise(Exceptions.CannotUseTransposeOnNonMatrix(s))
+
 and check_len s func_st =
 	let typ = get_ID_type s func_st in
 		(match typ with
@@ -247,6 +253,7 @@ and expr_to_sexpr fname_map func_st = function
 	| Rows(s)					-> check_rows s func_st
 	| Cols(s)					-> check_cols s func_st
 	| Len(s)					-> check_len s func_st
+	| Transpose(s)				-> check_transpose s func_st
 	| New(p) 				 	-> check_new p func_st
 	| Free(e)					-> check_free e func_st
 
@@ -262,6 +269,7 @@ and get_type_from_sexpr sexpr = match sexpr with
 	| SLen(l) 							-> Datatype(Int)
 	| SNew(p)							-> Datatype(p)
 	| SFree(e)							-> get_type_from_sexpr e
+	| STranspose(_,d) 					-> d
 	| SId(_, d) 						-> d
 	| SBinop(_, _, _, d) 				-> d
 	| SAssign(_, _, d) 					-> d

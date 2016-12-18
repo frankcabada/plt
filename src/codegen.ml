@@ -227,24 +227,7 @@ let translate(globals, functions) =
                                                 ignore(build_store add_res ld builder);
                                             done;
                                             L.build_load (L.build_gep tmp_v [| L.const_int i32_t 0 |] "tmpvec" builder) "tmpvec" builder
-                                        | Datatype(Matrix(Int,r1,c1)) ->
-                                            let r1_i = (match r1 with Int_lit(n) -> n | _ -> -1) in
-                                            let c1_i = (match c1 with Int_lit(n) -> n | _ -> -1) in
-                                            let tmp_s = L.build_alloca i32_t "tmpsum" builder in
-                                            let tmp_v = L.build_alloca (array_t i32_t r1_i) "tmpvec" builder in
-                                            ignore(L.build_store (L.const_int i32_t 0) tmp_s builder);
-                                            for i=0 to (r1_i-1) do
-                                                ignore(L.build_store (L.const_int i32_t 0) tmp_s builder);
-                                                for j=0 to (c1_i-1) do
-                                                        let m1 = build_matrix_access i j lhs_str (L.const_int i32_t 0) (L.const_int i32_t i) (L.const_int i32_t j) builder false in
-                                                        let v2 = build_vector_access j rhs_str (L.const_int i32_t 0) (L.const_int i32_t j) builder false in
-                                                        let mult_res = L.build_mul m1 v2 "tmp" builder in
-                                                        ignore(L.build_store (L.build_add mult_res (L.build_load tmp_s "addtmp" builder) "tmp" builder) tmp_s builder);
-                                                done;
-                                                let ld = L.build_gep tmp_v [| L.const_int i32_t 0; L.const_int i32_t i |] "tmpvec" builder in
-                                                ignore(build_store (L.build_load tmp_s "restmp" builder) ld builder);
-                                            done;
-                                            L.build_load (L.build_gep tmp_v [| L.const_int i32_t 0 |] "tmpvec" builder) "tmpvec" builder
+                                        | Datatype(Matrix(Int,r1,c1)) -> L.const_int i32_t 0
                                         | _ -> L.const_int i32_t 0)
                                 | _         -> raise(Exceptions.IllegalVectorBinop))
                         | "float" ->
@@ -285,24 +268,7 @@ let translate(globals, functions) =
                                                 ignore(build_store add_res ld builder);
                                             done;
                                             L.build_load (L.build_gep tmp_v [| L.const_int i32_t 0 |] "tmpvec" builder) "tmpvec" builder
-                                        | Datatype(Matrix(Float,r1,c1)) ->
-                                            let r1_i = (match r1 with Int_lit(n) -> n | _ -> -1) in
-                                            let c1_i = (match c1 with Int_lit(n) -> n | _ -> -1) in
-                                            let tmp_s = L.build_alloca float_t "tmpsum" builder in
-                                            let tmp_v = L.build_alloca (array_t float_t r1_i) "tmpvec" builder in
-                                            ignore(L.build_store (L.const_float float_t 0.0) tmp_s builder);
-                                            for i=0 to (r1_i-1) do
-                                                ignore(L.build_store (L.const_float float_t 0.0) tmp_s builder);
-                                                for j=0 to (c1_i-1) do
-                                                        let m1 = build_matrix_access i j lhs_str (L.const_int i32_t 0) (L.const_int i32_t i) (L.const_int i32_t j) builder false in
-                                                        let v2 = build_vector_access j rhs_str (L.const_int i32_t 0) (L.const_int i32_t j) builder false in
-                                                        let mult_res = L.build_fmul m1 v2 "tmp" builder in
-                                                        ignore(L.build_store (L.build_fadd mult_res (L.build_load tmp_s "addtmp" builder) "tmp" builder) tmp_s builder);
-                                                done;
-                                                let ld = L.build_gep tmp_v [| L.const_int i32_t 0; L.const_int i32_t i |] "tmpvec" builder in
-                                                ignore(build_store (L.build_load tmp_s "restmp" builder) ld builder);
-                                            done;
-                                            L.build_load (L.build_gep tmp_v [| L.const_int i32_t 0 |] "tmpvec" builder) "tmpvec" builder
+                                        | Datatype(Matrix(Int,r1,c1)) -> L.const_int i32_t 0
                                         | _ -> L.const_int i32_t 0)
                                 | _         -> raise(Exceptions.IllegalVectorBinop))
                         | _ -> L.const_int i32_t 0
@@ -456,10 +422,6 @@ let translate(globals, functions) =
                             (lhs, rhs), Datatype(Matrix(Int, r1, c2))
                         | (Datatype(Float), Datatype(Matrix(Float,r1,c2))) ->
                             (lhs, rhs), Datatype(Matrix(Float, r1, c2))
-                        | (Datatype(Matrix(Int,r1,c1)), Datatype(Vector(Int,n))) ->
-                            (lhs, rhs), Datatype(Vector(Int, r1))
-                        | (Datatype(Matrix(Float,r1,c1)), Datatype(Vector(Float,n))) ->
-                            (lhs, rhs), Datatype(Vector(Float, r1))
                         | (Datatype(Matrix(Int,r1,c1)), Datatype(Matrix(Int,r2,c2))) ->
                             (lhs, rhs), Datatype(Matrix(Int, r1, c2))
                         | (Datatype(Matrix(Float,r1,c1)), Datatype(Matrix(Float,r2,c2))) ->
@@ -497,7 +459,7 @@ let translate(globals, functions) =
                         A.Neg     -> L.build_neg e' "tmp" builder
                         | A.Inc   -> L.build_store (L.build_add e' (L.const_int i32_t 1) "tmp" builder) (lookup (match e with S.SId(s, d) -> s | _->raise(Exceptions.IncMustBeCalledOnID))) builder
                         | A.Dec   -> L.build_store (L.build_sub e' (L.const_int i32_t 1) "tmp" builder) (lookup (match e with S.SId(s, d) -> s | _->raise(Exceptions.DecMustBeCalledOnID))) builder
-                        | _       -> L.const_int i32_t 0)
+                        | _       -> raise(Exceptions.IllegalIntUnop))
                 in
                 let float_unops op =
                     match op with
@@ -520,6 +482,21 @@ let translate(globals, functions) =
             | S.SRows(r)                -> L.const_int i32_t r
             | S.SCols(c)                -> L.const_int i32_t c
             | S.SLen(l)                 -> L.const_int i32_t l
+            | S.STranspose(s,d)         ->
+                (match d with
+                    Datatype(Matrix(Int, c, r)) ->
+                        let r_tr = (match c with Int_lit(n) -> n | _ -> -1) in
+                        let c_tr = (match r with Int_lit(n) -> n | _ -> -1) in
+                        let tmp_tr = L.build_alloca (array_t (array_t i32_t c_tr) r_tr) "tmpmat" builder in
+                        for i=0 to (r_tr-1) do
+                            for j=0 to (c_tr-1) do
+                                let mtr = build_matrix_access r_tr c_tr s (L.const_int i32_t 0) (L.const_int i32_t i) (L.const_int i32_t j) builder false in
+                                let ld = L.build_gep tmp_tr [| L.const_int i32_t 0; L.const_int i32_t i; L.const_int i32_t j |] "tmpmat" builder in
+                                ignore(build_store mtr ld builder);
+                            done
+                        done;
+                        L.build_load (L.build_gep tmp_tr [| L.const_int i32_t 0 |] "tmpmat" builder) "tmpmat" builder
+                    | _ -> const_int i32_t 0)
             | S.SNew(p)                 -> (match p with
                                               A.Vector(_, _)  -> raise(Exceptions.CannotUseNewWithVectors)
                                             | A.Matrix(_,_,_) -> raise(Exceptions.CannotUseNewwithMatrices)

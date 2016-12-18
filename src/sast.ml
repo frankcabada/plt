@@ -35,6 +35,7 @@ type sexpr =
 	| SRows of int
 	| SCols of int
 	| SLen of int
+	| STranspose of string * datatype
 	| SNew of primitives
 	| SFree of sexpr
 

@@ -16,7 +16,7 @@
 %token INT BOOL VOID STRING FLOAT TRUE FALSE MATRIX VECTOR
 
 /* Misc */
-%token SEMI COMMA COLON ROWS COLS LEN BAR NEW FREE
+%token SEMI COMMA COLON ROWS COLS LEN TRANSPOSE BAR NEW FREE
 
 /* Literals, identifiers, EOF */
 %token <Ast.num> NUM_LIT
@@ -136,6 +136,7 @@ expr:
   | ID COLON ROWS                                               { Rows($1) }
   | ID COLON COLS                                               { Cols($1) }
   | ID COLON LEN                                                { Len($1) }
+  | ID COLON TRANSPOSE                                          { Transpose($1) }
   | NEW primitives                                              { New($2) }
   | FREE  expr                                                  { Free($2) }
 

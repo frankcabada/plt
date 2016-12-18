@@ -90,6 +90,36 @@ else
   echo "-----------------------------------------"
 fi
 
+./cmat.native -c pass/_matrices.test pass/_matrices.ll
+lli pass/_matrices.ll > pass/_matrices.res
+diff pass/_matrices.out pass/_matrices.res > /dev/null
+if [ $? = 0 ]; then
+  echo -e "\e[0;32m"
+  echo "-----------------------------------------"
+  echo "|     COMPILER: MATRIX TEST PASSED      |"
+  echo "-----------------------------------------"
+else
+  echo -e "\e[0;31m"
+  echo "-----------------------------------------"
+  echo "|     COMPILER: MATRIX TEST FAILED      |"
+  echo "-----------------------------------------"
+fi
+
+./cmat.native -c pass/_vectors.test pass/_vectors.ll
+lli pass/_vectors.ll > pass/_vectors.res
+diff pass/_vectors.out pass/_vectors.res > /dev/null
+if [ $? = 0 ]; then
+  echo -e "\e[0;32m"
+  echo "-----------------------------------------"
+  echo "|     COMPILER: VECTOR TEST PASSED      |"
+  echo "-----------------------------------------"
+else
+  echo -e "\e[0;31m"
+  echo "-----------------------------------------"
+  echo "|     COMPILER: VECTOR TEST FAILED      |"
+  echo "-----------------------------------------"
+fi
+
 ./cmat.native -c pass/_mat_vec.test pass/_mat_vec.ll
 lli pass/_mat_vec.ll > pass/_mat_vec.res
 diff pass/_mat_vec.out pass/_mat_vec.res > /dev/null

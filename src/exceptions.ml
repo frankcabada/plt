@@ -59,6 +59,7 @@ exception MustPassIntegerTypeToArrayAccess
 exception MultipleMainsDefined
 exception ReturnTypeMismatch of string * string
 exception ObjAccessMustHaveObjectType of string
+exception CannotUseTransposeOnNonMatrix of string
 exception UndefinedID of string
 exception UnknownIdentifier of string
 exception UnknownIdentifierForClass of string * string
@@ -77,6 +78,7 @@ exception AssignLHSMustBeAssignable
 exception DecMustBeCalledOnID
 exception IllegalBoolBinop
 exception IllegalBoolUnop
+exception IllegalIntUnop
 exception IllegalCast
 exception IllegalFloatBinop
 exception IllegalFloatUnop

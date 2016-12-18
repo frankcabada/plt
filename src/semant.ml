@@ -89,6 +89,7 @@ and check_unop fname_map func_st op e =
 		  Neg -> t
 		| Inc -> t
 		| Dec -> t
+		| 	_ 		-> raise(Exceptions.InvalidUnaryOperation)
 	in
 	let check_bool_unop x = match x with
 			Not 	-> Datatype(Bool)

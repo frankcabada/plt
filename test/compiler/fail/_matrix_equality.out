@@ -1,0 +1,1 @@
+Fatal error: exception Exceptions.InvalidBinopExpression("Can only use equality operators with ints and Strings")

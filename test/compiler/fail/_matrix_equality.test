@@ -1,0 +1,6 @@
+int main() {
+  matrix int [2,3] m1;
+  matrix int [2,3] m2;
+  m1 == m2;
+  return 0;
+}

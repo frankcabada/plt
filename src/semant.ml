@@ -169,6 +169,17 @@ and check_matrix_lit fname_map func_st nll =
 					else raise(Exceptions.MatrixLitMustBeOneType))) nl) nll);
 	SMatrix_lit(snll, first_typ)
 
+and check_vector_lit fname_map func_st nl =
+	let snl = (List.map lit_to_slit nl) in
+	let first = (List.hd nl) in
+	let first_typ = typ_of_lit first in
+		ignore(List.iter (fun n -> 
+			(let typ = typ_of_lit n in
+				if (typ = first_typ)
+					then ()
+				else raise(Exceptions.VectorLitMustBeOneType))) nl);
+	SVector_lit(snl, first_typ)
+
 and function_decl s fname_map =
 	try StringMap.find s fname_map
 	with Not_found -> raise (Exceptions.FunctionNotFound(s))
@@ -187,9 +198,20 @@ and check_cols s func_st =
 
 and check_len s func_st =
 	let typ = get_ID_type s func_st in
-		match typ with
+		(match typ with
 			Datatype(Vector(_, l)) -> (match l with Int_lit(n) -> SLen(n) | _ -> raise(Exceptions.VectorDimensionMustBeIntLit))
-			| _ -> raise(Exceptions.CannotUseRowsOnNonMatrix(s))
+			| _ -> raise(Exceptions.CannotUseRowsOnNonMatrix(s)))
+
+and check_new p func_st =
+	(match p with
+		  Vector(_,_) 		-> raise(Exceptions.CannotUseNewWithVectors)
+		| Matrix(_,_,_)		-> raise(Exceptions.CannotUseNewwithMatrices)
+		| _ 				-> SNew(p))
+
+and check_free e func_st =
+	(match e with
+		  Id(s)		-> SId(s, get_ID_type s func_st)
+		| _ 		-> raise(Exceptions.CanOnlyUseFreeWithVariables))
 
 and expr_to_sexpr fname_map func_st = function
 	  Num_lit(Int_lit(n))  		-> SNum_lit(SInt_lit(n))
@@ -212,9 +234,12 @@ and expr_to_sexpr fname_map func_st = function
 	| Matrix_row(s, e)       	-> check_matrix_row fname_map func_st s e
 	| Matrix_col(s, e)       	-> check_matrix_col fname_map func_st s e
 	| Matrix_lit(nll)			-> check_matrix_lit fname_map func_st nll
+	| Vector_lit(nl)            -> check_vector_lit fname_map func_st nl 
 	| Rows(s)					-> check_rows s func_st
 	| Cols(s)					-> check_cols s func_st
 	| Len(s)					-> check_len s func_st
+	| New(p) 				 	-> check_new p func_st
+	| Free(e)					-> check_free e func_st
 
 and get_type_from_sexpr sexpr = match sexpr with
 	  SNum_lit(SInt_lit(_))				-> Datatype(Int)
@@ -226,6 +251,8 @@ and get_type_from_sexpr sexpr = match sexpr with
 	| SRows(r) 							-> Datatype(Int)
 	| SCols(c) 							-> Datatype(Int)
 	| SLen(l) 							-> Datatype(Int)
+	| SNew(p)							-> Datatype(p)
+	| SFree(e)							-> get_type_from_sexpr e
 	| SId(_, d) 						-> d
 	| SBinop(_, _, _, d) 				-> d
 	| SAssign(_, _, d) 					-> d
@@ -238,10 +265,16 @@ and get_type_from_sexpr sexpr = match sexpr with
 	| SMatrix_lit(sll, d)				->
 		let c = List.length (List.hd sll) in
 		let r = List.length sll in
-		match d with
+		(match d with
 			Datatype(Int) 		-> Datatype(Matrix(Int, Int_lit(r), Int_lit(c)))
 			| Datatype(Float)	-> Datatype(Matrix(Float, Int_lit(r), Int_lit(c)))
-			| _ 				-> raise(Exceptions.UnsupportedMatrixType)
+			| _ 				-> raise(Exceptions.UnsupportedMatrixType))
+	| SVector_lit (sl, d)               ->
+		let r = List.length sl in
+		match d with
+			  Datatype(Int)     -> Datatype(Vector(Int, Int_lit(r)))
+			| Datatype(Float)   -> Datatype(Vector(Float, Int_lit(r)))
+			| _   				-> raise(Exceptions.UnsupportedVectorType)
 
 let add_reserved_functions =
 	let reserved_stub name return_type formals =

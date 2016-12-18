@@ -27,11 +27,11 @@ rule token = parse
 (* Types *)
 | "int" { INT } | "float" { FLOAT } | "bool" { BOOL } | "void" { VOID }
 | "String" { STRING } | "true" { TRUE } | "false" { FALSE }
-| "matrix" { MATRIX } | "vector" { VECTOR }
+| "matrix" { MATRIX } | "vector" { VECTOR } 
 
 (* Misc. *)
-| ';' { SEMI } | ',' { COMMA } | ':' { COLON }
-| "rows" { ROWS } | "cols" { COLS } | "len" { LEN }
+| ';' { SEMI } | ',' { COMMA } | ':' { COLON } | '|' { BAR }
+| "rows" { ROWS } | "cols" { COLS } | "len" { LEN } | "new" { NEW } | "free" { FREE }
 
 (* Literals *)
 | ['0'-'9']+ as lxm { NUM_LIT(Ast.Int_lit(int_of_string lxm)) }

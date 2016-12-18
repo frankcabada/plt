@@ -48,6 +48,8 @@ exception MatrixDimensionMustBeInt
 exception MatrixAccessOnNonMatrix of string
 exception MatrixColOnNonMatrix of string
 exception MatrixLitMustBeOneType
+exception VectorLitMustBeOneType
+exception MatrixOutOfBoundsAccess of string
 exception MatrixRowOnNonMatrix of string
 exception MismatchedMatricesForAddSub of string
 exception MismatchedMatricesForMult of string
@@ -92,4 +94,7 @@ exception UnopNotSupported
 exception UnsupportedBinopType
 exception UnsupportedMatrixType
 exception UnsupportedVectorType
+exception CannotUseNewWithVectors
+exception CannotUseNewwithMatrices
+exception CanOnlyUseFreeWithVariables
 exception VectorOutOfBoundsAccess of string

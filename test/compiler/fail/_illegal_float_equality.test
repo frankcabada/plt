@@ -1,0 +1,6 @@
+int main() {
+  float a;
+  float b;
+  a == b;
+  return 0;
+}

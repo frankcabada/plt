@@ -24,6 +24,7 @@ type expr =
 	| Bool_lit of bool
 	| String_lit of string
 	| Matrix_lit of num list list
+	| Vector_lit of num list
 	| Id of string
 	| Noexpr
 	| Null
@@ -38,6 +39,8 @@ type expr =
 	| Rows of string
 	| Cols of string
 	| Len of string
+	| New of primitives
+	| Free of expr
 
 (* Statements *)
 type stmt =

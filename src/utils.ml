@@ -66,6 +66,7 @@ and string_of_expr = function
 	| Unop(uop, e)				-> (string_of_uop uop) ^ "(" ^ string_of_expr e ^ ")"
 	| Null						-> "null"
 	| Matrix_lit(el) 			-> "Matrix_lit"
+	| Vector_lit(e)            -> "Vector lit"
 	| Vector_access (s, i) 		-> (s) ^ "[" ^ (string_of_expr i) ^ "]"
 	| Matrix_access (s, i, j) 	-> (s) ^ "[" ^ (string_of_expr i) ^ "," ^ (string_of_expr j) ^ "]"
 	| Matrix_row (s, i)			-> (s) ^ "[" ^ (string_of_expr i)^ ",:]"
@@ -73,6 +74,8 @@ and string_of_expr = function
 	| Rows(s)					-> (s) ^ ":rows"
 	| Cols(s)					-> (s) ^ ":cols"
 	| Len(s)					-> (s) ^ ":len"
+	| New (p)                   -> (string_of_primitive p) ^ " new"
+	| Free (e)                  -> (string_of_expr e) ^ " free"
 
 let string_of_snum = function
 		SInt_lit(x) -> string_of_int x
@@ -99,6 +102,7 @@ and string_of_sexpr = function
 	| SUnop(uop, e, _)				-> (string_of_uop uop) ^ "(" ^ string_of_sexpr e ^ ")"
 	| SNull							-> "null"
 	| SMatrix_lit (_, _)			-> "SMatrix_lit"
+	| SVector_lit (_, _)            -> "SVector_lit"
 	| SVector_access (s, i, _) 		-> (s) ^ "[" ^ (string_of_sexpr i) ^ "]"
 	| SMatrix_access (s, i, j, _) 	-> (s) ^ "[" ^ (string_of_sexpr i) ^ "," ^ (string_of_sexpr j) ^ "]"
 	| SMatrix_row (s, i, _)			-> (s) ^ "[" ^ (string_of_sexpr i)^ ",:]"
@@ -106,6 +110,8 @@ and string_of_sexpr = function
 	| SCols(c)						-> "SCols"
 	| SRows(r)						-> "SRows"
 	| SLen(l)						-> "SLen"
+	| SNew(p)						-> (string_of_primitive p) ^ " SNew"
+	| SFree(e)						-> (string_of_sexpr e) ^ " SFree"
 
 let string_of_local_expr = function
 		Noexpr -> ""

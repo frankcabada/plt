@@ -3,13 +3,13 @@
 /* globals */
 int N;
 
-#include <../stdlib.cmat>;
+#include <stdlib.cmat>;
 
 /* Program entry point */
 int main() {
   int fibNum;
   N = 10;
-  
+
   fibNum = fib(N);
   print_int(fibNum);
   /*
@@ -17,7 +17,7 @@ int main() {
   print_int(fibNum);
   */
 
-  return fibNum;  
+  return fibNum;
 }
 
 /* Fibonacci method by recursive algorithm */

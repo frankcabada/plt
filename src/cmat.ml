@@ -15,7 +15,7 @@ let _ =
             [ ("-a",Ast); ("-l",LLVM_IR); ("-c",Compile) ]
             else Compile in
     let infile =
-        if (Array.length Sys.argv > 2 && action=Compile)
+        if (Array.length Sys.argv > 2)
             then Sys.argv.(2)
             else ""
     in

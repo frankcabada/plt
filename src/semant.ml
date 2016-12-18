@@ -16,7 +16,7 @@ let get_logical_binop_type se1 se2 op = function
 		| (Datatype(Int), Datatype(Int))   -> SBinop(se1, op, se2, Datatype(Int))
 		| (Datatype(Int), Datatype(Bool))  -> SBinop(se1, op, se2, Datatype(Bool))
 		| (Datatype(Bool), Datatype(Int))  -> SBinop(se1, op, se2, Datatype(Bool))
-		| _ -> raise (Exceptions.InvalidBinopExpression "Can only use Bools for logical operators")
+		| _ -> raise (Exceptions.InvalidBinopExpression "Can only use Bools/Ints for logical operators")
 
 let get_arithmetic_binop_type se1 se2 op = function
 		  (Datatype(Int), Datatype(Float))
@@ -85,7 +85,6 @@ and check_assign fname_map func_st e1 e2 =
 and check_unop fname_map func_st op e =
 	let check_num_unop t = function
 		  Neg -> t
-		| Not -> t
 		| Inc -> t
 		| Dec -> t
 	in

@@ -19,13 +19,11 @@ exception CannotUseRowsOnNonMatrix of string
 exception CannotUseTransposeOnNonMatrix of string
 exception CannotUseColsOnNonMatrix of string
 exception CannotUseLenOnNonVector of string
-exception DuplicateFunc of string
 exception DuplicateGlobal of string
-exception DuplicateLocal of string 
+exception DuplicateFuncOrLocal of string 
 exception FunctionNotFound of string
 exception IncorrectNumberOfArguments of string * int * int
 exception InvalidBinopExpression of string
-exception InvalidMatrixInit
 exception InvalidUnaryOperation
 exception MalformedMatrixLit
 exception MatrixDimensionMustBeInt

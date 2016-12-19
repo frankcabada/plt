@@ -315,7 +315,7 @@ let report_duplicate s li =
 	let rec helper = function
 		n1 :: n2 :: _ when n1 = n2 ->
 			if s = "global" then raise(Exceptions.DuplicateGlobal(n1))
-			else if s = "function" then raise(Exceptions.DuplicateFunc(n1))
+			else if s = "function" then raise(Exceptions.DuplicateFuncOrLocal(n1))
 		| _ :: t -> helper t
 		| [] -> ()
 	in helper (List.sort compare li)

@@ -1,1 +1,1 @@
-Fatal error: exception Exceptions.DuplicateFunc("x")
+Fatal error: exception Exceptions.DuplicateFuncOrLocal("x")

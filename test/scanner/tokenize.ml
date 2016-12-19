@@ -36,7 +36,7 @@ let stringify = function
   (* Identifiers *)
   | ID(string) -> "ID"
   | ROWS -> "ROWS" | COLS -> "COLS" | LEN -> "LEN" | TRANSPOSE -> "TRANSPOSE"
-  | BAR -> "BAR" | NEW -> "NEW" | FREE -> "FREE"
+  | BAR -> "BAR"
 
   (* Literals *)
   | NUM_LIT(num) -> "NUM_LIT"

@@ -193,6 +193,46 @@
         return pow;
     }
 
+    /* calculate sin of an angle (x is in degrees) */
+
+    float sin(float x) {
+      int n; int i; int y; float z; float sinx; float PI;
+      
+      PI = 3.14159;
+      x = x * (PI / 180.0);
+      z = x;
+      sinx = x;
+      n = 1;
+
+      for (i=0; i<10; ++i) {
+        y = 2 * n * (2 * n + 1);
+        z = -z * x * x / y;
+        sinx = sinx + z;
+        ++n;
+      }
+      return sinx;
+    }
+
+    /* calculate cos of an angle (x is in degrees) */
+
+    float cos(float x) {
+      int n; int i; int y; float z; float cosx; float PI;
+      
+      PI = 3.14159;
+      x = x * (PI / 180.0);
+      z = 1.0;
+      cosx = z;
+      n = 1;
+
+      for (i=0; i<10; ++i) {
+        y = 2 * n * (2 * n - 1);
+        z = -z * x * x / y;
+        cosx = cosx + z;
+        ++n;
+      }
+      return cosx;
+    }
+
 /*
     Matrix Printing Functions
 */

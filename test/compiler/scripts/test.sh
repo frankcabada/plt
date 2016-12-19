@@ -302,3 +302,17 @@ else
   echo "|   COMPILER: VOID RETURN TEST FAILED   |"
   echo "-----------------------------------------"
 fi
+
+./cmat.native -c fail/_dupe_global_local.test fail/_dupe_global_local.ll >& fail/_dupe_global_local.res
+diff fail/_dupe_global_local.out fail/_dupe_global_local.res > /dev/null
+if [ $? = 0 ]; then
+  echo -e "\e[0;32m"
+  echo "-----------------------------------------"
+  echo "|COMPILER: DUPE GLOBAL LOCAL TEST PASSED|"
+  echo "-----------------------------------------"
+else
+  echo -e "\e[0;31m"
+  echo "-----------------------------------------"
+  echo "|COMPILER: DUPE GLOBAL LOCAL TEST FAILED|"
+  echo "-----------------------------------------"
+fi

@@ -1,0 +1,7 @@
+float x;
+
+int main() {
+  int x;
+  print_string("Hello world!");
+  return 0;
+}

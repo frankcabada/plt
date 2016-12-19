@@ -197,7 +197,7 @@
 
     float sin(float x) {
       int n; int i; int y; float z; float sinx; float PI;
-      
+
       PI = 3.14159;
       x = x * (PI / 180.0);
       z = x;
@@ -217,7 +217,7 @@
 
     float cos(float x) {
       int n; int i; int y; float z; float cosx; float PI;
-      
+
       PI = 3.14159;
       x = x * (PI / 180.0);
       z = 1.0;
@@ -244,17 +244,17 @@
 
       cosx = cos(theta);
       sinx = sin(theta);
-      
+
       m[0,0] = cosx;
-      m[0,1] = sinx;
-      m[1,0] = -sinx;
+      m[0,1] = -sinx;
+      m[1,0] = sinx;
       m[1,1] = cosx;
 
       return m;
     }
 
-    /* 
-        Return 3 dimensional rotation matrix from an angle theta and an axes vector. 
+    /*
+        Return 3 dimensional rotation matrix from an angle theta and an axes vector.
         The axes vector is of the form | x | y | z | and determines axis of rotation.
         For example, to rotate about the x axis, simply pass in the vector | 1 | 0 | 0 |
     */
@@ -264,25 +264,27 @@
 
       cosx = cos(theta);
       sinx = sin(theta);
-      
+      m = [0.0, 0.0, 0.0;
+           0.0, 0.0, 0.0;
+           0.0, 0.0, 0.0];
       if (axes[0] == 1) {
         m[0,0] = 1.0;
         m[1,1] = cosx;
-        m[1,2] = sinx;
-        m[2,1] = -sinx;
+        m[1,2] = -sinx;
+        m[2,1] = sinx;
         m[2,2] = cosx;
       }
       else if (axes[1] == 1) {
         m[0,0] = cosx;
-        m[0,2] = sinx;
-        m[2,0] = -sinx;
+        m[0,2] = -sinx;
+        m[2,0] = sinx;
         m[2,2] = cosx;
         m[1,1] = 1.0;
       }
       else if (axes[2] == 1) {
         m[0,0] = cosx;
-        m[0,1] = sinx;
-        m[1,0] = -sinx;
+        m[0,1] = -sinx;
+        m[1,0] = sinx;
         m[1,1] = cosx;
         m[2,2] = 1.0;
       }

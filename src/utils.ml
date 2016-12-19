@@ -85,8 +85,6 @@ and string_of_expr = function
 	| Cols(s)					-> (s) ^ ":cols"
 	| Transpose(s)					-> (s) ^ ":tr"
 	| Len(s)					-> (s) ^ ":len"
-	| New (p)                   -> (string_of_primitive p) ^ " new"
-	| Free (e)                  -> (string_of_expr e) ^ " free"
 
 let string_of_snum = function
 		SInt_lit(x) -> string_of_int x
@@ -122,8 +120,6 @@ and string_of_sexpr = function
 	| SRows(r)						-> "SRows"
 	| STranspose(s, _)				-> "STranspose"
 	| SLen(l)						-> "SLen"
-	| SNew(p)						-> (string_of_primitive p) ^ " SNew"
-	| SFree(e)						-> (string_of_sexpr e) ^ " SFree"
 
 let string_of_local_expr = function
 		Noexpr -> ""

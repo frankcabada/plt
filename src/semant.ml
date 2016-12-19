@@ -213,7 +213,7 @@ and check_cols s func_st =
 	let typ = get_ID_type s func_st in
 		match typ with
 			Datatype(Matrix(_, _, c)) -> (match c with Int_lit(n) -> SCols(n) | _ -> raise(Exceptions.MatrixDimensionMustBeInt))
-			| _ -> raise(Exceptions.CannotUseRowsOnNonMatrix(s))
+			| _ -> raise(Exceptions.CannotUseColsOnNonMatrix(s))
 
 and check_transpose s func_st =
 	let typ = get_ID_type s func_st in
@@ -225,18 +225,7 @@ and check_len s func_st =
 	let typ = get_ID_type s func_st in
 		(match typ with
 			Datatype(Vector(_, l)) -> (match l with Int_lit(n) -> SLen(n) | _ -> raise(Exceptions.VectorDimensionMustBeIntLit))
-			| _ -> raise(Exceptions.CannotUseRowsOnNonMatrix(s)))
-
-and check_new p func_st =
-	(match p with
-		  Vector(_,_) 		-> raise(Exceptions.CannotUseNewWithVectors)
-		| Matrix(_,_,_)		-> raise(Exceptions.CannotUseNewwithMatrices)
-		| _ 				-> SNew(p))
-
-and check_free e func_st =
-	(match e with
-		  Id(s)		-> SId(s, get_ID_type s func_st)
-		| _ 		-> raise(Exceptions.CanOnlyUseFreeWithVariables))
+			| _ -> raise(Exceptions.CannotUseLenOnNonVector(s)))
 
 and expr_to_sexpr fname_map func_st = function
 	  Num_lit(Int_lit(n))  		-> SNum_lit(SInt_lit(n))
@@ -264,8 +253,6 @@ and expr_to_sexpr fname_map func_st = function
 	| Cols(s)					-> check_cols s func_st
 	| Len(s)					-> check_len s func_st
 	| Transpose(s)				-> check_transpose s func_st
-	| New(p) 				 	-> check_new p func_st
-	| Free(e)					-> check_free e func_st
 
 and get_type_from_sexpr sexpr = match sexpr with
 	  SNum_lit(SInt_lit(_))				-> Datatype(Int)
@@ -277,8 +264,6 @@ and get_type_from_sexpr sexpr = match sexpr with
 	| SRows(r) 							-> Datatype(Int)
 	| SCols(c) 							-> Datatype(Int)
 	| SLen(l) 							-> Datatype(Int)
-	| SNew(p)							-> Datatype(p)
-	| SFree(e)							-> get_type_from_sexpr e
 	| STranspose(_,d) 					-> d
 	| SId(_, d) 						-> d
 	| SBinop(_, _, _, d) 				-> d

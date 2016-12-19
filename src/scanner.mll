@@ -22,7 +22,7 @@ rule token = parse
 | '[' { LBRACKET } | ']' { RBRACKET }
 
 (* Control Flow *)
-| "if" { IF } (* | "elseif" { ELSEIF } *) | "else" { ELSE } | "while" { WHILE }
+| "if" { IF } | "else" { ELSE } | "while" { WHILE }
 | "for" { FOR } | "return" { RETURN }
 
 (* Conditionals *)
@@ -40,7 +40,7 @@ rule token = parse
 
 (* Misc. *)
 | ';' { SEMI } | ',' { COMMA } | ':' { COLON } | '|' { BAR }
-| "rows" { ROWS } | "cols" { COLS } | "len" { LEN } | "tr" { TRANSPOSE } | "new" { NEW } | "free" { FREE }
+| "rows" { ROWS } | "cols" { COLS } | "len" { LEN } | "tr" { TRANSPOSE }
 
 (* Literals *)
 | ['0'-'9']+ as lxm { NUM_LIT(Ast.Int_lit(int_of_string lxm)) }

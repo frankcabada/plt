@@ -507,14 +507,6 @@ let translate(globals, functions) =
                         done;
                         L.build_load (L.build_gep tmp_tr [| L.const_int i32_t 0 |] "tmpmat" builder) "tmpmat" builder
                     | _ -> const_int i32_t 0)
-            | S.SNew(p)                 -> (match p with
-                                              A.Vector(_, _)  -> raise(Exceptions.CannotUseNewWithVectors)
-                                            | A.Matrix(_,_,_) -> raise(Exceptions.CannotUseNewwithMatrices)
-                                            | _               -> let p' = ltype_of_typ p in
-                                                                 L.build_load (L.build_malloc p' "tmp" builder) "tmp2" builder)
-            | S.SFree(e)                -> (match e with
-                                              SId(s, d) -> L.build_free (lookup s) builder
-                                            | _ -> raise(Exceptions.CanOnlyUseFreeWithVariables));
             | S.SCall ("print_string", [e], d) ->
                 L.build_call printf_func [| string_format_str ; (expr builder e) |] "printf" builder
             | S.SCall ("print_int", [e], d) ->

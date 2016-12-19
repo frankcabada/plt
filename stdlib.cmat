@@ -234,6 +234,66 @@
     }
 
 /*
+    Matrix Manipulation Functions
+*/
+
+    /* Return 2 dimensional rotation matrix from an angle theta */
+
+    matrix float[2,2] rotation_2D_mat(float theta) {
+      matrix float[2,2] m; float cosx; float sinx;
+
+      cosx = cos(theta);
+      sinx = sin(theta);
+      
+      m[0,0] = cosx;
+      m[0,1] = sinx;
+      m[1,0] = -sinx;
+      m[1,1] = cosx;
+
+      return m;
+    }
+
+    /* 
+        Return 3 dimensional rotation matrix from an angle theta and an axes vector. 
+        The axes vector is of the form | x | y | z | and determines axis of rotation.
+        For example, to rotate about the x axis, simply pass in the vector | 1 | 0 | 0 |
+    */
+
+    matrix float[3,3] rotation_3D_mat(float theta, vector int[3] axes) {
+      matrix float[3,3] m; float cosx; float sinx;
+
+      cosx = cos(theta);
+      sinx = sin(theta);
+      
+      if (axes[0] == 1) {
+        m[0,0] = 1.0;
+        m[1,1] = cosx;
+        m[1,2] = sinx;
+        m[2,1] = -sinx;
+        m[2,2] = cosx;
+      }
+      else if (axes[1] == 1) {
+        m[0,0] = cosx;
+        m[0,2] = sinx;
+        m[2,0] = -sinx;
+        m[2,2] = cosx;
+        m[1,1] = 1.0;
+      }
+      else if (axes[2] == 1) {
+        m[0,0] = cosx;
+        m[0,1] = sinx;
+        m[1,0] = -sinx;
+        m[1,1] = cosx;
+        m[2,2] = 1.0;
+      }
+      else {
+        print_string("Must specify axis of rotation.");
+      }
+
+      return m;
+    }
+
+/*
     Matrix Printing Functions
 */
 

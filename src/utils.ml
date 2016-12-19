@@ -18,6 +18,10 @@ let save file string =
 	 output_string channel string;
 	 close_out channel
 
+let string_of_num = function
+		Int_lit(x) -> string_of_int x
+	| Float_lit(x) -> string_of_float x
+
 (* Print data types *)
 let string_of_primitive = function
 	Int				-> "int"
@@ -25,8 +29,8 @@ let string_of_primitive = function
 	| Void			-> "void"
 	| Bool			-> "bool"
 	| String		-> "String"
-	| Vector(p,i) 	-> "vector"
-	| Matrix(p,i,j) -> "matrix"
+	| Vector(p,i) 	-> "vector(" ^ (string_of_num i) ^ ")"
+	| Matrix(p,i,j) -> "matrix(" ^ (string_of_num i) ^ "," ^ (string_of_num j) ^ ")"
 
 let rec print_brackets = function
 			1 	-> "[]"
@@ -56,10 +60,6 @@ let string_of_uop = function
 	| Dec			-> "--"
 	| Neg			-> "-"
 
-let string_of_num = function
-		Int_lit(x) -> string_of_int x
-	| Float_lit(x) -> string_of_float x
-
 let rec string_of_bracket_expr = function
 	[] 					-> ""
 	| 	head :: tail 	-> "[" ^ (string_of_expr head) ^ "]" ^ (string_of_bracket_expr tail)
@@ -85,8 +85,6 @@ and string_of_expr = function
 	| Cols(s)					-> (s) ^ ":cols"
 	| Transpose(s)					-> (s) ^ ":tr"
 	| Len(s)					-> (s) ^ ":len"
-	| New (p)                   -> (string_of_primitive p) ^ " new"
-	| Free (e)                  -> (string_of_expr e) ^ " free"
 
 let string_of_snum = function
 		SInt_lit(x) -> string_of_int x
@@ -122,8 +120,6 @@ and string_of_sexpr = function
 	| SRows(r)						-> "SRows"
 	| STranspose(s, _)				-> "STranspose"
 	| SLen(l)						-> "SLen"
-	| SNew(p)						-> (string_of_primitive p) ^ " SNew"
-	| SFree(e)						-> (string_of_sexpr e) ^ " SFree"
 
 let string_of_local_expr = function
 		Noexpr -> ""

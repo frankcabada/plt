@@ -36,8 +36,6 @@ type sexpr =
 	| SCols of int
 	| SLen of int
 	| STranspose of string * datatype
-	| SNew of primitives
-	| SFree of sexpr
 
 (* Statements *)
 type sstmt =
@@ -51,10 +49,10 @@ type sstmt =
 (* Function Declarations *)
 type sfunc_decl = {
 	sreturn_type 	: datatype;
-	sfname 		: string;
-	sformals 	: formal list;
-	slocals  	: local list;
-	sbody 		: sstmt list;
+	sfname 			: string;
+	sformals 		: formal list;
+	slocals  		: local list;
+	sbody 			: sstmt list;
 }
 
 (* All method declarations | Main entry method *)

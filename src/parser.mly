@@ -14,7 +14,7 @@
 %token LPAREN RPAREN LBRACE RBRACE LBRACKET RBRACKET
 
 /* Control Flow */
-%token IF /*ELSEIF*/ ELSE WHILE FOR RETURN
+%token IF ELSE WHILE FOR RETURN
 
 /* Conditionals */
 %token EQ NEQ LT GT LEQ GEQ AND OR NOT
@@ -26,14 +26,13 @@
 %token INT BOOL VOID STRING FLOAT TRUE FALSE MATRIX VECTOR
 
 /* Misc */
-%token SEMI COMMA COLON ROWS COLS LEN TRANSPOSE BAR NEW FREE
+%token SEMI COMMA COLON ROWS COLS LEN TRANSPOSE BAR
 
 /* Literals, identifiers, EOF */
 %token <Ast.num> NUM_LIT
 %token <string> ID
 %token <string> STRING_LIT
 %token NULL
-/*%token CONST*/
 %token EOF
 
 /* Precedence and associativity of each operator */
@@ -44,10 +43,9 @@
 %left AND
 %left EQ NEQ
 %left LT GT LEQ GEQ
-%left PLUS MINUS INC DEC /* ?? Correct precedence */
+%left PLUS MINUS INC DEC
 %left TIMES DIVIDE
 %right NOT NEG
-%right FREE
 
 %start program
 %type <Ast.program> program
@@ -147,8 +145,6 @@ expr:
   | ID COLON COLS                                               { Cols($1) }
   | ID COLON LEN                                                { Len($1) }
   | ID COLON TRANSPOSE                                          { Transpose($1) }
-  | NEW primitives                                              { New($2) }
-  | FREE  expr                                                  { Free($2) }
 
 expr_opt:
     /* nothing */                   { Noexpr }

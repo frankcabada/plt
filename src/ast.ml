@@ -50,8 +50,6 @@ type expr =
 	| Cols of string
 	| Len of string
 	| Transpose of string
-	| New of primitives
-	| Free of expr
 
 (* Statements *)
 type stmt =
@@ -65,10 +63,10 @@ type stmt =
 (* Function Declarations *)
 type func_decl = {
 	return_type : datatype;
-	fname 			: string;
-	formals 		: formal list;
-	locals  		: local list;
-	body 				: stmt list;
+	fname 		: string;
+	formals 	: formal list;
+	locals  	: local list;
+	body 		: stmt list;
 }
 
 (* Start Symbol *)

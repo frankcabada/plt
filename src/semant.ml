@@ -141,14 +141,14 @@ and check_matrix_row fname_map func_st s e =
 	ignore(check_expr_is_int func_st e);
 	let t = get_ID_type s func_st	in
 		match t with
-			Datatype(Matrix(d,r,c)) -> SMatrix_row(s, expr_to_sexpr fname_map func_st e, Datatype(Matrix(d,Int_lit(1),c)))
+			Datatype(Matrix(d,r,c)) -> SMatrix_row(s, expr_to_sexpr fname_map func_st e, Datatype(Matrix(d,r,Int_lit(1))))
 			| _ -> raise(Exceptions.MatrixRowOnNonMatrix(s))
 
 and check_matrix_col fname_map func_st s e =
 	ignore(check_expr_is_int func_st e);
 	let t = get_ID_type s func_st	in
 		match t with
-			Datatype(Matrix(d,r,c)) -> SMatrix_col(s, expr_to_sexpr fname_map func_st e, Datatype(Matrix(d,r,Int_lit(1))))
+			Datatype(Matrix(d,r,c)) -> SMatrix_col(s, expr_to_sexpr fname_map func_st e, Datatype(Matrix(d,Int_lit(1),c)))
 			| _ -> raise(Exceptions.MatrixColOnNonMatrix(s))
 
 and check_matrix_access fname_map func_st s e1 e2 =

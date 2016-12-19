@@ -18,6 +18,10 @@ let save file string =
 	 output_string channel string;
 	 close_out channel
 
+let string_of_num = function
+		Int_lit(x) -> string_of_int x
+	| Float_lit(x) -> string_of_float x
+
 (* Print data types *)
 let string_of_primitive = function
 	Int				-> "int"
@@ -25,8 +29,8 @@ let string_of_primitive = function
 	| Void			-> "void"
 	| Bool			-> "bool"
 	| String		-> "String"
-	| Vector(p,i) 	-> "vector"
-	| Matrix(p,i,j) -> "matrix"
+	| Vector(p,i) 	-> "vector(" ^ (string_of_num i) ^ ")"
+	| Matrix(p,i,j) -> "matrix(" ^ (string_of_num i) ^ "," ^ (string_of_num j) ^ ")"
 
 let rec print_brackets = function
 			1 	-> "[]"
@@ -55,10 +59,6 @@ let string_of_uop = function
 	| Inc			-> "++"
 	| Dec			-> "--"
 	| Neg			-> "-"
-
-let string_of_num = function
-		Int_lit(x) -> string_of_int x
-	| Float_lit(x) -> string_of_float x
 
 let rec string_of_bracket_expr = function
 	[] 					-> ""

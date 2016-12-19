@@ -1,0 +1,54 @@
+#include <stdlib.cmat>;
+
+int main() {
+  vector float[3] position;
+  
+  position[0] = 0.0; position[1] = 0.0; position[2] = 1.0;
+  
+  print_string("Initial position vector:");
+  printf3(position);
+  print_string("");
+
+  print_string("Translate dx=10.0 dy=20.0:");
+  position = translate(position, 10.0, 20.0);
+  printf3(position);
+  print_string("");
+
+  print_string("Rotate theta=90.0:");
+  position = z_rotate(position, 90.0);
+  printf3(position);
+  print_string("");
+
+  print_string("Translate dx=25.0 dy=13.0:");
+  position = translate(position, 25.0, 13.0);
+  printf3(position);
+  print_string("");
+
+  print_string("Rotate theta=45.0:");
+  position = z_rotate(position, 45.0);
+  printf3(position);
+  print_string("");
+
+  return 0;
+}
+
+vector float[3] translate(vector float[3] cur_position, float dx, float dy) {
+  vector float[3] translation; vector float[3] new_position;
+
+  translation[0] = dx; translation[1] = dy; translation[2] = 0.0;
+
+  new_position = translation + cur_position;
+
+  return new_position;
+}
+
+vector float[3] z_rotate(vector float[3] cur_position, float theta) {
+  matrix float[3,3] rotation; vector float[3] new_position; vector int[3] axes;
+
+  axes = | 0 | 0 | 1 |;
+  rotation = rotation_3D_mat(theta, axes);
+
+  new_position = rotation * cur_position;
+
+  return new_position;
+}

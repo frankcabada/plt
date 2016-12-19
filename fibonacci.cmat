@@ -12,9 +12,11 @@ int main() {
 
   fibNum = fib(N);
   print_int(fibNum);
+  print_string("");
   /*
   fibNum = dynamicFib(N);
   print_int(fibNum);
+  print_int("");
   */
 
   return fibNum;

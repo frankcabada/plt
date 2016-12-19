@@ -9,15 +9,19 @@ int N;
 int main() {
   int fibNum;
   N = 10;
+  print_string("N:");
+  print_int(N);
+  print_string("");
 
   fibNum = fib(N);
+  print_string("Recursive fib:");
   print_int(fibNum);
   print_string("");
-  /*
-  fibNum = dynamicFib(N);
+  
+  fibNum = iterativeFib(N);
+  print_string("Iterative fib:");
   print_int(fibNum);
-  print_int("");
-  */
+  print_string("");
 
   return fibNum;
 }
@@ -29,8 +33,8 @@ int fib(int n) {
   return fib(n-2) + fib(n-1);
 }
 
-/* Fibonacci method by dynamic algorithm */
-int dynamicFib(int n) {
+/* Fibonacci method by iterative algorithm */
+int iterativeFib(int n) {
   int i; int f1; int f2;
   f1 = 1; f2 = 1;
 
